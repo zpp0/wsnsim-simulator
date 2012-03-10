@@ -19,9 +19,15 @@ class event
 {
 public:
     // Конструктор принимает момент времени, в которой должно произойти событие.
-    event(virtualTime Time) :time(Time) {}
+    // event() ;
+    // event(virtualTime Time) :time(Time) {}
     virtual ~event(){};
-    
+
+    virtual QString eventName() const = 0;
+
+    virtual void record(QDataStream& stream) = 0;
+
+    quint8 eventID;
     // virtual bool check(){}
 
     // момент времени, в который должно произойти событие (мкс)

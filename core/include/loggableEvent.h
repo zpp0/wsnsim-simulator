@@ -10,10 +10,10 @@
 
 #include <QString>
 
-#include "event.h"
+// #include "event.h"
 #include "types.h"
 
-class loggableEvent : public event
+class loggableEvent
 {
 public:
     virtual QString eventName() const = 0;

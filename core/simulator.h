@@ -17,8 +17,8 @@ class simulator
 {
 
 public:
-    simulator(QString projectFileName);
-    // ~simulator();
+    simulator(QString projectFilePath);
+    ~simulator();
     
     void eval();
 

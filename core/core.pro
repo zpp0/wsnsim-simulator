@@ -15,6 +15,7 @@ HEADERS += env.h \
            log.h \
            node.h \
            simulator.h \
+           test-events.h \
            include/event.h \
            include/IEnvironment.h \
            include/IHardware.h \

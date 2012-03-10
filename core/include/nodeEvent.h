@@ -19,11 +19,12 @@
 class nodeEvent : public event
 {
 public:
-    nodeEvent(virtualTime StartTime, nodeID EventNode) :event(startTime), eventNode(EventNode);
+// nodeEvent(virtualTime Time, nodeID EventNode) :event(Time), eventNodeID(EventNode) {};
+// nodeEvent() :event() {};
     virtual ~nodeEvent(){};
 
     //ссылка на узел, с которым происходит событие
-    nodeID eventNode;
+    nodeID eventNodeID;
 };
 
 #endif // NODEEVENT_H
