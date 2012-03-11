@@ -26,9 +26,11 @@ public:
     static void init(QString logFilePath);
     static void uninit();
 
-    static QDataStream& logStream();
+    static void writeLog(loggableEvent* event);
     
 private:
+    log();
+    static QHash<QString, EventID> events;
     static QFile* m_log;
     static QDataStream* m_logStream;
 };

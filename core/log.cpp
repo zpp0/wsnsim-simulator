@@ -13,6 +13,7 @@
 
 QFile* log::m_log;
 QDataStream* log::m_logStream;
+QHash<QString, EventID> log::events;
 
 void log::init(QString logFilePath)
 {
@@ -39,7 +40,8 @@ void log::uninit()
     m_log->close();
 }
 
-QDataStream& log::logStream()
+void log::writeLog(loggableEvent* event)
 {
-    return (*m_logStream);
+    (*m_logStream) << event->time << events[event->eventName()];
+    event->record(*m_logStream);
 }

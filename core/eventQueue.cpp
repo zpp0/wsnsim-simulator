@@ -7,7 +7,7 @@
 
 #include "eventQueue.h"
 
-//добавляем в очередь
+// добавляем в очередь
 void eventQueue::insert(loggableEvent* event)
 {
     queue.insert(event->time, event);

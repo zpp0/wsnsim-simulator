@@ -10,9 +10,9 @@
 
 #include <QtCore>
 
-typedef quint64 virtualTime;
-typedef quint16 nodeID;
-typedef quint8 eventID;
-typedef void(*interruptHandler)();
+typedef quint64 VirtualTime;
+typedef quint16 NodeID;
+typedef quint8 EventID;
+typedef void(*InterruptHandler)();
 
 #endif // TYPES_H

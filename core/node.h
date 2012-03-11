@@ -17,14 +17,14 @@ class node : public QObject
     Q_OBJECT
 
 public:
-    node(nodeID ID, IHardware* hardware, ISoftware* software)
+    node(NodeID ID, IHardware* hardware, ISoftware* software)
         : m_ID(ID), m_p_hardware(hardware), m_p_software(software) {}
 
     // ~node();
 
 private:
     // служебный ID узла
-    nodeID m_ID;
+    NodeID m_ID;
 
     IHardware* m_p_hardware;
     ISoftware* m_p_software;

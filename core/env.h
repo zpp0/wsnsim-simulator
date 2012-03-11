@@ -23,7 +23,7 @@ public:
     // ~env();
 
     // реальное время в системе
-    static virtualTime time;
+    static VirtualTime time;
 
     static QList<IEnvironment*> modules;
 

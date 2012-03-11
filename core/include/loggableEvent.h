@@ -13,6 +13,11 @@
 #include "event.h"
 #include "types.h"
 
+/**
+ *
+ * класс журналируемых событий
+ *
+ **/
 class loggableEvent : public event
 {
 public:

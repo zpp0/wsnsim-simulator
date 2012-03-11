@@ -18,7 +18,7 @@ public:
     
     virtual QString deviceName() const = 0;
 
-    virtual QList<interruptHandler> interrupts() = 0;
+    virtual QList<InterruptHandler> interrupts() = 0;
 };
 
 #endif // IHARDWARE_H

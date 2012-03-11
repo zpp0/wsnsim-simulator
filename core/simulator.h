@@ -11,7 +11,6 @@
 #include <QString>
 
 #include "types.h"
-// #include "log.h"
 
 class simulator
 {
@@ -23,13 +22,13 @@ public:
     void eval();
 
     // максимальное время работы симулятора
-    virtualTime getMaxSimulatorWorkTime();
+    VirtualTime getMaxSimulatorWorkTime();
 
 private:
     void loadProject(QString file);
 
     // максимально-возможное время работы симулятора
-    static virtualTime m_maxSimulatorWorkTime;
+    static VirtualTime m_maxSimulatorWorkTime;
 
 };
 
