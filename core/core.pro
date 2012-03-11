@@ -24,5 +24,6 @@ HEADERS += env.h \
            include/loggableEvent.h \
            include/nodeEvent.h \
            include/processableEvent.h \
-           include/types.h
-SOURCES += eventQueue.cpp log.cpp main.cpp simulator.cpp
+           include/types.h \
+           include/logtypes.h
+SOURCES += eventQueue.cpp log.cpp main.cpp simulator.cpp logtypes.cpp
