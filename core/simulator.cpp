@@ -46,7 +46,6 @@ void simulator::eval()
     quint64 eventsCount = 0;
     virtualTime time = 0;
 
-
     for (quint16 newNodeID = 0; newNodeID < nodesNum; newNodeID++) {
 
         qsrand(QDateTime::currentDateTime().toTime_t() + eventsCount);
@@ -71,7 +70,7 @@ void simulator::eval()
 
         event.record(log::logStream());
         
-        eventsCount = newNodeID;
+        eventsCount++;
     }
 
     while ((eventsCount < eventsNum)
