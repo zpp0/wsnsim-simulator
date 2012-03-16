@@ -40,7 +40,7 @@ void simulator::eval()
     // restrictions
     quint64 eventsNum = 1000000000000000000000;
     quint16 nodesNum = 25;
-    virtualTime maxTime = 86400000000 / 60;
+    virtualTime maxTime = 86400000000;
 
     quint8 events = 10;
     quint64 eventsCount = 0;
@@ -74,7 +74,7 @@ void simulator::eval()
     }
 
     while ((eventsCount < eventsNum)
-           || (time < maxTime)) {
+           && (time < maxTime)) {
         nodeID randomNodeID = ((double)qrand() / RAND_MAX) * nodesNum;
         eventID randomEventID = ((double)qrand() / RAND_MAX) * events;
 
@@ -220,7 +220,7 @@ void simulator::eval()
         
         }
 
-        time += ((double)qrand() / RAND_MAX) * 1000000;
+        time += ((double)qrand() / RAND_MAX) * 1000;
         eventsCount++;
 
     }
