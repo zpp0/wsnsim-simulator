@@ -75,7 +75,10 @@ public:
     virtual void record(QDataStream& stream)
     { 
         stream << time << eventID << eventNodeID << message.length;
+
+        stream << message.length;
         stream.writeRawData(message.array.constData(), message.length);
+
         stream << RSSI;
     }
 
@@ -91,7 +94,10 @@ public:
     virtual void record(QDataStream& stream)
     { 
         stream << time << eventID << eventNodeID;
-        stream.writeBytes(message.array.constData(), message.length);
+
+        stream << message.length;
+        stream.writeRawData(message.array.constData(), message.length);
+
         stream << TXPower;
     }
 
@@ -119,7 +125,10 @@ public:
     virtual void record(QDataStream& stream)
     { 
         stream << time << eventID << eventNodeID;
-        stream.writeBytes(sensorName.string.constData(), sensorName.length);
+
+        stream << sensorName.length;
+        stream.writeRawData(sensorName.string.constData(), sensorName.length);
+
         stream << value;
     }
 

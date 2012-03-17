@@ -36,9 +36,8 @@ void simulator::loadProject (QString projectFileName)
 
 void simulator::eval()
 {
-
     // restrictions
-    quint64 eventsNum = 1000000000000000000000;
+    quint64 eventsNum = 100;
     quint16 nodesNum = 25;
     virtualTime maxTime = 86400000000;
 
@@ -226,5 +225,4 @@ void simulator::eval()
     }
            
     qDebug() << "time" << time << "events" << eventsCount;
-
 }
