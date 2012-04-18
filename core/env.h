@@ -12,10 +12,11 @@
 
 #include "IEnvironment.h"
 #include "types.h"
+#include "eventQueue.h"
 
 // Класс среды
 
-class env : public QObject
+class Env : public QObject
 {
     Q_OBJECT
 
@@ -25,14 +26,22 @@ public:
     // реальное время в системе
     static VirtualTime time;
 
-    static QList<IEnvironment*> modules;
+    static IModule* getInterface(IModule* module, QString interface);
+
+    // static QList<IEnvironment*> modules;
 
     // // размеры среды по 3 измерениям
     // static EnvSize size;
 
     // // список зарегистрированных узлов
     // static QVector<node*> nodes;
-    // // static QHash<node*, double*> nodesCoords;
+    // // // static QHash<node*, double*> nodesCoords;
+
+    // FIXME: THIS WILL BE DELETED!
+    static QMap<QString, IModule*> m_interfaces_TEMP;
+
+    // FIXME: THIS WILL BW DELETED
+    static eventQueue queue;
 
 private:
 

@@ -15,11 +15,94 @@
 #include "env.h"
 #include "node.h"
 #include "event.h"
+#include "log.h"
 
-// #include "dataParams.h"
+// TODO: WHIS WILL BE DELETED!
+#include "scene.h"
+#include "radioChannel.h"
+#include "rtx.h"
+#include "timer.h"
+
+#include "ITimer.h"
+
+#include "projectParams.h"
+
+VirtualTime simulator::m_maxSimulatorWorkTime;
 
 simulator::simulator(QString projectFileName)
 {
+    QLibrary projectDataLib("./libprojectData");
+    projectDataLib.load();
+
+    if(!projectDataLib.isLoaded()) {
+        qDebug() << "Error load library";
+        return;
+    }        
+
+    // FIXME: make it easy
+    typedef ProjectParams(*projectDataLoad) (QString& projectFileName, QString* errorMessage);
+    projectDataLoad pd = (projectDataLoad) projectDataLib.resolve("load");
+
+    QString errorMessage;
+    QString projectFile;
+
+    ProjectParams projectParams = pd(projectFileName, &errorMessage);
+
+    log::init(projectParams.simulatorParams.logFile, projectParams.events);
+
+    m_maxSimulatorWorkTime = projectParams.simulatorParams.maxTime;
+
+    // TODO: worse. Delete this
+    Scene* scene = new Scene();
+
+    radioChannel* radio = new radioChannel();
+
+    Env::m_interfaces_TEMP["IScene"] = qobject_cast<IModule*> (scene);
+    Env::m_interfaces_TEMP["IRadioChannel"] = qobject_cast<IModule*> (radio);
+
+    QList<ModuleParam> scene_params;
+    QList<ModuleParam> radioChannel_params;
+    QList<ModuleParam> rtx_params;
+    foreach (ModuleParams params, projectParams.modulesParams) {
+        if (params.moduleName == "Scene")
+            scene_params = params.params;
+        if (params.moduleName == "rtx")
+            rtx_params = params.params;
+        if (params.moduleName == "radioChannel")
+            radioChannel_params = params.params;
+    }
+
+    qDebug() << "scene init";
+    scene->moduleInit(scene_params);
+    // qDebug() << "interface cast radio" << qobject_cast<IModule*> (radio);
+
+    // qDebug() << "nodes";
+    QVector<Node*> nodes = scene->nodes();
+    foreach(Node* node, nodes) {
+        // qDebug() << "new node";
+        RTX* rtx = new RTX();
+        Timer* timer = new Timer();
+        // qDebug() << "set parent Node to RTX" << node;
+        rtx->setParentNode(node);
+        timer->setParentNode(node);
+
+        // qDebug() << "interface cast rtx" << qobject_cast<IModule*> (rtx);
+        node->m_interfaces_TEMP["Irtx"] = (IModule*) rtx;
+        // node->m_interfaces_TEMP["Irtx"] = qobject_cast<IModule*> (rtx);
+        node->m_interfaces_TEMP["ITimer"] = (IModule*) timer;
+        // node->m_interfaces_TEMP["ITimer"] = qobject_cast<IModule*> (timer);
+
+        rtx->moduleInit(rtx_params);
+    }
+
+    qDebug() << "radio init";
+    radio->moduleInit(radioChannel_params);
+
+    // foreach (Node* node, nodes) {
+    //     qDebug() << "node init" << node->ID;
+    //     node->init();
+    // }
+    
     // QFileInfo info = QFileInfo(QDir::current(), projectFileName);
     // info.setFile(info.absolutePath());
 
@@ -39,6 +122,11 @@ simulator::simulator(QString projectFileName)
 // simulator::~simulator()
 // {
 // }
+
+VirtualTime simulator::getMaxSimulatorWorkTime()
+{
+    return m_maxSimulatorWorkTime;
+}
 
 void simulator::loadProject (QString projectFileName)
 {
@@ -173,62 +261,101 @@ void simulator::loadProject (QString projectFileName)
 
 void simulator::eval()
 {
-    // qDebug() << "max time" << env::getMaxSimulatorWorkTime();
+    qDebug() << "SIMULATOR START";
+    qDebug() << "max time" << getMaxSimulatorWorkTime();
     
-    // quint64 oldTime = 0;
+    quint64 oldTime = 0;
 
-    // int completionPersent = 0;
+    int completionPersent = 0;
     
-    // event* nextEvent;
+    // processableEvent* nextEvent;
+    event* nextEvent;
 
-    // // node* node = NULL;
+    // node* node = NULL;
 
-    // // для всех событий из очереди
-    // // извлекаем событие и отправляем соответствующее сообщение
-    // while ((nextEvent = env::popEventQueue()) != NULL) {
+    // для всех событий из очереди
+    // извлекаем событие и отправляем соответствующее сообщение
+    while ((nextEvent = Env::queue.pop()) != NULL) {
 
-    //     // qDebug() << "time" << env::getMainTime() << nextEvent->startTime;
+        // Timer::timerInterrupt* e = (Timer::timerInterrupt*) nextEvent;
+        // qDebug() << "time" << env::getMainTime() << nextEvent->startTime;
+
+        // qDebug() << "time" << Env::time;
+        qDebug() << "pop new event" << nextEvent->eventName()
+                 << "number" << event::count
+                 << "time" << nextEvent->time;
         
-    //     // если текущее время равно или превышает максимальное
-    //     if (nextEvent->startTime >= env::getMaxSimulatorWorkTime()) {
-    //         if (completionPersent < 100) {
-    //             completionPersent = 100;
-    //             std::cout << "\r" << std::unitbuf << completionPersent << "%";
-    //         }
-    //         delete nextEvent;
-    //         break;
-    //     }
+        // если текущее время равно или превышает максимальное
+        if (nextEvent->time >= getMaxSimulatorWorkTime()) {
+        // if (e->time >= getMaxSimulatorWorkTime()) {
+            if (completionPersent < 100) {
+                completionPersent = 100;
+                std::cout << "\r" << std::unitbuf << completionPersent << "%";
+            }
+            delete nextEvent;
 
-    //     oldTime = env::getMainTime();
 
-    //     // if ((nextEvent->startTime >= oldTime)
-    //     //     || (node != ((nodeEvent*)nextEvent)->eventNode))
-    //     // {
-    //     if (nextEvent->check() == true) {
-    //         //устанавливаем время, на время начала события
-    //         env::setMainTime(nextEvent->startTime);
+            int count = 1;
+            while (Env::queue.pop() != NULL)
+                count++;
 
-    //         if (oldTime != env::getMainTime()) {
-    //             if (env::moveNodes())
-    //                 env::nodesHearTest();
-    //         }
+            event::count -= count;
 
-    //         // выполнения события
-    //         nextEvent->action();
-    //     }
+            qDebug() << "rest" << count;
+            break;
+        }
 
-    //     // node = ((nodeEvent*)nextEvent)->eventNode;
+        oldTime = Env::time;
 
-    //     qint64 remainingTime = env::getMaxSimulatorWorkTime() - nextEvent->startTime;
-    //     int currentPercent = ((env::getMaxSimulatorWorkTime() - remainingTime) * 100) / env::getMaxSimulatorWorkTime();
-    //     if (completionPersent != currentPercent) {
-    //         completionPersent = currentPercent;
-    //         std::cout << "\r" << std::unitbuf << completionPersent << "%";
-    //     }
+        // if ((nextEvent->startTime >= oldTime)
+        //     || (node != ((nodeEvent*)nextEvent)->eventNode))
+        // {
+        // if (nextEvent->check() == true) {
+
+         //устанавливаем время, на время начала события
+        Env::time = nextEvent->time;
+        // Env::time = e->time;
+
+        // if (oldTime != Env::time) {
+        //     if (env::moveNodes())
+        //         env::nodesHearTest();
+        // }
+
+        // FIXME: переделать
+        if (nextEvent->recordable)
+            log::writeLog(nextEvent);
+
+        // выполнения события
+        nextEvent->process();
+
+        // }
+
+        // node = ((nodeEvent*)nextEvent)->eventNode;
+
+        VirtualTime remainingTime = getMaxSimulatorWorkTime() - nextEvent->time;
+        // qint64 remainingTime = getMaxSimulatorWorkTime() - e->time;
+        int currentPercent = ((getMaxSimulatorWorkTime() - remainingTime) * 100) / getMaxSimulatorWorkTime();
+        if (completionPersent != currentPercent) {
+            completionPersent = currentPercent;
+            std::cout << "\r" << std::unitbuf << completionPersent << "%";
+        }
         
-    //     delete nextEvent;
-    // }
+        delete nextEvent;
+    }
 
+    qDebug() << "events count" << event::count;
+    qDebug() << "nodePowerUp" << IScene::nodePowerUp::count;
+    qDebug() << "ChangeLink" << IRadioChannel::ChangeLink::count;
+    qDebug() << "CCATest" << Irtx::CCATest::count;
+    qDebug() << "Collision" << Irtx::Collision::count;
+    qDebug() << "SFD_TX_Down" << Irtx::SFD_TX_Down::count;
+    qDebug() << "SFD_TX_Up" << Irtx::SFD_TX_Up::count;
+    qDebug() << "SFD_RX_Down" << Irtx::SFD_RX_Down::count;
+    qDebug() << "SFD_RX_Up" << Irtx::SFD_RX_Up::count;
+    qDebug() << "timer" << ITimer::timerInterrupt::count;
+    
+
+    log::uninit();
     // std::cerr << std::endl << event::Count << " events" << std::endl;
     // std::cerr << std::endl << nodeEventRadioRX::CollCount << " collisions" << std::endl;
     // std::cerr << std::endl << nodeEventRadioRX::RXCount << " RX messages" << std::endl;

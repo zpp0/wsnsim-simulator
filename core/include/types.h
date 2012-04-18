@@ -13,6 +13,7 @@
 typedef quint64 VirtualTime;
 typedef quint16 NodeID;
 typedef quint8 EventID;
+typedef QByteArray byteArray;
 typedef void(*InterruptHandler)();
 
 #endif // TYPES_H

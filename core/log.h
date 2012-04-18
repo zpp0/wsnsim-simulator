@@ -12,6 +12,7 @@
 #include <QFile>
 
 #include "loggableEvent.h"
+#include "projectParams.h"
 
 /**
  *
@@ -23,10 +24,11 @@ class log
 {
 public:
     
-    static void init(QString logFilePath);
+    static void init(QString logFilePath, Events eventsLists);
     static void uninit();
 
-    static void writeLog(loggableEvent* event);
+    // static void writeLog(loggableEvent* event);
+    static void writeLog(event* event);
     
 private:
     log();

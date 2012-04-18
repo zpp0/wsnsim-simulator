@@ -21,6 +21,9 @@
 class loggableEvent : public event
 {
 public:
+    // момент времени, в который должно произойти событие (мкс)
+    // VirtualTime time;
+
     virtual QString eventName() const = 0;
 
     virtual void record(QDataStream& stream) = 0;

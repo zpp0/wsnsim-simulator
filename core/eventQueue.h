@@ -10,21 +10,25 @@
 
 #include <QMultiMap>
 
-#include "loggableEvent.h"
+// #include "processableEvent.h"
+#include "event.h"
 #include "types.h"
 
 class eventQueue
 {
 public:
     // вставить событие в нужное по хронологии место в очереди
-    void insert(loggableEvent* event);
+    // void insert(processableEvent* event);
+    void insert(event* event);
 
     // извлечь из очереди очередное событие
-    loggableEvent* pop();
+    // processableEvent* pop();
+    event* pop();
     
 private:
     // очередь событий
-    QMultiMap<VirtualTime, loggableEvent*> queue;
+    // QMultiMap<VirtualTime, processableEvent*> queue;
+    QMultiMap<VirtualTime, event*> queue;
 };
 
 #endif // EVENTQUEUE_H
