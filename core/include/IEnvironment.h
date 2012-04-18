@@ -9,7 +9,9 @@
 
 #include <QtCore>
 
-class IEnvironment
+#include "IModule.h"
+
+class IEnvironment : public IModule
 {
 public:
 	virtual ~IEnvironment() {}

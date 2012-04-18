@@ -9,8 +9,11 @@
 
 #include <QtCore>
 
-class IModule
+#include "projectParams.h"
+
+class IModule : public QObject
 {
+    Q_OBJECT
 public:
 	virtual ~IModule() {}
 
@@ -20,11 +23,12 @@ public:
 
     virtual QString moduleDescription() const = 0;
 
-	virtual bool moduleEnable() = 0;
+	virtual bool moduleInit(QList<ModuleParam> params) = 0;
 
     virtual QList<QString> moduleExportInterfaces() const = 0;
 
     virtual QList<QString> moduleImportInterfaces() const = 0;
 };
+
 
 #endif // IMODULE_H

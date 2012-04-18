@@ -11,8 +11,12 @@
 
 #include "types.h"
 
-class IHardware
+#include "IModule.h"
+
+class IHardware : public IModule
 {
+    // Q_OBJECT
+
 public:
 	virtual ~IHardware() {}
     
