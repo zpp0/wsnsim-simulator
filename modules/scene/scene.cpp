@@ -272,5 +272,5 @@ void IScene::nodePowerUp::process()
 
 // #include "moc_scene.cpp"
 
-Q_EXPORT_PLUGIN(Scene);
+// Q_EXPORT_PLUGIN(Scene);
 // Q_EXPORT_PLUGIN2(sceneplugin, Scene);

@@ -9,7 +9,9 @@ OBJECTS_DIR = ./debug
 DEPENDPATH += . include
 INCLUDEPATH += . include ../../projectData ../interfaces/environment/ ../interfaces/hardware/ ../modules/radioChannel/ ../modules/RTX/ ../modules/timer/ ../modules/scene/
 # CONFIG += static
-CONFIG += release
+CONFIG += release warn_off
+
+DEFINES += QT_NO_DEBUG_OUTPUT QT_NO_WARNING_OUTPUT
 
 # Input
 HEADERS += env.h \
