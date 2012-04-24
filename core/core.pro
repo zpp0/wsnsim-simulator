@@ -7,11 +7,14 @@ TARGET = simulator
 DESTDIR = ../../bin/
 OBJECTS_DIR = ./debug
 DEPENDPATH += . include
-INCLUDEPATH += . include
+INCLUDEPATH += . include ../../projectData ../interfaces/environment/ ../interfaces/hardware/ ../modules/radioChannel/ ../modules/RTX/ ../modules/timer/ ../modules/scene/
+# CONFIG += static
+CONFIG += release
 
 # Input
 HEADERS += env.h \
            eventQueue.h \
+           ../../projectData/projectParams.h \
            log.h \
            node.h \
            simulator.h \
@@ -21,9 +24,14 @@ HEADERS += env.h \
            include/IModule.h \
            include/ISimulator.h \
            include/ISoftware.h \
-           include/loggableEvent.h \
            include/nodeEvent.h \
-           include/processableEvent.h \
            include/types.h \
-           include/logtypes.h
-SOURCES += eventQueue.cpp log.cpp main.cpp simulator.cpp logtypes.cpp
+           ../interfaces/environment/IRadioChannel.h \
+           ../interfaces/environment/IScene.h \ 
+           ../interfaces/hardware/Irtx.h \ 
+           ../interfaces/hardware/ITimer.h \
+           ../modules/radioChannel/radioChannel.h \
+           ../modules/scene/scene.h \
+           ../modules/timer/timer.h \
+           ../modules/RTX/rtx.h
+SOURCES += eventQueue.cpp log.cpp main.cpp simulator.cpp event.cpp ../modules/RTX/rtx.cpp ../modules/radioChannel/radioChannel.cpp ../modules/scene/scene.cpp ../modules/timer/timer.cpp env.cpp node.cpp

@@ -11,7 +11,8 @@
 #include <QString>
 #include <QFile>
 
-#include "loggableEvent.h"
+#include "event.h"
+// #include "loggableEvent.h"
 #include "projectParams.h"
 
 /**
