@@ -11,18 +11,12 @@
 
 #include "ICore.h"
 
-#include "IModule.h"
-
-#include "types.h"
-
 struct INode : public ICore
 {
-	virtual ~INode() {}
-
-    virtual QString interfaceName() const { return "INode"; }
+    INode() { interfaceInfo.name = "INode"; }
 
     virtual NodeID ID() = 0;
-    virtual IModule* getInterface(QString requestingModuleName, QString requestedInterfaceName) = 0;
+    virtual IModule* getInterface(IModule* receiver, QString interfaceName) = 0;
 };
 // Q_DECLARE_INT
 

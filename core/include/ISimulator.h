@@ -1,7 +1,7 @@
 /**
  *
  * File: ISimulator.h
- * Description: Simulator interface
+ * Description: Simulator core interface
  * Author: Yarygin Alexander <zpp0@mail.ru>
  *
  **/
@@ -10,31 +10,14 @@
 #define ISIMULATOR_H
 
 #include "ICore.h"
-#include "IModule.h"
 
 struct ISimulator : public ICore
 {
-	virtual ~ISimulator() {}
+    ISimulator() { interfaceInfo.name = "ISimulator"; }
 
-    // TODO: do events struct
-    virtual void getEvents() = 0;
-    virtual void registerEventHandler(IModule* module, QString eventName);
+    virtual ICore* getCoreInterface(IModule* receiver, QString interfaceName) = 0;
+    virtual QList<QString> getEvents() = 0;
+    virtual void registerEventHandler(IModule* handler, QString eventName) = 0;
 };
 
 #endif // ISIMULATOR_H
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,8 @@
 /**
  *
- * ISoftware.h - node's Software interface
+ * File: ISoftware.h
+ * Description: node's Software interface
+ * Author: Yarygin Alexander <zpp0@mail.ru>
  *
  **/
 

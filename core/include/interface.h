@@ -1,6 +1,7 @@
 /**
  *
  * File: interface.h
+ * Description: Simulator interface bace class
  * Author: Yarygin Alexander <zpp0@mail.ru>
  *
  **/
@@ -10,13 +11,15 @@
 
 #include <QtCore>
 
+#include "types.h"
+
 class Interface : public QObject
 {
     Q_OBJECT
-
 public:
-    virtual QString interfaceName() const = 0;
-
+    virtual ~Interface() {};
+    
+    InterfaceInfo interfaceInfo;
 };
 
 #endif // INTERFACE_H

@@ -1,6 +1,8 @@
 /**
  *
- * IModule.h - Module interface
+ * File: IModule.h
+ * Description: Module interface
+ * Author: Yarygin Alexander <zpp0@mail.ru>
  *
  **/
 
@@ -9,14 +11,12 @@
 
 #include "interface.h"
 
-#include "types.h"
-
 struct IModule : public Interface
 {
 	virtual ~IModule() {}
 
-    virtual ModuleInfo moduleInfo() const = 0;
-
+    ModuleInfo moduleInfo;
+    
 	virtual bool moduleInit(QMap<QString, Interface*> importInterfaces,
                             QMap<QString, QString> params) = 0;
 };
