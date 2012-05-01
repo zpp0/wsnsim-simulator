@@ -14,4 +14,3 @@ event::event()
     count++;
     recordable = false;
 }
-

@@ -13,9 +13,8 @@
 
 #include "event.h"
 
-class IQueue : public ICore
+struct IQueue : public ICore
 {
-public:
 	virtual ~IQueue() {}
 
     virtual QString interfaceName() const { return "IQueue"; }

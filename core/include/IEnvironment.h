@@ -7,13 +7,10 @@
 #ifndef IENVIRONMENT_H
 #define IENVIRONMENT_H
 
-#include <QtCore>
-
 #include "IModule.h"
 
-class IEnvironment : public IModule
+struct IEnvironment : public IModule
 {
-public:
 	virtual ~IEnvironment() {}
 
 };

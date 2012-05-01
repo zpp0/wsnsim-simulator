@@ -15,9 +15,8 @@
 
 #include "types.h"
 
-class IEnv : public ICore
+struct IEnv : public ICore
 {
-public:
 	virtual ~IEnv() {}
 
     virtual QString interfaceName() const { return "IEnv"; }

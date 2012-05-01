@@ -20,6 +20,10 @@ IModule* Env::getInterface(IModule* module, QString interface)
     // foreach (QString intname, interfaces)
         // qDebug() << intname;
 
+    // module->
+    
+    // QString::
+
     // if (module->moduleImportInterfaces().indexOf(interface) != -1)
     // Interface = m_interfaces_TEMP[interface];
     return m_interfaces_TEMP[interface];

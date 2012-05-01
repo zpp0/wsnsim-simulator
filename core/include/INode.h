@@ -15,9 +15,8 @@
 
 #include "types.h"
 
-class INode : public ICore
+struct INode : public ICore
 {
-public:
 	virtual ~INode() {}
 
     virtual QString interfaceName() const { return "INode"; }

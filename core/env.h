@@ -28,15 +28,6 @@ public:
 
     static IModule* getInterface(IModule* module, QString interface);
 
-    // static QList<IEnvironment*> modules;
-
-    // // размеры среды по 3 измерениям
-    // static EnvSize size;
-
-    // // список зарегистрированных узлов
-    // static QVector<node*> nodes;
-    // // // static QHash<node*, double*> nodesCoords;
-
     // FIXME: THIS WILL BE DELETED!
     static QMap<QString, IModule*> m_interfaces_TEMP;
 

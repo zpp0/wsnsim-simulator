@@ -7,11 +7,10 @@
 #ifndef ISOFTWARE_H
 #define ISOFTWARE_H
 
-#include <QtCore>
+#include "IModule.h"
 
-class ISoftware
+struct ISoftware : public IModule
 {
-public:
 	virtual ~ISoftware() {}
 };
 

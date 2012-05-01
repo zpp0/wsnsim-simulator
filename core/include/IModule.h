@@ -7,28 +7,18 @@
 #ifndef IMODULE_H
 #define IMODULE_H
 
-#include <QtCore>
+#include "interface.h"
 
-#include "projectParams.h"
+#include "types.h"
 
-class IModule : public QObject
+struct IModule : public Interface
 {
-    Q_OBJECT
-public:
 	virtual ~IModule() {}
 
-	virtual QString moduleName() const = 0;
+    virtual ModuleInfo moduleInfo() const = 0;
 
-	virtual QString moduleVersion() const = 0;
-
-    virtual QString moduleDescription() const = 0;
-
-	virtual bool moduleInit(QList<ModuleParam> params) = 0;
-
-    virtual QList<QString> moduleExportInterfaces() const = 0;
-
-    virtual QList<QString> moduleImportInterfaces() const = 0;
+	virtual bool moduleInit(QMap<QString, Interface*> importInterfaces,
+                            QMap<QString, QString> params) = 0;
 };
-
 
 #endif // IMODULE_H
