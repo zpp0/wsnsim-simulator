@@ -1,6 +1,7 @@
 /**
  *
  * File: env.h
+ * Description: Simulator Environment class
  * Author: Yarygin Alexander <zpp0@mail.ru>
  *
  **/
@@ -10,32 +11,20 @@
 
 #include <QList>
 
-#include "IEnvironment.h"
-#include "types.h"
-#include "eventQueue.h"
+#include "IEnv.h"
+
+#include "IModule.h"
 
 // Класс среды
 
-class Env : public QObject
+// FIXME: is it hack?
+struct Env : public IEnv
 {
-    Q_OBJECT
-
-public:
-    // ~env();
-
+    /* virtual */ VirtualTime time();
+    /* virtual */ IModule* getInterface(IModule* receiver, QString interfaceName);
+    
     // реальное время в системе
     static VirtualTime time;
-
-    static IModule* getInterface(IModule* module, QString interface);
-
-    // FIXME: THIS WILL BE DELETED!
-    static QMap<QString, IModule*> m_interfaces_TEMP;
-
-    // FIXME: THIS WILL BW DELETED
-    static eventQueue queue;
-
-private:
-
 };
 
 #endif // ENV_H
