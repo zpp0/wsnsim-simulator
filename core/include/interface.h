@@ -17,6 +17,7 @@ class Interface : public QObject
 {
     Q_OBJECT
 public:
+    Interface() { interfaceInfo.type = InterfaceType_Undefined; }
     virtual ~Interface() {};
     
     InterfaceInfo interfaceInfo;

@@ -31,7 +31,8 @@ struct ModuleInfo
 };
 
 enum InterfaceType {
-    Undefined,
+    InterfaceType_Undefined,
+    InterfaceType_Core,
     InterfaceType_Environment,
     InterfaceType_Hardware,
     InterfaceType_Software,
@@ -40,12 +41,8 @@ enum InterfaceType {
 struct InterfaceInfo
 {
     QString name;
-    // interface type: Environment, Hardware or Software
-    // FIXME: is it real necessary?
+    // interface type: Core, Environment, Hardware or Software
     InterfaceType type;
-
-    // WARNING: it will be deleted soon
-    QList<QString> dependInterfaces;
 
     // events
     // TODO: do eventParamType as enum

@@ -13,6 +13,7 @@
 
 struct ICore : public Interface
 {
+    ICore() { interfaceInfo.type = InterfaceType_Core; }
 	virtual ~ICore() {}
 };
 
