@@ -7,7 +7,7 @@
 
 #include "eventQueue.h"
 
-#include "loggableEvent.h"
+#include "event.h"
 
 // добавляем в очередь
 // void eventQueue::insert(processableEvent* event)
