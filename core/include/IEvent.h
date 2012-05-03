@@ -11,11 +11,13 @@
 
 #include "ICore.h"
 
+class IModule;
+
 struct IEvent : public ICore
 {
     IEvent() { interfaceInfo.name = "IEvent"; }
     
-    virtual void create(IModule* author, QString name, VirtualTime time, QVariantList params) = 0;
+    virtual void post(IModule* author, QString name, VirtualTime time, QVariantList params) = 0;
 };
 // Q_DECLARE_INT
 

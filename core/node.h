@@ -10,8 +10,6 @@
 
 #include "INode.h"
 
-#include "IModule.h"
-
 class Node : public INode
 {
 public:
@@ -24,6 +22,18 @@ private:
 
     // служебный ID узла
     NodeID m_ID;
+};
+
+#include "INodesFactory.h"
+
+class NodesFactory : public INodesFactory
+{
+    // ~NodeFactory();
+
+    /* virtual */ INode* create();
+private:
+    static NodeID m_nextNodeID;
+    // static QList<Node*> m_nodes;
 };
 
 #endif // NODE_H

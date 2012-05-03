@@ -7,15 +7,16 @@
 
 #include "env.h"
 
-VirtualTime Env::time;
+#include "simulator.h"
 
-VirtualTime Env::time()
+VirtualTime Env::time = 0;
+
+VirtualTime Env::globalTime()
 {
     return time;
 }
 
 IModule* Env::getInterface(IModule* receiver, QString interfaceName)
 {
-    // TODO: do it
-    return NULL;
+    return Simulator::getEnvInterface(receiver, interfaceName);
 }

@@ -11,11 +11,13 @@
 
 #include "log.h"
 
-QFile* log::m_log;
-QDataStream* log::m_logStream;
-QHash<QString, EventID> log::events;
+QFile* Log::m_log;
+QDataStream* Log::m_logStream;
+QMap<QString, EventID> Log::m_events;
 
-void log::init(QString logFilePath, Events eventsLists)
+QMap<QString, quint64> Log::m_eventCount;
+
+void Log::init(QString logFilePath, QMap<QString, EventID> events)
 {
     // qDebug() << "log path is" << currentProjectPath;
     
@@ -29,44 +31,31 @@ void log::init(QString logFilePath, Events eventsLists)
         exit(1);
     }
 
+    // TODO: replace pointer to object with setDevice()
     m_logStream = new QDataStream(m_log);
 
-    // foreach (QList<EventParams> eventsList, eventsLists) {
-    foreach (EventParams params, eventsLists.systemEvents) {
-        QString eventName = params.eventInfo["name"];
-        EventID eventID = params.eventInfo["ID"].toUInt();
-        events[eventName] = eventID;
-    }
-    // }
-
-    // events["timerInterrupt"] = 0;
-    // events["nodePowerUp"] = 1;
-    // events["SFD_RX_Up"] = 2;
-    // events["SFD_RX_Down"] = 3;
-    // events["SFD_TX_Up"] = 4;
-    // events["SFD_TX_Down"] = 5;
-    // events["Collision"] = 6;
-    // events["CCATest"] = 7;
-    // events["ChangeLink"] = 8;
-    // // events["timerInterrupt"] = 0;
-    // // events[""]
+    m_events = events;
     
     // QTextCodec::setCodecForTr(QTextCodec::codecForName("utf-8"));
     // QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
 }
 
-void log::uninit()
+void Log::uninit()
 {
     m_log->close();
+    
+    // TODO: delete pointers
 }
 
-// void log::writeLog(loggableEvent* event)
-void log::writeLog(event* event)
+void Log::write(Event* event)
 {
-    qDebug() << "write event in log" << events[event->eventName()] << event->eventName();
+    qDebug() << "write event in log" << m_events[event->name] << event->name;
     // qDebug() << "write std data" << event;
-    (*m_logStream) << event->time << events[event->eventName()];
+    (*m_logStream) << event->time << m_events[event->name];
     // (*m_logStream) << event->time;
     // qDebug() << "write event data" << event;
-    event->record(*m_logStream);
+    // FIXME: uncomment it
+    // event->record(*m_logStream);
+
+    m_eventCount[event->name] += 1;
 }

@@ -11,13 +11,15 @@
 
 #include "interface.h"
 
+#include "ISimulator.h"
+
 struct IModule : public Interface
 {
 	virtual ~IModule() {}
 
     ModuleInfo moduleInfo;
     
-	virtual bool moduleInit(QMap<QString, Interface*> importInterfaces,
+	virtual bool moduleInit(ISimulator* isimulator,
                             QMap<QString, QString> params) = 0;
 };
 

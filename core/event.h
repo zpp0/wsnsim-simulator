@@ -10,45 +10,25 @@
 
 #include "types.h"
 
-// /**
-//  *
-//  * виртуальный класс отвечает за все события в системе
-//  * является родительским для дерева классов событий
-//  *
-//  **/
-// class event
-// {
-// public:
-//     event();
-//     virtual ~event(){};
-
-//     static quint64 count;
-    
-//     // момент времени, в который должно произойти событие (мкс)
-//     VirtualTime time;
-
-//     // FIXME: убрать это отсюда
-//     bool recordable;
-
-//     virtual QString eventName() const = 0;
-
-//     virtual void process() = 0;
-
-//     virtual void record(QDataStream& stream) = 0;
-
-// };
-
-
-struct event
+struct Event
 {
     QString name;
-    // move to core
+    // TODO: move to core
     // bool priority;
-    // move to core
+    // TODO: move to core
     // bool recordable;
     VirtualTime time;
     // WARNING: in params can be written anything
     QVariantList params;
 };
-    
+
+#include "IEvent.h"
+
+#include "IModule.h"
+
+struct EventFactory : public IEvent
+{
+    /* virtual */ void post(IModule* author, QString name, VirtualTime time, QVariantList params);
+};
+
 #endif // EVENT_H

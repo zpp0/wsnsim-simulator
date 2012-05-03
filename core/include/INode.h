@@ -11,6 +11,8 @@
 
 #include "ICore.h"
 
+#include "IModule.h"
+
 struct INode : public ICore
 {
     INode() { interfaceInfo.name = "INode"; }

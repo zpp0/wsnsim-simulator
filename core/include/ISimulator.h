@@ -11,6 +11,8 @@
 
 #include "ICore.h"
 
+class IModule;
+
 struct ISimulator : public ICore
 {
     ISimulator() { interfaceInfo.name = "ISimulator"; }

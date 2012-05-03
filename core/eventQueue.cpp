@@ -10,20 +10,18 @@
 #include "event.h"
 
 // добавляем в очередь
-// void eventQueue::insert(processableEvent* event)
-void eventQueue::insert(event* event)
+void eventQueue::insert(Event* event)
 {
     queue.insert(event->time, event);
 }
 
 // извлекаем из очереди
-// processableEvent* eventQueue::pop()
-event* eventQueue::pop()
+Event* eventQueue::pop()
 {
     if (queue.isEmpty())
         return NULL;
 
-    event* first = *(queue.lowerBound(0));
+    Event* first = *(queue.lowerBound(0));
     // processableEvent* first = *(queue.lowerBound(0));
     // loggableEvent* f = (loggableEvent*) first;
     queue.remove(first->time, first);

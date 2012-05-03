@@ -10,7 +10,6 @@
 
 #include <QMultiMap>
 
-// #include "processableEvent.h"
 #include "event.h"
 #include "types.h"
 
@@ -18,17 +17,14 @@ class eventQueue
 {
 public:
     // вставить событие в нужное по хронологии место в очереди
-    // void insert(processableEvent* event);
-    void insert(event* event);
+    void insert(Event* event);
 
     // извлечь из очереди очередное событие
-    // processableEvent* pop();
-    event* pop();
+    Event* pop();
     
 private:
     // очередь событий
-    // QMultiMap<VirtualTime, processableEvent*> queue;
-    QMultiMap<VirtualTime, event*> queue;
+    QMultiMap<VirtualTime, Event*> queue;
 };
 
 #endif // EVENTQUEUE_H

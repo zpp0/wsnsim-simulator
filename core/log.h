@@ -11,30 +11,25 @@
 #include <QString>
 #include <QFile>
 
-#include "loggableEvent.h"
-#include "projectParams.h"
+#include "event.h"
 
-/**
- *
- * класс предназначен для записи файла логов
- *
- **/
-
-class log
+class Log
 {
 public:
-    
-    static void init(QString logFilePath, Events eventsLists);
+    // TODO: remove second argument?
+    static void init(QString logFilePath, QMap<QString, EventID> events);
     static void uninit();
 
-    // static void writeLog(loggableEvent* event);
-    static void writeLog(event* event);
+    // TODO: return bool if event was successfully recorded
+    static void write(Event* event);
     
 private:
-    log();
-    static QHash<QString, EventID> events;
+    static QMap<QString, EventID> m_events;
     static QFile* m_log;
     static QDataStream* m_logStream;
+
+    // TODO: do it public
+    static QMap<QString, quint64> m_eventCount;
 };
 
 #endif // LOG_H

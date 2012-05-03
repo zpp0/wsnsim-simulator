@@ -13,14 +13,12 @@
 
 #include "IEnv.h"
 
-#include "IModule.h"
-
 // Класс среды
 
 // FIXME: is it hack?
 struct Env : public IEnv
 {
-    /* virtual */ VirtualTime time();
+    /* virtual */ VirtualTime globalTime();
     /* virtual */ IModule* getInterface(IModule* receiver, QString interfaceName);
     
     // реальное время в системе
