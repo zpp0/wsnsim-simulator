@@ -11,11 +11,9 @@
 
 #include "IEnvironment.h"
 
-#include "types.h"
-#include "node.h"
+#include "INode.h"
 
-#include "nodeEvent.h"
-#include "loggableEvent.h"
+#include "types.h"
 
 class IRadioChannel : public IEnvironment, public QObject
 {
@@ -28,11 +26,11 @@ public:
         interfaceInfo.events["ChangeLink"]["NodeID2"] = "NodeID2";
     }
 
-    virtual void send(Node* node, byteArray message) = 0;
+    virtual void send(INode* node, byteArray message) = 0;
 
-    virtual byteArray listen(Node* node) = 0;
+    virtual byteArray listen(INode* node) = 0;
 
-    virtual double aroundPower(Node* node) = 0;
+    virtual double aroundPower(INode* node) = 0;
 
 };
 Q_DECLARE_INTERFACE(IRadioChannel,

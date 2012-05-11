@@ -13,6 +13,8 @@
 
 #include "IScene.h"
 
+#include "IEnv.h"
+
 /**
  * WARNING:
  * в интерфейсе нет оповещения о включении/выключении узла
@@ -21,7 +23,7 @@
  * интерфейсам нужны строковые имена, чтобы можно было запросить их из объекта
  **/
 
-class radioChannel : public IRadioChannel
+class radioChannel : public IRadioChannel, public QObject
 {
     Q_OBJECT
     Q_INTERFACES(IRadioChannel)
@@ -36,27 +38,27 @@ public:
     virtual QList<QString> moduleExportInterfaces() const;
     virtual QList<QString> moduleImportInterfaces() const;
 
-    virtual void send(Node* sender, byteArray message);
+    virtual void send(INode* sender, byteArray message);
 
-    virtual byteArray listen(Node* listener);
+    virtual byteArray listen(INode* listener);
 
-    virtual double aroundPower(Node* listener);
+    virtual double aroundPower(INode* listener);
 
 private:
     double rssi(Node* sender, Node* listener);
 
     void nodesHearTest();
 
-    void changeLink(bool add, Node* node1, Node* node2, double rssi);
+    void changeLink(bool add, INode* node1, INode* node2, double rssi);
 
-    bool hear(double rssi, Node* listener);
+    bool hear(double rssi, INode* listener);
 
     IScene* m_scene;
     
-    QHash<Node*, QVector<Node*> > m_nodesLinks;
+    QHash<INode*, QVector<INode*> > m_nodesLinks;
 
-    QHash<Node*, QVector<QByteArray> > m_nodesLocalChannel;
+    QHash<INode*, QVector<QByteArray> > m_nodesLocalChannel;
 };
-// Q_EXPORT_PLUGIN(radioChannel)
+Q_EXPORT_PLUGIN(radioChannel)
 
 #endif // RADIOCHANNEL_H
