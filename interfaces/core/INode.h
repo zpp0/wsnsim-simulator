@@ -18,7 +18,6 @@ struct INode : public ICore
     INode() { interfaceInfo.name = "INode"; }
 
     virtual NodeID ID() = 0;
-    virtual IModule* getInterface(IModule* receiver, QString interfaceName) = 0;
 };
 // Q_DECLARE_INT
 

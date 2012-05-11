@@ -24,15 +24,15 @@ public:
     Simulator(QString projectFileName);
 
     /* virtual */ ICore* getCoreInterface(IModule* receiver, QString name);
+    /* virtual */ IModule* getEnvInterface(IModule* receiver, QString interfaceName);
+    /* virtual */ IModule* getNodeInterface(IModule* receiver, INode* node, QString interfaceName);
+
     /* virtual */ QList<QString> getEvents();
     /* virtual */ void registerEventHandler(IModule* handler, QString eventName);
 
     // --
     static void postEvent(IModule* author, Event* event);
     
-    static IModule* getEnvInterface(IModule* receiver, QString interfaceName);
-    static IModule* getNodeInterface(IModule* receiver, INode* node, QString interfaceName);
-
     static void registerNode(Node* node);
     // --
     

@@ -19,7 +19,6 @@
 struct Env : public IEnv
 {
     /* virtual */ VirtualTime globalTime();
-    /* virtual */ IModule* getInterface(IModule* receiver, QString interfaceName);
     
     // реальное время в системе
     static VirtualTime time;

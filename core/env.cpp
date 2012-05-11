@@ -15,8 +15,3 @@ VirtualTime Env::globalTime()
 {
     return time;
 }
-
-IModule* Env::getInterface(IModule* receiver, QString interfaceName)
-{
-    return Simulator::getEnvInterface(receiver, interfaceName);
-}

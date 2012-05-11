@@ -18,7 +18,6 @@ struct IEnv : public ICore
     IEnv() { interfaceInfo.name = "IEnv"; }
     
     virtual VirtualTime globalTime() = 0;
-    virtual IModule* getInterface(IModule* receiver, QString interfaceName) = 0;
 };
 // Q_DECLARE_INT
 
