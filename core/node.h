@@ -16,7 +16,6 @@ public:
     Node(NodeID Id) : m_ID(Id) {}
 
     /* virtual */ NodeID ID();
-    /* virtual */ IModule* getInterface(IModule* receiver, QString interfaceName);
 
 private:
 
