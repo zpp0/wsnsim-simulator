@@ -17,30 +17,22 @@
 #include "nodeEvent.h"
 #include "loggableEvent.h"
 
-class IRadioChannel : public IEnvironment
+class IRadioChannel : public IEnvironment, public QObject
 {
+    Q_OBJECT
 public:
+    IRadioChannel()
+    {
+        interfaceInfo.name = "IRadioChannel";
+        interfaceInfo.events["ChangeLink"]["NodeID"] = "NodeID";
+        interfaceInfo.events["ChangeLink"]["NodeID2"] = "NodeID2";
+    }
+
     virtual void send(Node* node, byteArray message) = 0;
 
     virtual byteArray listen(Node* node) = 0;
 
     virtual double aroundPower(Node* node) = 0;
-
-    class ChangeLink : public nodeEvent
-// , public loggableEvent
-    {
-    public:
-        
-        ChangeLink() { count++; }
-
-        static quint64 count;
-
-        NodeID node2;
-        virtual QString eventName() const { return "ChangeLink"; }
-        virtual void record(QDataStream& stream) { stream << eventNode << node2; }
-        virtual void process() {}
-
-    };
 
 };
 Q_DECLARE_INTERFACE(IRadioChannel,
