@@ -9,14 +9,10 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-#include <QtCore>
-
 #include "types.h"
 
-class Interface : public QObject
+struct Interface
 {
-    Q_OBJECT
-public:
     Interface() { interfaceInfo.type = InterfaceType_Undefined; }
     virtual ~Interface() {};
     
