@@ -32,6 +32,10 @@ public:
         dependence += "IRadioChannel";
         dependence += "IEvent";
         moduleInfo.importInterfaces = dependence;
+
+        moduleInfo.params["RXSensivity"] = "int";
+        moduleInfo.params["TXPower"] = "int";
+        moduleInfo.params["CCAThreshold"] = "int";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
