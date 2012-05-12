@@ -33,8 +33,8 @@ void radioChannel::send(INode* sender, byteArray message)
 
         double rssi_value = rssi(sender, listener);
 
-        m_event->post(this, "newMessage", 0
-                      QVariantList() << listener->ID() << message << rssi_value;
+        m_event->post(this, "newMessage", 0,
+                      QVariantList() << listener->ID() << message << rssi_value);
     }
 }
 
