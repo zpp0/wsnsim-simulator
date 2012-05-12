@@ -16,52 +16,16 @@
 
 #include "Irtx.h"
 
-#include "env.h"
-#include "log.h"
-
 #define LAMBDA 0.122
 
-quint64 IRadioChannel::ChangeLink::count = 0;
-
-QString radioChannel::moduleName() const
+bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
 {
-    return "Radio Channel";
-}
+    m_scene = (IScene*)isimulator->getEnvInterface(this, "IScene");
+    m_event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
 
-QString radioChannel::moduleVersion() const
-{
-    return "0.1";
-}
-
-QString radioChannel::moduleDescription() const
-{
-    return "Модуль радиоканала";
-}
-
-bool radioChannel::moduleInit(QList<ModuleParam> params)
-{
-    // qDebug() << "get interface";
-    // TODO: получить рабочий интерфейс
-    m_scene = (IScene*)Env::getInterface((IModule*) this, "IScene");
-    // qDebug() << "scene ="  << m_scene;
     nodesHearTest();
 
     return true;
-}
-
-QList<QString> radioChannel::moduleExportInterfaces() const
-{
-    QList<QString> interfaces;
-    interfaces += "IRadioChannel";
-    return interfaces;
-}
-
-QList<QString> radioChannel::moduleImportInterfaces() const
-{
-    QList<QString> interfaces;
-    interfaces += "IScene";
-    interfaces += "IRtx";
-    return interfaces;
 }
 
 void radioChannel::send(Node* sender, byteArray message)
