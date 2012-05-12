@@ -117,7 +117,7 @@ int Scene::dimension()
     return 2;
 }
 
-double* Scene::coord(Node* node)
+double* Scene::coord(INode* node)
 {
     return m_nodesCoords[node];
 }
@@ -139,7 +139,7 @@ int Scene::isSameCoords(double coord[3])
     return -1;
 }
 
-double Scene::distance(Node* node1, Node* node2)
+double Scene::distance(INode* node1, INode* node2)
 {
     return m_distances[node1][node2];
 }
