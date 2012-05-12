@@ -52,14 +52,9 @@ double radioChannel::rssi(INode* sender, INode* listener)
     double dist = m_scene->distance(sender, listener);
 
     // общее выражение Prx = Ptx*GTx*Grx(lambda/(4*pi*d))^2
-    Irtx* rtx = (Irtx*)sender->getInterface((IModule*) this, "Irtx");
+    Irtx* rtx = (Irtx*)m_simulator->getNodeInterface(this, sender, "Irtx");
     // qDebug() << "get rtx interface from node" << rtx;
     double rssi = rtx->TXPower() + 10 * log10(pow(LAMBDA/(4*M_PI*dist), 2));
-
-    // std::cerr <<  " sender "  << env::getNodeID(sender)
-    // <<  " listener "  << env::getNodeID(listener)
-              // <<  " rssi "  << rssi
-              // <<  " distance "  << dist << std::endl;
 
     return rssi;
 }
@@ -126,7 +121,7 @@ void radioChannel::changeLink(bool add, INode* node1, INode* node2, double rssi)
 bool radioChannel::hear(double rssi, INode* listener)
 {
     // qDebug() << "in radiochannel hear";
-    Irtx* rtx = (Irtx*)listener->getInterface(NULL, "Irtx");
+    Irtx* rtx = (Irtx*)m_simulator->getNodeInterface(this, listener, "Irtx");
     // qDebug() << "get node rtx";
     if (rssi > rtx->RXSensivity()) {
         // qDebug() << "hear with RSSI" << rssi;
