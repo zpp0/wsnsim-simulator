@@ -6,7 +6,7 @@ TEMPLATE = lib
 CONFIG  += plugin
 TARGET = 
 DEPENDPATH += .
-INCLUDEPATH += . ../../core/include/ ../../interfaces/environment/ ../../core/ ../../interfaces/hardware/
+INCLUDEPATH += . ../../interfaces/core/ ../../interfaces/modules/
 
 # Input
 HEADERS += rtx.h
