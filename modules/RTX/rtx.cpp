@@ -6,37 +6,7 @@
 
 #include "rtx.h"
 
-#include "env.h"
-#include "IScene.h"
-
-#include "log.h"
-
-
-quint64 Irtx::SFD_RX_Up::count = 0;
-quint64 Irtx::SFD_RX_Down::count = 0;
-quint64 Irtx::SFD_TX_Up::count = 0;
-quint64 Irtx::SFD_TX_Down::count = 0;
-quint64 Irtx::Collision::count = 0;
-quint64 Irtx::CCATest::count = 0;
-
-
-QString RTX::moduleName() const
-{
-    return "RTX";
-}
-
-QString RTX::moduleVersion() const
-{
-    return "0.1";
-}
-
-QString RTX::moduleDescription() const
-{
-    return "Модуль радио приемника-передатчика стандарта 802.15.4";
-}
-
-bool RTX::moduleInit(QList<ModuleParam> params)
-{
+bool RTX::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     m_channel = (IRadioChannel*)Env::getInterface((IModule*)this, "IRadioChannel");
 
     m_state = rtxState_Free;
@@ -64,30 +34,6 @@ bool RTX::moduleInit(QList<ModuleParam> params)
     // m_channel = 11;
 
     return true;
-}
-
-QList<QString> RTX::moduleExportInterfaces() const
-{
-    QList<QString> tmp;
-    return tmp;
-}
-
-QList<QString> RTX::moduleImportInterfaces() const
-{
-    QList<QString> interfaces;
-    interfaces += "IRadioChannel";
-    return interfaces;
-}
-
-QString RTX::deviceName() const
-{
-    return "cc2420";
-}
-
-QList<InterruptHandler> RTX::interrupts()
-{
-    QList<InterruptHandler> tmp;
-    return tmp;
 }
 
 void RTX::setTXPower(int power)
