@@ -4,14 +4,6 @@
  *
  **/
 
-/**
- * WARNING:
- * нет зависимости от IRtx
- * не хватает доступа ко всем зарегистрированным в среде узлам
- * не понятно как сделать несколько каналов
- * не понятно как создавать события начала/окончания приема/передачи на узлах
- **/
-
 #include "radioChannel.h"
 
 #include "Irtx.h"
@@ -40,24 +32,9 @@ void radioChannel::send(Node* sender, byteArray message)
 
         double rssi_value = rssi(sender, listener);
 
-        // FIXME: все что ниже - бред
-        Irtx::SFD_RX_Up* event = new Irtx::SFD_RX_Up();
-
-        event->time = Env::time;
-        event->eventNode = listener->ID;
-
-        Env::queue.insert(event);
-
-        Irtx::SFD_RX_Down* eventDown = new Irtx::SFD_RX_Down();
-        eventDown->time = Env::time + message.size() * 32;
-        eventDown->eventNode = listener->ID;
-        eventDown->message = message;
-        eventDown->RSSI = rssi_value;
-        eventDown->handler = NULL;
-
-        Env::queue.insert(eventDown);
+        m_event->post(this, "newMessage",
+                      QVariantList() << listener->ID() << message << rssi_value;
     }
-
 }
 
 byteArray radioChannel::listen(Node* listener)
