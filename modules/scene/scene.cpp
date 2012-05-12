@@ -8,6 +8,8 @@
 
 #include "INodesFactory.h"
 
+#include "IEvent.h"
+
 bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params);
 {
     double x_size = params["xSize"].toDouble();
@@ -23,8 +25,6 @@ bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params);
     // размеры среды
     m_size[0] = x_size;
     m_size[1] = y_size;
-    // m_size[2] = 1;
-
 
     INodesFactory* factory = isimulator->getCoreInterface(this, "INodesFactory");
     // создаем узлы
@@ -58,30 +58,25 @@ bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params);
         m_nodes += nodeNew;
         m_nodesCoords[nodeNew] = coords;
 
-        nodePowerUp* event = new nodePowerUp();
-        qDebug() << "event count" << event::count;
-        event->time = nodePowerUpTime;
-        event->eventNode = nodeNew->ID;
-        event->coords[0] = coords[0];
-        event->coords[1] = coords[1];
+        IEvent* event = isimulator->getCoreInterface(this, "IEvent");
 
-        Env::queue.insert(event);
+        event->post(this, "nodePowerUp", nodePowerUpTime,
+                    QVariantList() << nodeNew->ID() << coords[0] << coords[1]);
     }
 
     // вычисляем расстояния между узлами
-    foreach(Node* node1, m_nodes) {
+    foreach(INode* node1, m_nodes) {
         // вычисляем расстояния от этого узла до остальных
-        foreach(Node* node2, m_nodes) {
+        foreach(INode* node2, m_nodes) {
 
             double* coord1 = coord(node1);
             double* coord2 = coord(node2);
 
             double distance = sqrt(pow((coord2[0]-coord1[0]), 2)
                                    + pow((coord2[1]-coord1[1]), 2));
-            // + pow((coord2[2]-coord1[2]), 2));
 
-            qDebug() << "distance node1" << node1->ID
-                     << "node2" << node2->ID
+            qDebug() << "distance node1" << node1->ID()
+                     << "node2" << node2->ID()
                      << "is" << distance;
 
             // запоминаем расстояние
