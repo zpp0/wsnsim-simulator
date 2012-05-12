@@ -6,34 +6,7 @@
 
 #include "scene.h"
 
-// FIXME: это нужно только для создания события
-#include "env.h"
-
-#include "log.h"
-
-#define X_SIZE 1000
-#define Y_SIZE 1000
-// #define Z_SIZE 1
-#define NODESNUM 20
-
-quint64 IScene::nodePowerUp::count = 0;
-
-QString Scene::moduleName() const
-{
-    return "Environment Scene";
-}
-
-QString Scene::moduleVersion() const
-{
-    return "0.1";
-}
-
-QString Scene::moduleDescription() const
-{
-    return "Модуль управляет расположением узлов в пространстве";
-}
-
-bool Scene::moduleInit(QList<ModuleParam> params)
+bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params);
 {
     double x_size = X_SIZE-1;
     double y_size = Y_SIZE-1;
@@ -194,19 +167,6 @@ bool Scene::moduleInit(QList<ModuleParam> params)
 
     // успешная инициализация
     return true;
-}
-
-QList<QString> Scene::moduleExportInterfaces() const
-{
-    QList<QString> interfaces;
-    interfaces += "IScene";
-    return interfaces;
-}
-
-QList<QString> Scene::moduleImportInterfaces() const
-{
-    QList<QString> tmp;
-    return tmp;
 }
 
 int Scene::dimension()
