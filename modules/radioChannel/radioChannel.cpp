@@ -14,6 +14,7 @@ bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
 {
     m_scene = (IScene*)isimulator->getEnvInterface(this, "IScene");
     m_event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
+    m_simulator = isimulator;
 
     nodesHearTest();
 
@@ -61,7 +62,6 @@ double radioChannel::rssi(Node* sender, Node* listener)
               // <<  " distance "  << dist << std::endl;
 
     return rssi;
-
 }
 
 void radioChannel::nodesHearTest()

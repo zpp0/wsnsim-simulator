@@ -51,7 +51,9 @@ private:
 
     IScene* m_scene;
     IEvent* m_event;
-    
+
+    ISimulator* m_simulator;
+
     QHash<INode*, QVector<INode*> > m_nodesLinks;
     QHash<INode*, QVector<QByteArray> > m_nodesLocalChannel;
 };
