@@ -11,41 +11,40 @@
 
 #include "IScene.h"
 
-#include "node.h"
-
 class Scene : public IScene
 {
     Q_OBJECT
-	Q_INTERFACES(IScene)
+    Q_INTERFACES(IScene)
 
 public:
-    virtual QString moduleName() const;
-	virtual QString moduleVersion() const;
-    virtual QString moduleDescription() const;
+    Scene()
+    {
+        moduleInfo.name = "Scene";
+        moduleInfo.version = "0.1";
+        moduleInfo.description = "";
+        moduleInfo.exportInterface = "IRadioChannel";
+        moduleInfo.importInterfaces = QList("INodesFactory", "INode");
+    }
 
-	virtual bool moduleInit(QList<ModuleParam> params);
+    /* virtual */ bool moduleInit(ISimulator* isimulator,
+                                  QMap<QString, QString> params);
 
-    virtual QList<QString> moduleExportInterfaces() const;
-    virtual QList<QString> moduleImportInterfaces() const;
+    /* virtual */ int dimension();
+    /* virtual */ double* coord(INode* node);
+    /* virtual */ double* size();
+    /* virtual */ double distance(INode* node1, INode* node2);
 
-    virtual int dimension();
-    virtual double* coord(Node* node);
-    virtual double* size();
-    virtual double distance(Node* node1, Node* node2);
-
-    virtual quint16 nodesCount();
-    
-    virtual QVector<Node*> nodes();
+    /* virtual */ quint16 nodesCount();
 
 private:
     int isSameCoords(double coord[2]);
-    
-    double m_size[2];
-    
-    QVector<Node*> m_nodes;
-    QHash<Node*, double*> m_nodesCoords;
 
-    QMap<Node*, QMap<Node*, double> > m_distances;
+    double m_size[2];
+
+    QVector<INode*> m_nodes;
+    QHash<INode*, double*> m_nodesCoords;
+
+    QMap<INode*, QMap<INode*, double> > m_distances;
 
 };
 
