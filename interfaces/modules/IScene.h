@@ -11,37 +11,25 @@
 
 #include "IEnvironment.h"
 
-#include "nodeEvent.h"
+#include "INode.h"
+#include "INodesFactory.h"
 
-#include "node.h"
-
-class IScene : public IEnvironment
+class IScene : public IEnvironment, public QObject
 {
+    Q_OBJECT
 public:
-    virtual int dimension() = 0;
-    virtual double* coord(Node* node) = 0;
-    virtual double* size() = 0;
-    virtual double distance(Node* node1, Node* node2) = 0;
-
-    virtual quint16 nodesCount() = 0;
-
-    class nodePowerUp : public nodeEvent
+    IScene()
     {
-    public:
-        nodePowerUp() { count++; }
+        interfaceInfo.name = "IScene";
+        interfaceInfo.events["nodePowerUp"]["NodeID"] = "NodeID";
+        interfaceInfo.events["nodePowerUp"]["coordx"] = "double";
+        interfaceInfo.events["nodePowerUp"]["coordy"] = "double";
+    }
 
-        static quint64 count;
-
-
-        double coords[2];
-        virtual QString eventName() const { return "nodePowerUp"; }
-        virtual void record(QDataStream& stream) { stream << eventNode << coords[0] << coords[1]; }
-        virtual void process();
-    };
-    
-    // TODO: THIS WILL BE DELETED!
-    virtual QVector<Node*> nodes() = 0;
-    
+    virtual int dimension() = 0;
+    virtual double* coord(INode* node) = 0;
+    virtual double* size() = 0;
+    virtual double distance(INode* node1, INode* node2) = 0;
 };
 Q_DECLARE_INTERFACE(IScene,
                     "simulator.IScene/0.1");

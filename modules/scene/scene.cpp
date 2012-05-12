@@ -6,56 +6,17 @@
 
 #include "scene.h"
 
-// FIXME: это нужно только для создания события
-#include "env.h"
+#include "INodesFactory.h"
 
-#include "log.h"
+#include "IEvent.h"
 
-#define X_SIZE 1000
-#define Y_SIZE 1000
-// #define Z_SIZE 1
-#define NODESNUM 20
-
-quint64 IScene::nodePowerUp::count = 0;
-
-QString Scene::moduleName() const
+bool Scene::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
 {
-    return "Environment Scene";
-}
-
-QString Scene::moduleVersion() const
-{
-    return "0.1";
-}
-
-QString Scene::moduleDescription() const
-{
-    return "Модуль управляет расположением узлов в пространстве";
-}
-
-bool Scene::moduleInit(QList<ModuleParam> params)
-{
-    double x_size = X_SIZE-1;
-    double y_size = Y_SIZE-1;
-    
-    int nodesNum = NODESNUM-1;
-
-    VirtualTime nodePowerUpTimeRange = 100-1;
-
-    bool isRandomEnabled = false;
-
-    foreach (ModuleParam param, params) {
-        if (param.name == "xSize")
-            x_size = param.value.toDouble();
-        if (param.name == "ySize")
-            y_size = param.value.toDouble();
-        if (param.name == "nodeNum")
-            nodesNum = param.value.toInt();
-        if (param.name == "nodePowerUpTimeRange")
-            nodePowerUpTimeRange = param.value.toULong();
-        if (param.name == "isRandomEnabled")
-            isRandomEnabled = param.value.toInt();
-    }
+    double x_size = params["xSize"].toDouble();
+    double y_size = params["ySize"].toDouble();
+    int nodesNum = params["nodeNum"].toInt();
+    VirtualTime nodePowerUpTimeRange = params["nodePowerUpTimeRange"].toULong();
+    bool isRandomEnabled = params["isRandomEnabled"].toInt();
 
     qDebug("Scene params gotten:");
     qDebug("xsize: %f ysize: %f nodes: %i nodePowerUpTimeRange: %llu isRandomEnabled: %i",
@@ -64,8 +25,8 @@ bool Scene::moduleInit(QList<ModuleParam> params)
     // размеры среды
     m_size[0] = x_size;
     m_size[1] = y_size;
-    // m_size[2] = 1;
 
+    INodesFactory* factory = (INodesFactory*)isimulator->getCoreInterface(this, "INodesFactory");
     // создаем узлы
     // запоминаем созданные узлы и их координаты в объекте среды
 
@@ -74,82 +35,48 @@ bool Scene::moduleInit(QList<ModuleParam> params)
 
 
         // создаем узел
-        Node* nodeNew = new Node(i);
+        INode* nodeNew = factory->create();
 
         // получаем координаты узла
         double* coords = new double[2];
 
-        // // если координаты не случайные, то получаем их из структуры параметров
-        // if (nodes[i]->random == false) {
-        //     // проверяем на совподение координат текущего узла с уже созданными
-        //     int nodeIdWithSameCoord = isSameCoords(nodes[i]->coord);
-        //     // если совпадений нет
-        //     if (nodeIdWithSameCoord == -1)
-        //         // получаем координаты нового узла из структуры параметров
-        //         memmove(coords, nodes[i]->coord, sizeof(double) * 3);
-
-        //     // если есть совпадение
-        //     else {
-        //         // пишем ошибку и выходим
-        //         std::cerr << "Error: Nodes " << nodeIdWithSameCoord << " and " << i
-        //                   << " have same coords: "  << nodes[i]->coord[0] << nodes[i]->coord[1] << nodes[i]->coord[2] << std::endl
-        //                   << "Exit." << std::endl;
-
-        //         exit(1);
-        //     }
-        // }
-        
         VirtualTime nodePowerUpTime;
-                
+
         // иначе, генерируем их случайно
-        // else {
-        // do {
+        // FIXME: coords cann't been the same
         for (int a = 0; a < 2; a++) {
-            if (isRandomEnabled) {
-                qsrand(QDateTime::currentDateTime().toTime_t() + a + (quint64)nodeNew);
+            qsrand(QDateTime::currentDateTime().toTime_t() + a + (quint64)nodeNew);
 
-                nodePowerUpTime = ((double)qrand() / RAND_MAX) * nodePowerUpTimeRange;
-                coords[a] = ((double)qrand() / RAND_MAX) * m_size[a];
-            }
-            else {
-                nodePowerUpTime = 100;
-                coords[a] = 200;
-            }
+            nodePowerUpTime = ((double)qrand() / RAND_MAX) * nodePowerUpTimeRange;
+            coords[a] = ((double)qrand() / RAND_MAX) * m_size[a];
         }
-            // пока они совпадают с уже существующими
-        // } while (isSameCoords(coords) != -1);
 
-        qDebug() << "nodeNew" << nodeNew->ID
+        qDebug() << "nodeNew" << nodeNew->ID()
                  << "coords" << coords[0] << coords[1]
                  << "time" << nodePowerUpTime;
 
         m_nodes += nodeNew;
         m_nodesCoords[nodeNew] = coords;
 
-        nodePowerUp* event = new nodePowerUp();
-        qDebug() << "event count" << event::count;
-        event->time = nodePowerUpTime;
-        event->eventNode = nodeNew->ID;
-        event->coords[0] = coords[0];
-        event->coords[1] = coords[1];
+        IEvent* event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
 
-        Env::queue.insert(event);
+        event->post(this, "nodePowerUp", nodePowerUpTime,
+                    QVariantList() << nodeNew->ID() << coords[0] << coords[1]);
     }
 
     // вычисляем расстояния между узлами
-    foreach(Node* node1, m_nodes) {
-    // вычисляем расстояния от этого узла до остальных
-        foreach(Node* node2, m_nodes) {
+    foreach(INode* node1, m_nodes) {
+        // вычисляем расстояния от этого узла до остальных
+        foreach(INode* node2, m_nodes) {
 
             double* coord1 = coord(node1);
             double* coord2 = coord(node2);
 
             double distance = sqrt(pow((coord2[0]-coord1[0]), 2)
                                    + pow((coord2[1]-coord1[1]), 2));
-            // + pow((coord2[2]-coord1[2]), 2));
 
-            qDebug() << "distance node1" << node1->ID
-                     << "node2" << node2->ID
+            qDebug() << "distance node1" << node1->ID()
+                     << "node2" << node2->ID()
                      << "is" << distance;
 
             // запоминаем расстояние
@@ -157,56 +84,8 @@ bool Scene::moduleInit(QList<ModuleParam> params)
         }
     }
 
-    
-        
-        // const char* startUpTimeFuncName = nodeNew->getNodeType()->functionName(NODE_POWERON_TIME);
-
-    //     quint64 startUpTime = 0;
-        
-    //     if (strcmp(startUpTimeFuncName, "") != 0) {
-
-    //         QString randomSeedInit = "math.randomseed(" + QString::number(i) + ")";
-    //         luaL_dostring(nodeNew->getLua(), randomSeedInit.toUtf8().constData());
-
-    //         // вытаскиваем функцию процеесса lua 
-    //         lua_getglobal(nodeNew->getLua(), startUpTimeFuncName);
-            
-    //         //вызов функции процесса
-    //         if (lua_pcall(nodeNew->getLua(), 0, 1, 0) != 0)
-    //             std::cerr << "Warning: node " << nodeNew->getMAC()
-    //                       << " start up error " << std::endl;
-            
-    //         startUpTime = lua_tonumber(nodeNew->getLua(), -1);
-    //         lua_pop(nodeNew->getLua(), 1);
-
-    //         // if (startUpTime > m_maxSimulatorWorkTime)
-    //         // startUpTime = 0;
-    //     }
-    //     qDebug() << "create node";
-    //     // std::cerr << "create event NodeOn on time " << startUpTime << " node " << nodeNew << " id " << nodeNew->getMAC() << std::endl;
-
-    //     nodeEventOn* event = new nodeEventOn(startUpTime, nodeNew, coords);
-    //     insertEventQueue(event);
-    // }
-
-    // foreach (Node* node, m_nodes)
-    //     node->init();
-
     // успешная инициализация
     return true;
-}
-
-QList<QString> Scene::moduleExportInterfaces() const
-{
-    QList<QString> interfaces;
-    interfaces += "IScene";
-    return interfaces;
-}
-
-QList<QString> Scene::moduleImportInterfaces() const
-{
-    QList<QString> tmp;
-    return tmp;
 }
 
 int Scene::dimension()
@@ -214,7 +93,7 @@ int Scene::dimension()
     return 2;
 }
 
-double* Scene::coord(Node* node)
+double* Scene::coord(INode* node)
 {
     return m_nodesCoords[node];
 }
@@ -236,41 +115,7 @@ int Scene::isSameCoords(double coord[3])
     return -1;
 }
 
-double Scene::distance(Node* node1, Node* node2)
+double Scene::distance(INode* node1, INode* node2)
 {
     return m_distances[node1][node2];
 }
-
-quint16 Scene::nodesCount()
-{
-    return m_nodes.size();
-}
-
-QVector<Node*> Scene::nodes()
-{
-    return m_nodes;
-}
-
-void IScene::nodePowerUp::process()
-{
-    Node* initNode;
-    
-    // FIXME: AAAAAA!!!!
-    IScene* scene = (IScene*)Env::getInterface(NULL, "IScene");
-
-    QVector<Node*> nodes = scene->nodes();
-    foreach (Node* node, nodes)
-        if (node->ID == eventNode)
-            initNode = node;
-
-    qDebug() << "node init" << initNode->ID;
-    initNode->init();
-    log::writeLog(this);
-
-}
-
-
-// #include "moc_scene.cpp"
-
-Q_EXPORT_PLUGIN(Scene);
-// Q_EXPORT_PLUGIN2(sceneplugin, Scene);
