@@ -26,7 +26,7 @@ bool Scene::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     m_size[0] = x_size;
     m_size[1] = y_size;
 
-    INodesFactory* factory = isimulator->getCoreInterface(this, "INodesFactory");
+    INodesFactory* factory = (INodesFactory*)isimulator->getCoreInterface(this, "INodesFactory");
     // создаем узлы
     // запоминаем созданные узлы и их координаты в объекте среды
 
@@ -58,7 +58,7 @@ bool Scene::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
         m_nodes += nodeNew;
         m_nodesCoords[nodeNew] = coords;
 
-        IEvent* event = isimulator->getCoreInterface(this, "IEvent");
+        IEvent* event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
 
         event->post(this, "nodePowerUp", nodePowerUpTime,
                     QVariantList() << nodeNew->ID() << coords[0] << coords[1]);
