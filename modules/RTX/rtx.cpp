@@ -7,22 +7,20 @@
 #include "rtx.h"
 
 bool RTX::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
-    m_channel = (IRadioChannel*)Env::getInterface((IModule*)this, "IRadioChannel");
+{
+    m_channel = (IRadioChannel*)isimulator->getEnvInterface(this, "IRadioChannel");
+    m_parentNode = (INode*)isimulator->getCoreInterface(this, "INode");
+    m_event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
 
     m_state = rtxState_Free;
 
-    int RXSensivity = -90;
-    int TXPower = 0;
-    int CCAThreshold = -45;
+    int RXSensivity;
+    int TXPower;
+    int CCAThreshold;
 
-    foreach (ModuleParam param, params) {
-        if (param.name == "RXSensivity")
-            RXSensivity = param.value.toInt();
-        if (param.name == "TXPower")
-            TXPower = param.value.toInt();
-        if (param.name == "CCAThreshold")
-            CCAThreshold = param.value.toInt();
-    }
+    RXSensivity = params["RXSensivity"].toInt();
+    TXPower = params["TXPower"].toInt();
+    CCAThreshold = params["CCAThreshold"].toInt();
 
     qDebug("RTX params gotten:");
     qDebug("RXSensivity: %i TXPower: %i CCAThreshold: %i",
@@ -31,7 +29,6 @@ bool RTX::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     m_RXSensivity = RXSensivity;
     m_TXPower = TXPower;
     m_CCAThreshold = CCAThreshold;
-    // m_channel = 11;
 
     return true;
 }
