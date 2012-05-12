@@ -23,7 +23,7 @@ public:
         moduleInfo.version = "0.1";
         moduleInfo.description = "";
         moduleInfo.exportInterface = "IRadioChannel";
-        moduleInfo.importInterfaces = QList("INodesFactory", "INode");
+        moduleInfo.importInterfaces = QList("INodesFactory", "INode", "IEvent");
         moduleInfo.params["xSize"] = "double";
         moduleInfo.params["ySize"] = "double";
         moduleInfo.params["nodeNum"] = "int";
