@@ -34,6 +34,7 @@ public:
         interfaceInfo.events["Collision"]["NodeID"] = "NodeID";
 
         interfaceInfo.events["CCATest"]["NodeID"] = "NodeID";
+        interfaceInfo.events["CCATest"]["State"] = "int";
     }
 
     virtual void setTXPower(int power) = 0;
