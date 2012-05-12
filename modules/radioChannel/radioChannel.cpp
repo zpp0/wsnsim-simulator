@@ -98,23 +98,13 @@ void radioChannel::changeLink(bool add, INode* node1, INode* node2, double rssi)
     if (add) {
         // qDebug() << "node" << node1->ID 
                  // << "listen node" << node2->ID;
-        qDebug() << "node1" << node1->ID
-                 << "hear node2" << node2->ID
+        qDebug() << "node1" << node1->ID()
+                 << "hear node2" << node2->ID()
                  << "with RSSI" << rssi;
 
         m_nodesLinks[node1] += node2;
-        ChangeLink* event = new ChangeLink();
-        qDebug() << "event count" << event::count;
-        event->time = Env::time;
-        event->eventNode = node1->ID;
-        event->node2 = node2->ID;
-        // event->recordable = true;
 
-        // Env::queue.insert(event);
-
-        qDebug() << "change link event number" << ChangeLink::count;
-        log::writeLog(event);
-        delete event;
+        m_event->post(this, "ChangeLink", 0, QVariantList() << node1->ID() << node2->ID());
     }
 }
 
