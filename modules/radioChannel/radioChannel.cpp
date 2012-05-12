@@ -10,7 +10,7 @@
 
 #define LAMBDA 0.122
 
-bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
+bool radioChannel::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
 {
     m_scene = (IScene*)isimulator->getEnvInterface(this, "IScene");
     m_event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
