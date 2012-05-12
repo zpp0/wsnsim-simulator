@@ -34,8 +34,6 @@ public:
     /* virtual */ double* size();
     /* virtual */ double distance(INode* node1, INode* node2);
 
-    /* virtual */ quint16 nodesCount();
-
 private:
     int isSameCoords(double coord[2]);
 
