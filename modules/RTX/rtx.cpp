@@ -63,10 +63,10 @@ void RTX::startTX(byteArray message)
 
         m_event->post(this, "SFD_TX_Up", 0,
                       QVariantList() << m_parentNode->ID() << message << m_TXPower);
-        
+
         m_state = rtxState_TXON;
         qDebug() << "radio state set TXON";
-        
+
         timeTXEnd = message.size() * 32;
         // qDebug() << "timeEnd set";
 
@@ -103,7 +103,7 @@ bool RTX::CCA()
 
     m_event->post(this, "CCATest", 0,
                   QVariantList() << m_parentNode->ID() << state);
-    
+
     return result;
 }
 
