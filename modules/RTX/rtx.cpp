@@ -61,71 +61,35 @@ void RTX::startTX(byteArray message)
     if (m_state == rtxState_Free) {
         qDebug() << "in startTX node" << m_parentNode->ID;
 
-        SFD_TX_Up* event = new SFD_TX_Up();
-        qDebug() << "event count" << event::count;
-        // qDebug() << "event created";
-        event->time = Env::time;
-        event->recordable = true;
-        // qDebug() << "event time set";
-        // qDebug() << "parent Node" << m_parentNode;
-        event->eventNode = m_parentNode->ID;
-        // qDebug() << "event ID set";
-        event->message = message;
-        // qDebug() << "event message set";
-        event->TXPower = m_TXPower;
-        // qDebug() << "event TXPow set";
-        event->handler = NULL;
-        // qDebug() << "event handler set";
-
-        Env::queue.insert(event);
-        // qDebug() << "event insert in queue";
-
+        m_event->post(this, "SFD_TX_Up", 0,
+                      QVariantList() << m_parentNode->ID() << message << m_TXPower);
+        
         m_state = rtxState_TXON;
         qDebug() << "radio state set TXON";
-        // FIXME: 32 or else?
-        timeTXEnd = Env::time + message.size() * 32;
+        
+        timeTXEnd = message.size() * 32;
         // qDebug() << "timeEnd set";
 
         m_channel->send(m_parentNode, message);
 
-        SFD_TX_Down* eventDown = new SFD_TX_Down();
-        qDebug() << "event count" << event::count;
-        // qDebug() << "event created";
-        eventDown->time = timeTXEnd;
-        // qDebug() << "event time set";
-        eventDown->eventNode = m_parentNode->ID;
-        // qDebug() << "event ID set";
-        // eventDown->message = message;
-        // qDebug() << "event message set";
-        // eventDown->TXPower = m_TXPower;
-        // qDebug() << "event TXPow set";
-        // eventDown->handler = NULL;
-        // qDebug() << "event handler set";
-
-        Env::queue.insert(eventDown);
-        // qDebug() << "event TXDown insert in queue";
+        m_event->post(this, "SFD_TX_Up", timeTXEnd,
+                      QVariantList() << m_parentNode->ID());
     }
 }
 
 void RTX::startTX(byteArray message, void (*handler)())
 {
-    SFD_TX_Up* event = new SFD_TX_Up();
-    qDebug() << "event count" << event::count;
-    event->time = Env::time;
-    event->eventNode = m_parentNode->ID;
-    event->message = message;
-    event->TXPower = m_TXPower;
-    event->handler = handler;
-
-    Env::queue.insert(event);
+    m_event->post(this, "SFD_TX_Up", 0,
+                  QVariantList() << m_parentNode->ID() << message << m_TXPower);
 
     m_state = rtxState_TXON;
 }
 
 void RTX::waitTXEnd()
 {
-    if (Env::time < timeTXEnd)
-        Env::time = timeTXEnd;
+    // TODO:
+    // if (Env::time < timeTXEnd)
+    //     Env::time = timeTXEnd;
 
     m_state = rtxState_Free;
     qDebug() << "rtx state set Free";
@@ -133,26 +97,13 @@ void RTX::waitTXEnd()
 
 bool RTX::CCA()
 {
+    bool state = m_channel->aroundPower(m_parentNode) < m_CCAThreshold;
 
-    // FIXME: написать нормально
+    qDebug() << "in CCA test" << state;
 
-    // if (m_channel->aroundPower(m_parentNode) < m_CCAThreshold)
-    bool result = clearChannel();
-
-    qDebug() << "in CCA test" << result;
-
-    CCATest* event = new CCATest();
-    qDebug() << "event count" << event::count;
-    event->time = Env::time;
-    event->eventNode = m_parentNode->ID;
-    event->result = result;
-
-    // Env::queue.insert(event);
-
-    log::writeLog(event);
-
-    delete event;
-
+    m_event->post(this, "CCATest", 0,
+                  QVariantList() << m_parentNode->ID() << state);
+    
     return result;
 }
 
