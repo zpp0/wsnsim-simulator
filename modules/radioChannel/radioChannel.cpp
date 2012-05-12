@@ -26,8 +26,8 @@ void radioChannel::send(INode* sender, byteArray message)
     qDebug() << "in radiochannel send";
 
     foreach (INode* listener, m_nodesLinks[sender]) {
-        
-        qDebug() << "add to local node channel" << listener->ID;
+
+        qDebug() << "add to local node channel" << listener->ID();
 
         m_nodesLocalChannel[listener] += message;
 
@@ -63,7 +63,7 @@ void radioChannel::nodesHearTest()
 {
     //составляем списки слышимых узлов для каждого из узлов
     // WARNING: нужен список узлов
-    // foreach (Node* node, 
+    // foreach (Node* node,
     QVector<INode*> nodes = m_scene->nodes();
     for (int i = 0; i < nodes.size(); i++) {
         //для данного узла проверим видит ли каждого из остальных
@@ -72,9 +72,9 @@ void radioChannel::nodesHearTest()
             //с самим собой не сравниваем
             if (i == j)
                 continue;
-            
+
             double Rssi = rssi(nodes[i], nodes[j]);
-            
+
             // проверяем слышат ли друг друга узлы с адресами mac1 и mac2 на расстоянии d
             if ((hear(Rssi, nodes[j]) == true)
                 && m_nodesLinks[nodes[i]].indexOf(nodes[j]) == -1) {
@@ -88,40 +88,29 @@ void radioChannel::nodesHearTest()
                 changeLink(false, nodes[i], nodes[j], Rssi);
         }
     }
-
 }
 
 void radioChannel::changeLink(bool add, INode* node1, INode* node2, double rssi)
 {
     // qDebug() << "in radiochannel changelink";
 
-    if (add) {
-        // qDebug() << "node" << node1->ID 
-                 // << "listen node" << node2->ID;
-        qDebug() << "node1" << node1->ID()
-                 << "hear node2" << node2->ID()
-                 << "with RSSI" << rssi;
-
+    if (add)
         m_nodesLinks[node1] += node2;
+    else
+        m_nodesLinks[node1] -= node2;
 
-        m_event->post(this, "ChangeLink", 0, QVariantList() << node1->ID() << node2->ID());
-    }
+    qDebug() << "node1" << node1->ID()
+             << "hear node2" << node2->ID()
+             << "with RSSI" << rssi;
+
+    m_event->post(this, "ChangeLink", 0,
+                  QVariantList() << node1->ID() << node2->ID());
 }
 
 bool radioChannel::hear(double rssi, INode* listener)
 {
     // qDebug() << "in radiochannel hear";
     Irtx* rtx = (Irtx*)m_simulator->getNodeInterface(this, listener, "Irtx");
-    // qDebug() << "get node rtx";
-    if (rssi > rtx->RXSensivity()) {
-        // qDebug() << "hear with RSSI" << rssi;
-        return true;
-    }
-    else {
-        // qDebug() << "not hear";
-        return false;
-    }
+
+    return rssi > rtx->RXSensivity();
 }
-
-
-
