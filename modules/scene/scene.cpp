@@ -10,27 +10,11 @@
 
 bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params);
 {
-    double x_size = X_SIZE-1;
-    double y_size = Y_SIZE-1;
-
-    int nodesNum = NODESNUM-1;
-
-    VirtualTime nodePowerUpTimeRange = 100-1;
-
-    bool isRandomEnabled = false;
-
-    foreach (ModuleParam param, params) {
-        if (param.name == "xSize")
-            x_size = param.value.toDouble();
-        if (param.name == "ySize")
-            y_size = param.value.toDouble();
-        if (param.name == "nodeNum")
-            nodesNum = param.value.toInt();
-        if (param.name == "nodePowerUpTimeRange")
-            nodePowerUpTimeRange = param.value.toULong();
-        if (param.name == "isRandomEnabled")
-            isRandomEnabled = param.value.toInt();
-    }
+    double x_size = params["xSize"].toDouble();
+    double y_size = params["ySize"].toDouble();
+    int nodesNum = params["nodeNum"].toInt();
+    VirtualTime nodePowerUpTimeRange = params["nodePowerUpTimeRange"].toULong();
+    bool isRandomEnabled = params["isRandomEnabled"].toInt();
 
     qDebug("Scene params gotten:");
     qDebug("xsize: %f ysize: %f nodes: %i nodePowerUpTimeRange: %llu isRandomEnabled: %i",
@@ -46,7 +30,6 @@ bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params);
 
     // для всех параметров узлов из массива
     for (int i = 0; i < nodesNum; i++) {
-
 
         // создаем узел
         Node* nodeNew = new Node(i);
