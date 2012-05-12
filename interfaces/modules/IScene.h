@@ -30,8 +30,6 @@ public:
     virtual double* coord(INode* node) = 0;
     virtual double* size() = 0;
     virtual double distance(INode* node1, INode* node2) = 0;
-
-    virtual quint16 nodesCount() = 0;
 };
 Q_DECLARE_INTERFACE(IScene,
                     "simulator.IScene/0.1");
