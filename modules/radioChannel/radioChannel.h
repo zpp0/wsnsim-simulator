@@ -33,7 +33,11 @@ public:
         moduleInfo.version = "0.1";
         moduleInfo.description = "";
         moduleInfo.exportInterface = "IRadioChannel";
-        moduleInfo.importInterfaces = QList("IScene", "IRtx", "IEvent");
+        QList<QString> dependence;
+        dependence += "IScene";
+        dependence += "Irtx";
+        dependence += "IEvent";
+        moduleInfo.importInterfaces = dependence;
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
@@ -44,7 +48,7 @@ public:
     /* virtual */ double aroundPower(INode* listener);
 
 private:
-    double rssi(Node* sender, Node* listener);
+    double rssi(INode* sender, INode* listener);
     void nodesHearTest();
     void changeLink(bool add, INode* node1, INode* node2, double rssi);
     bool hear(double rssi, INode* listener);
@@ -57,6 +61,6 @@ private:
     QHash<INode*, QVector<INode*> > m_nodesLinks;
     QHash<INode*, QVector<QByteArray> > m_nodesLocalChannel;
 };
-Q_EXPORT_PLUGIN(radioChannel)
+// Q_EXPORT_PLUGIN(radioChannel)
 
 #endif // RADIOCHANNEL_H
