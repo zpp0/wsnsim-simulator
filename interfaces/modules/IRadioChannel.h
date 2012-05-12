@@ -24,6 +24,8 @@ public:
         interfaceInfo.name = "IRadioChannel";
         interfaceInfo.events["ChangeLink"]["NodeID"] = "NodeID";
         interfaceInfo.events["ChangeLink"]["NodeID2"] = "NodeID2";
+        interfaceInfo.events["newMessage"]["NodeID"] = "NodeID";
+        interfaceInfo.events["newMessage"]["message"] = "byteArray";
     }
 
     virtual void send(INode* node, byteArray message) = 0;
