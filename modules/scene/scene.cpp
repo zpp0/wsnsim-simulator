@@ -10,7 +10,7 @@
 
 #include "IEvent.h"
 
-bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params);
+bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
 {
     double x_size = params["xSize"].toDouble();
     double y_size = params["ySize"].toDouble();
