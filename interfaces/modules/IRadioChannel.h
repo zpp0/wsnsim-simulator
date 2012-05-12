@@ -26,6 +26,7 @@ public:
         interfaceInfo.events["ChangeLink"]["NodeID2"] = "NodeID2";
         interfaceInfo.events["newMessage"]["NodeID"] = "NodeID";
         interfaceInfo.events["newMessage"]["message"] = "byteArray";
+        interfaceInfo.events["newMessage"]["RSSI"] = "double";
     }
 
     virtual void send(INode* node, byteArray message) = 0;
