@@ -21,11 +21,11 @@ bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     return true;
 }
 
-void radioChannel::send(Node* sender, byteArray message)
+void radioChannel::send(INode* sender, byteArray message)
 {
     qDebug() << "in radiochannel send";
 
-    foreach (Node* listener, m_nodesLinks[sender]) {
+    foreach (INode* listener, m_nodesLinks[sender]) {
         
         qDebug() << "add to local node channel" << listener->ID;
 
@@ -38,7 +38,7 @@ void radioChannel::send(Node* sender, byteArray message)
     }
 }
 
-double radioChannel::aroundPower(Node* listener)
+double radioChannel::aroundPower(INode* listener)
 {
     // TODO: написать
     // получить локальный канал узла listener
@@ -47,7 +47,7 @@ double radioChannel::aroundPower(Node* listener)
     // посчитать максимальное RSSI от этих узлов
 }
 
-double radioChannel::rssi(Node* sender, Node* listener)
+double radioChannel::rssi(INode* sender, INode* listener)
 {
     double dist = m_scene->distance(sender, listener);
 
@@ -69,7 +69,7 @@ void radioChannel::nodesHearTest()
     //составляем списки слышимых узлов для каждого из узлов
     // WARNING: нужен список узлов
     // foreach (Node* node, 
-    QVector<Node*> nodes = m_scene->nodes();
+    QVector<INode*> nodes = m_scene->nodes();
     for (int i = 0; i < nodes.size(); i++) {
         //для данного узла проверим видит ли каждого из остальных
         for (int j = 0; j < nodes.size(); j++) {
@@ -96,7 +96,7 @@ void radioChannel::nodesHearTest()
 
 }
 
-void radioChannel::changeLink(bool add, Node* node1, Node* node2, double rssi)
+void radioChannel::changeLink(bool add, INode* node1, INode* node2, double rssi)
 {
     // qDebug() << "in radiochannel changelink";
 
@@ -123,7 +123,7 @@ void radioChannel::changeLink(bool add, Node* node1, Node* node2, double rssi)
     }
 }
 
-bool radioChannel::hear(double rssi, Node* listener)
+bool radioChannel::hear(double rssi, INode* listener)
 {
     // qDebug() << "in radiochannel hear";
     Irtx* rtx = (Irtx*)listener->getInterface(NULL, "Irtx");
