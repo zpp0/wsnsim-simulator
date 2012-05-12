@@ -28,6 +28,7 @@ struct ModuleInfo
     QList<QString> importInterfaces;
     // name and types of input params
     QMap<QString, QString> params;
+    QList<QString> handledEvents;
 };
 
 enum InterfaceType {
