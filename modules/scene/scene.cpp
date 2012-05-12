@@ -201,34 +201,6 @@ double Scene::distance(Node* node1, Node* node2)
     return m_distances[node1][node2];
 }
 
-quint16 Scene::nodesCount()
-{
-    return m_nodes.size();
-}
-
-QVector<Node*> Scene::nodes()
-{
-    return m_nodes;
-}
-
-void IScene::nodePowerUp::process()
-{
-    Node* initNode;
-    
-    // FIXME: AAAAAA!!!!
-    IScene* scene = (IScene*)Env::getInterface(NULL, "IScene");
-
-    QVector<Node*> nodes = scene->nodes();
-    foreach (Node* node, nodes)
-        if (node->ID == eventNode)
-            initNode = node;
-
-    qDebug() << "node init" << initNode->ID;
-    initNode->init();
-    log::writeLog(this);
-
-}
-
 
 // #include "moc_scene.cpp"
 
