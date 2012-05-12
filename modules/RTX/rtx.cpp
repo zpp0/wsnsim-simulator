@@ -76,7 +76,7 @@ void RTX::startTX(byteArray message)
         // qDebug() << "event TXPow set";
         event->handler = NULL;
         // qDebug() << "event handler set";
-    
+
         Env::queue.insert(event);
         // qDebug() << "event insert in queue";
 
@@ -101,7 +101,7 @@ void RTX::startTX(byteArray message)
         // qDebug() << "event TXPow set";
         // eventDown->handler = NULL;
         // qDebug() << "event handler set";
-    
+
         Env::queue.insert(eventDown);
         // qDebug() << "event TXDown insert in queue";
     }
@@ -116,7 +116,7 @@ void RTX::startTX(byteArray message, void (*handler)())
     event->message = message;
     event->TXPower = m_TXPower;
     event->handler = handler;
-    
+
     Env::queue.insert(event);
 
     m_state = rtxState_TXON;
@@ -140,7 +140,7 @@ bool RTX::CCA()
     bool result = clearChannel();
 
     qDebug() << "in CCA test" << result;
-    
+
     CCATest* event = new CCATest();
     qDebug() << "event count" << event::count;
     event->time = Env::time;
@@ -164,115 +164,4 @@ int RTX::TXPower()
 int RTX::RXSensivity() const
 {
     return m_RXSensivity;
-}
-
-bool RTX::clearChannel()
-{
-    byteArray message = m_channel->listen(m_parentNode);
-    // qDebug() << "get message" << message << "size" << message.size();
-    return message.size() > 0;
-}
-
-void RTX::SFD_TX_Down::process()
-{
-
-    // TODO: ЭТО РАБОТАЕТ ТОЛЬКО ПОТОМУ ЧТО НЕ РЕАЛИЗОВАНА ПРОВЕРКА ИМПОРТИРУЕМЫХ МОДУЛЕЙ getInterface
-    IScene* scene = (IScene*)Env::getInterface(NULL, "IScene");
-
-    QVector<Node*> nodes = scene->nodes();
-
-    Node* rtxNode = NULL;
-
-    foreach (Node* node, nodes)
-        if (node->ID == eventNode)
-            rtxNode = node;
-
-    qDebug() << "in TX Down interrupt node" << rtxNode->ID;
-
-    RTX* rtx = (RTX*)rtxNode->getInterface(NULL, "Irtx");
-
-    rtx->m_state = RTX::rtxState_Free;
-    
-    // Node* node = eventNode 
-
-    qDebug() << "rtx state set Free";
-
-    log::writeLog(this);
-}
-
-void RTX::SFD_RX_Up::process()
-{
-    // TODO: ЭТО РАБОТАЕТ ТОЛЬКО ПОТОМУ ЧТО НЕ РЕАЛИЗОВАНА ПРОВЕРКА ИМПОРТИРУЕМЫХ МОДУЛЕЙ getInterface
-    IScene* scene = (IScene*)Env::getInterface(NULL, "IScene");
-
-    QVector<Node*> nodes = scene->nodes();
-
-    Node* rtxNode = NULL;
-
-    foreach (Node* node, nodes)
-        if (node->ID == eventNode)
-            rtxNode = node;
-
-    RTX* rtx = (RTX*)rtxNode->getInterface(NULL, "Irtx");
-
-    if ((rtx->m_state == RTX::rtxState_Free)
-        || (rtx->m_state == RTX::rtxState_RXON))
-    {
-        qDebug() << "in RX UP interrupt node" << rtxNode->ID;
-
-        rtx->m_state = RTX::rtxState_RXON;
-    
-        // Node* node = eventNode 
-
-        qDebug() << "rtx state set RXON";
-        log::writeLog(this);
-    }
-}
-
-void RTX::SFD_RX_Down::process()
-{
-    // TODO: ЭТО РАБОТАЕТ ТОЛЬКО ПОТОМУ ЧТО НЕ РЕАЛИЗОВАНА ПРОВЕРКА ИМПОРТИРУЕМЫХ МОДУЛЕЙ getInterface
-    IScene* scene = (IScene*)Env::getInterface(NULL, "IScene");
-
-    QVector<Node*> nodes = scene->nodes();
-
-    Node* rtxNode = NULL;
-
-    foreach (Node* node, nodes)
-        if (node->ID == eventNode)
-            rtxNode = node;
-
-    RTX* rtx = (RTX*)rtxNode->getInterface(NULL, "Irtx");
-
-    log::writeLog(this);
-
-    if (rtx->m_state == RTX::rtxState_RXON) {
-        // TODO: проверить что не возникла коллизия
-        if (rtx->clearChannel()) {
-            qDebug() << "in RX Down interrupt node" << rtxNode->ID;
-
-            rtx->m_state = RTX::rtxState_Free;
-    
-            qDebug() << "rtx state set Free";
-
-        }
-        else {
-            qDebug() << "collision on node" << rtxNode->ID;
-
-            Collision* event = new Collision();
-            qDebug() << "event count" << event::count;
-            event->time = Env::time;
-            event->eventNode = eventNode;
-            // event->recordable = true;
-
-            log::writeLog(event);
-
-            delete event;
-            // Env::queue.insert(event);
-
-            rtx->m_state = RTX::rtxState_Free;
-
-            qDebug() << "rtx state set Free";
-        }
-    }
 }
