@@ -18,7 +18,7 @@
 class RTX : public Irtx
 {
     Q_OBJECT
-	Q_INTERFACES(Irtx)
+    Q_INTERFACES(Irtx)
 
 public:
     RTX()
@@ -36,12 +36,12 @@ public:
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
                                   QMap<QString, QString> params);
-    
+
     /* virtual */ void setTXPower(int power);
     /* virtual */ void setChannel(int newChannel);
     /* virtual */ void setPower(bool on);
     /* virtual */ void setCCAThreshold(int threshold);
-    
+
     /* virtual */ void startTX(byteArray message);
     /* virtual */ void startTX(byteArray message, void (*handler)());
     /* virtual */ void waitTXEnd();
@@ -50,25 +50,12 @@ public:
     /* virtual */ int TXPower();
     /* virtual */ int RXSensivity() const;
 
-    bool clearChannel();
-
-    enum rtxState
-    { 
-        rtxState_OFF,
-        rtxState_Free,
-        rtxState_RXON, 
-        rtxState_TXON
-    };
-
-
-    // TODO: move to private
-    rtxState m_state;
-
 private:
 
     IRadioChannel* m_channel;
 
-    Node* m_parentNode;
+    INode* m_parentNode;
+    IEvent* m_event;
     
     int m_RXSensivity;
     int m_TXPower;
@@ -77,7 +64,16 @@ private:
 
     VirtualTime timeTXEnd;
 
+    enum rtxState
+    {
+        rtxState_OFF,
+        rtxState_Free,
+        rtxState_RXON,
+        rtxState_TXON
+    };
+
+    rtxState m_state;
 };
-// Q_EXPORT_PLUGIN(RTX);
+Q_EXPORT_PLUGIN(RTX);
 
 #endif // RTX_H
