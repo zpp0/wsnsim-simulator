@@ -6,6 +6,8 @@
 
 #include "scene.h"
 
+#include "INodesFactory.h"
+
 bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params);
 {
     double x_size = X_SIZE-1;
