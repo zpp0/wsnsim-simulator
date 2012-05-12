@@ -10,9 +10,10 @@
 #include <QtCore>
 
 #include "Irtx.h"
-#include "IRadioChannel.h"
 
-#include "node.h"
+#include "IRadioChannel.h"
+#include "INode.h"
+#include "IEvent.h"
 
 class RTX : public Irtx
 {
@@ -20,34 +21,34 @@ class RTX : public Irtx
 	Q_INTERFACES(Irtx)
 
 public:
-    // RTX(Node* parentNode) : m_parentNode(parentNode) {};
-    virtual QString moduleName() const;
-	virtual QString moduleVersion() const;
-    virtual QString moduleDescription() const;
+    RTX()
+    {
+        moduleInfo.name = "RTX ";
+        moduleInfo.version = "0.1";
+        moduleInfo.description = "";
+        moduleInfo.exportInterface = "Irtx";
+        QList<QString> dependence;
+        dependence += "INode";
+        dependence += "IRadioChannel";
+        dependence += "IEvent";
+        moduleInfo.importInterfaces = dependence;
+    }
 
-	virtual bool moduleInit(QList<ModuleParam> params);
-
-    virtual QString deviceName() const;
-    virtual QList<InterruptHandler> interrupts();
-
-    virtual QList<QString> moduleExportInterfaces() const;
-    virtual QList<QString> moduleImportInterfaces() const;
-
-    // FIXME: DELETEA!!!1
-    void setParentNode(Node* parentNode) { m_parentNode = parentNode; }
-
-    virtual void setTXPower(int power);
-    virtual void setChannel(int newChannel);
-    virtual void setPower(bool on);
-    virtual void setCCAThreshold(int threshold);
+    /* virtual */ bool moduleInit(ISimulator* isimulator,
+                                  QMap<QString, QString> params);
     
-    virtual void startTX(byteArray message);
-    virtual void startTX(byteArray message, void (*handler)());
-    virtual void waitTXEnd();
-    virtual bool CCA();
+    /* virtual */ void setTXPower(int power);
+    /* virtual */ void setChannel(int newChannel);
+    /* virtual */ void setPower(bool on);
+    /* virtual */ void setCCAThreshold(int threshold);
+    
+    /* virtual */ void startTX(byteArray message);
+    /* virtual */ void startTX(byteArray message, void (*handler)());
+    /* virtual */ void waitTXEnd();
+    /* virtual */ bool CCA();
 
-    virtual int TXPower();
-    virtual int RXSensivity() const;
+    /* virtual */ int TXPower();
+    /* virtual */ int RXSensivity() const;
 
     bool clearChannel();
 
