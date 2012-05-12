@@ -37,20 +37,6 @@ void radioChannel::send(Node* sender, byteArray message)
     }
 }
 
-byteArray radioChannel::listen(Node* listener)
-{
-    // FIXME: сделать нормально
-    byteArray array;
-    QVector<QByteArray> messages = m_nodesLocalChannel[listener];
-    // FIXME: ARRRRRRGGGHHH
-    if (messages.size() == 0)
-        array += "1";
-
-    if (messages.size() == 1)
-        array = messages[0];
-    return array;
-}
-
 double radioChannel::aroundPower(Node* listener)
 {
     // TODO: написать

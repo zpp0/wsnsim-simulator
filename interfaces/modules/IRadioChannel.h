@@ -31,8 +31,6 @@ public:
 
     virtual void send(INode* node, byteArray message) = 0;
 
-    virtual byteArray listen(INode* node) = 0;
-
     virtual double aroundPower(INode* node) = 0;
 
 };
