@@ -24,6 +24,11 @@ public:
         moduleInfo.description = "";
         moduleInfo.exportInterface = "IRadioChannel";
         moduleInfo.importInterfaces = QList("INodesFactory", "INode");
+        moduleInfo.params["xSize"] = "double";
+        moduleInfo.params["ySize"] = "double";
+        moduleInfo.params["nodeNum"] = "int";
+        moduleInfo.params["nodePowerUpTimeRange"] = "ULong";
+        moduleInfo.params["isRandomEnabled"] = "bool";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
