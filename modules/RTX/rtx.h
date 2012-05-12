@@ -36,6 +36,10 @@ public:
         moduleInfo.params["RXSensivity"] = "int";
         moduleInfo.params["TXPower"] = "int";
         moduleInfo.params["CCAThreshold"] = "int";
+
+        QList<QString> handledEvents;
+        handledEvents += "newMessage";
+        moduleInfo.handledEvents += handledEvents;
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
@@ -53,6 +57,8 @@ public:
 
     /* virtual */ int TXPower();
     /* virtual */ int RXSensivity() const;
+
+    /* virtual */ void eventHandler(QString name, QVariantList params);
 
 private:
 
