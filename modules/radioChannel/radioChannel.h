@@ -21,7 +21,7 @@
  * в интерфейсе нет оповещения о смене исходящей мощности узла
  **/
 
-class radioChannel : public IRadioChannel, public QObject
+class radioChannel : public IRadioChannel
 {
     Q_OBJECT
     Q_INTERFACES(IRadioChannel)
