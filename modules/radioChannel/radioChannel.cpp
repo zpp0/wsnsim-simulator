@@ -98,7 +98,7 @@ void radioChannel::changeLink(bool add, INode* node1, INode* node2, double rssi)
     if (add)
         m_nodesLinks[node1] += node2;
     else
-        m_nodesLinks[node1] -= node2;
+        m_nodesLinks[node1].remove(m_nodesLinks[node1].indexOf(node2));
 
     qDebug() << "node1" << node1->ID()
              << "hear node2" << node2->ID()
