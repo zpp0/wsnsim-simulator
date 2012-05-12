@@ -11,19 +11,37 @@
 
 #include "IHardware.h"
 
-#include "types.h"
-#include "nodeEvent.h"
-#include "loggableEvent.h"
-#include "processableEvent.h"
-
-class Irtx : public IHardware
+class Irtx : public IHardware, public QObject
 {
+    Q_OBJECT
 public:
+    Irtx()
+    {
+        interfaceInfo.name = "Irtx";
+
+        interfaceInfo.events["SFD_RX_Up"]["NodeID"] = "NodeID";
+
+        interfaceInfo.events["SFD_RX_Down"]["NodeID"] = "NodeID";
+        interfaceInfo.events["SFD_RX_Down"]["message"] = "byteArray";
+        interfaceInfo.events["SFD_RX_Down"]["RSSI"] = "double";
+
+        interfaceInfo.events["SFD_TX_Up"]["NodeID"] = "NodeID";
+        interfaceInfo.events["SFD_TX_Up"]["message"] = "byteArray";
+        interfaceInfo.events["SFD_TX_Up"]["TXPower"] = "double";
+
+        interfaceInfo.events["SFD_TX_Down"]["NodeID"] = "NodeID";
+
+        interfaceInfo.events["Collision"]["NodeID"] = "NodeID";
+
+        interfaceInfo.events["CCATest"]["NodeID"] = "NodeID";
+        interfaceInfo.events["CCATest"]["State"] = "int";
+    }
+
     virtual void setTXPower(int power) = 0;
     virtual void setChannel(int newChannel) = 0;
     virtual void setPower(bool on) = 0;
     virtual void setCCAThreshold(int threshold) = 0;
-    
+
     virtual void startTX(byteArray message) = 0;
     virtual void startTX(byteArray message, void (*handler)()) = 0;
     virtual void waitTXEnd() = 0;
@@ -31,119 +49,6 @@ public:
 
     virtual int TXPower() = 0;
     virtual int RXSensivity() const = 0;
-
-    // virtual void addRXInterrupt()
-
-    class SFD_RX_Up : public nodeEvent
-// , public loggableEvent
-    {
-    public:
-        SFD_RX_Up() { count++; }
-        virtual QString eventName() const { return "SFD_RX_Up"; }
-        virtual void record(QDataStream& stream) { stream << eventNode; }
-        virtual void process();
-
-        static quint64 count;
-    };
-
-    class SFD_RX_Down : public nodeEvent
-// , public loggableEvent, public processableEvent
-    {
-    public:
-        SFD_RX_Down() { count++; }
-
-        byteArray message;
-        int RSSI;
-        InterruptHandler handler;
-
-        static quint64 count;
-        
-        virtual QString eventName() const { return "SFD_RX_Down"; }
-        virtual void record(QDataStream& stream) 
-        {
-            stream << eventNode << ((quint8)message.size());
-            stream.writeRawData(message, message.size());
-            stream << RSSI;
-        }
-
-        virtual void process();
-        // {
-        //     if (handler != NULL)
-        //         handler();
-        // }
-
-    };
-
-    class SFD_TX_Up : public nodeEvent
-// , public loggableEvent, public processableEvent
-    {
-    public:
-        SFD_TX_Up() { count++; }
-        byteArray message;
-        int TXPower;
-        InterruptHandler handler;
-
-        static quint64 count;
-
-        virtual void process()
-        {
-            if (handler != NULL)
-                handler();
-        }
-
-        virtual QString eventName() const { return "SFD_TX_Up"; }
-        virtual void record(QDataStream& stream)
-        {
-            stream << eventNode << ((quint8)message.size());
-            stream.writeRawData(message, message.size());
-            stream << TXPower;
-        }
-    };
-
-    class SFD_TX_Down : public nodeEvent
-// , public loggableEvent
-    {
-    public:
-        SFD_TX_Down() { count++; }
-
-        static quint64 count;
-
-        virtual QString eventName() const { return "SFD_TX_Down"; }
-        virtual void record(QDataStream& stream) { stream << eventNode; }
-        virtual void process();
-        // {
-        //     qDebug() << "in TX Down interrupt";
-        //     qDebug() << "rtx state set RXON";
-        // }
-    };
-
-    class Collision : public nodeEvent
-    {
-    public:
-        Collision() { count++; }
-
-        static quint64 count;
-
-
-        // FIXME: нужен список NodeID
-        virtual QString eventName() const { return "Collision"; }
-        virtual void record(QDataStream& stream) { stream << eventNode; }
-        virtual void process() {};
-    };
-
-    class CCATest : public nodeEvent
-    {
-    public:
-        CCATest() { count++; }
-
-        static quint64 count;
-
-        int result;
-        virtual QString eventName() const { return "CCATest"; }
-        virtual void record(QDataStream& stream) { stream << eventNode << result; }
-        virtual void process() {};
-    };
-
 
 };
 Q_DECLARE_INTERFACE(Irtx,
