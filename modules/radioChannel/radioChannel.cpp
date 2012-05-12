@@ -61,33 +61,34 @@ double radioChannel::rssi(INode* sender, INode* listener)
 
 void radioChannel::nodesHearTest()
 {
-    //составляем списки слышимых узлов для каждого из узлов
-    // WARNING: нужен список узлов
-    // foreach (Node* node,
-    QVector<INode*> nodes = m_scene->nodes();
-    for (int i = 0; i < nodes.size(); i++) {
-        //для данного узла проверим видит ли каждого из остальных
-        for (int j = 0; j < nodes.size(); j++) {
+    // TODO: do it without m_scene->nodes()
+    // //составляем списки слышимых узлов для каждого из узлов
+    // // WARNING: нужен список узлов
+    // // foreach (Node* node,
+    // QVector<INode*> nodes = m_scene->nodes();
+    // for (int i = 0; i < nodes.size(); i++) {
+    //     //для данного узла проверим видит ли каждого из остальных
+    //     for (int j = 0; j < nodes.size(); j++) {
 
-            //с самим собой не сравниваем
-            if (i == j)
-                continue;
+    //         //с самим собой не сравниваем
+    //         if (i == j)
+    //             continue;
 
-            double Rssi = rssi(nodes[i], nodes[j]);
+    //         double Rssi = rssi(nodes[i], nodes[j]);
 
-            // проверяем слышат ли друг друга узлы с адресами mac1 и mac2 на расстоянии d
-            if ((hear(Rssi, nodes[j]) == true)
-                && m_nodesLinks[nodes[i]].indexOf(nodes[j]) == -1) {
+    //         // проверяем слышат ли друг друга узлы с адресами mac1 и mac2 на расстоянии d
+    //         if ((hear(Rssi, nodes[j]) == true)
+    //             && m_nodesLinks[nodes[i]].indexOf(nodes[j]) == -1) {
 
-                changeLink(true, nodes[i], nodes[j], Rssi);
-            }
+    //             changeLink(true, nodes[i], nodes[j], Rssi);
+    //         }
 
-            // если не слышат, но раньше слышали
-            else if ((hear(Rssi, nodes[j]) == false)
-                     && m_nodesLinks[nodes[i]].indexOf(nodes[j]) != -1)
-                changeLink(false, nodes[i], nodes[j], Rssi);
-        }
-    }
+    //         // если не слышат, но раньше слышали
+    //         else if ((hear(Rssi, nodes[j]) == false)
+    //                  && m_nodesLinks[nodes[i]].indexOf(nodes[j]) != -1)
+    //             changeLink(false, nodes[i], nodes[j], Rssi);
+    //     }
+    // }
 }
 
 void radioChannel::changeLink(bool add, INode* node1, INode* node2, double rssi)
