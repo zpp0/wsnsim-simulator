@@ -25,14 +25,17 @@ bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params);
     m_size[1] = y_size;
     // m_size[2] = 1;
 
+
+    INodesFactory* factory = isimulator->getCoreInterface(this, "INodesFactory");
     // создаем узлы
     // запоминаем созданные узлы и их координаты в объекте среды
 
     // для всех параметров узлов из массива
     for (int i = 0; i < nodesNum; i++) {
 
+
         // создаем узел
-        Node* nodeNew = new Node(i);
+        INode* nodeNew = factory->create();
 
         // получаем координаты узла
         double* coords = new double[2];
@@ -40,22 +43,15 @@ bool moduleInit(ISimulator* isimulator, QMap<QString, QString> params);
         VirtualTime nodePowerUpTime;
 
         // иначе, генерируем их случайно
+        // FIXME: coords cann't been the same
         for (int a = 0; a < 2; a++) {
-            if (isRandomEnabled) {
-                qsrand(QDateTime::currentDateTime().toTime_t() + a + (quint64)nodeNew);
+            qsrand(QDateTime::currentDateTime().toTime_t() + a + (quint64)nodeNew);
 
-                nodePowerUpTime = ((double)qrand() / RAND_MAX) * nodePowerUpTimeRange;
-                coords[a] = ((double)qrand() / RAND_MAX) * m_size[a];
-            }
-            else {
-                nodePowerUpTime = 100;
-                coords[a] = 200;
-            }
+            nodePowerUpTime = ((double)qrand() / RAND_MAX) * nodePowerUpTimeRange;
+            coords[a] = ((double)qrand() / RAND_MAX) * m_size[a];
         }
-        // пока они совпадают с уже существующими
-        // } while (isSameCoords(coords) != -1);
 
-        qDebug() << "nodeNew" << nodeNew->ID
+        qDebug() << "nodeNew" << nodeNew->ID()
                  << "coords" << coords[0] << coords[1]
                  << "time" << nodePowerUpTime;
 
