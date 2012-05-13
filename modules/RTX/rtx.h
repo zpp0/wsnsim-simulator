@@ -39,6 +39,10 @@ public:
 
         QList<QString> handledEvents;
         handledEvents += "newMessage";
+        handledEvents += "SFD_RX_Up";
+        handledEvents += "SFD_RX_Down";
+        handledEvents += "SFD_TX_Up";
+        handledEvents += "SFD_TX_Down";
         moduleInfo.handledEvents += handledEvents;
     }
 
@@ -62,17 +66,25 @@ public:
 
 private:
 
+    void newMessageEvent(byteArray message, double RSSI);
+    void SFD_RX_Up_Event(byteArray message, double RSSI);
+    void SFD_RX_Down_Event(byteArray message);
+    void SFD_TX_Up_Event(byteArray message, double TXPower);
+    void SFD_TX_Down_Event();
+
     IRadioChannel* m_channel;
 
     INode* m_parentNode;
     IEvent* m_event;
-    
+
     int m_RXSensivity;
     int m_TXPower;
     int m_CCAThreshold;
     // int m_channel;
 
     VirtualTime timeTXEnd;
+
+    double m_currentRX_RSSI;
 
     enum rtxState
     {
@@ -84,6 +96,5 @@ private:
 
     rtxState m_state;
 };
-Q_EXPORT_PLUGIN(RTX);
 
 #endif // RTX_H
