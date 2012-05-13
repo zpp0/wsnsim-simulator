@@ -22,7 +22,7 @@ struct IModule : public Interface
 	virtual bool moduleInit(ISimulator* isimulator,
                             QMap<QString, QString> params) = 0;
 
-    virtual void eventHandler(QString eventName, QVariantList params) {}
+    virtual void eventHandler(QString eventName, QVariantList params) = 0;
 };
 
 #endif // IMODULE_H
