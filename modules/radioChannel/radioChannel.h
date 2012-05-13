@@ -14,13 +14,6 @@
 #include "IScene.h"
 #include "IEvent.h"
 
-/**
- * WARNING:
- * в интерфейсе нет оповещения о включении/выключении узла
- * в интерфейсе нет оповещения о перемещении узла
- * в интерфейсе нет оповещения о смене исходящей мощности узла
- **/
-
 class radioChannel : public IRadioChannel
 {
     Q_OBJECT
@@ -33,11 +26,10 @@ public:
         moduleInfo.version = "0.1";
         moduleInfo.description = "";
         moduleInfo.exportInterface = "IRadioChannel";
-        QList<QString> dependence;
-        dependence += "IScene";
-        dependence += "Irtx";
-        dependence += "IEvent";
-        moduleInfo.importInterfaces = dependence;
+        moduleInfo.importInterfaces += "IScene";
+        moduleInfo.importInterfaces += "Irtx";
+        moduleInfo.importInterfaces += "IEvent";
+        moduleInfo.handledEvents += "nodePowerUp"
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
@@ -47,11 +39,15 @@ public:
     /* virtual */ byteArray listen(INode* listener);
     /* virtual */ double aroundPower(INode* listener);
 
+    /* virtual */ void eventHandler(QString eventName, QVariantList params);
+
 private:
     double rssi(INode* sender, INode* listener);
     void nodesHearTest();
     void changeLink(bool add, INode* node1, INode* node2, double rssi);
     bool hear(double rssi, INode* listener);
+
+    void nodePowerUp_Event(INode* node, double coordx, double coordy);
 
     IScene* m_scene;
     IEvent* m_event;

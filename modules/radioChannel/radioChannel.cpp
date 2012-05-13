@@ -115,3 +115,13 @@ bool radioChannel::hear(double rssi, INode* listener)
 
     return rssi > rtx->RXSensivity();
 }
+
+void radioChannel::eventHandler(QString eventName, QVariantList params)
+{
+    if (eventName == "nodePowerUp")
+        nodePowerUp_Event(params[0], params[1], params[2]);
+}
+
+void radioChannel::nodePowerUp_Event(INode* node, double coordx, double coordy)
+{
+}
