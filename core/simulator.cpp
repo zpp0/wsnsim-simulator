@@ -246,7 +246,7 @@ void Simulator::eval()
             Log::write(nextEvent);
 
         foreach (IModule* handler, m_eventHandlers[nextEvent->name])
-            handler->eventHandler(nextEvent);
+            handler->eventHandler(nextEvent->name, nextEvent->params);
 
         VirtualTime remainingTime = m_maxGlobalTime - nextEvent->time;
         int currentPercent = ((m_maxGlobalTime - remainingTime) * 100) / m_maxGlobalTime;
