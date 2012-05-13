@@ -20,10 +20,11 @@ public:
         interfaceInfo.name = "Irtx";
 
         interfaceInfo.events["SFD_RX_Up"]["NodeID"] = "NodeID";
+        interfaceInfo.events["SFD_RX_Up"]["message"] = "byteArray";
+        interfaceInfo.events["SFD_RX_Up"]["RSSI"] = "double";
 
         interfaceInfo.events["SFD_RX_Down"]["NodeID"] = "NodeID";
         interfaceInfo.events["SFD_RX_Down"]["message"] = "byteArray";
-        interfaceInfo.events["SFD_RX_Down"]["RSSI"] = "double";
 
         interfaceInfo.events["SFD_TX_Up"]["NodeID"] = "NodeID";
         interfaceInfo.events["SFD_TX_Up"]["message"] = "byteArray";
@@ -35,6 +36,8 @@ public:
 
         interfaceInfo.events["CCATest"]["NodeID"] = "NodeID";
         interfaceInfo.events["CCATest"]["State"] = "int";
+
+        interfaceInfo.events["message_dropped"]["NodeID"] = "NodeID";
     }
 
     virtual void setTXPower(int power) = 0;
@@ -52,6 +55,6 @@ public:
 
 };
 Q_DECLARE_INTERFACE(Irtx,
-                    "simulator.IRtx/0.1");
+                    "simulator.Irtx/0.1");
 
 #endif // IRTX_H
