@@ -27,23 +27,20 @@ public:
         moduleInfo.version = "0.1";
         moduleInfo.description = "";
         moduleInfo.exportInterface = "Irtx";
-        QList<QString> dependence;
-        dependence += "INode";
-        dependence += "IRadioChannel";
-        dependence += "IEvent";
-        moduleInfo.importInterfaces = dependence;
+
+        moduleInfo.importInterfaces += "INode";
+        moduleInfo.importInterfaces += "IRadioChannel";
+        moduleInfo.importInterfaces += "IEvent";
 
         moduleInfo.params["RXSensivity"] = "int";
         moduleInfo.params["TXPower"] = "int";
         moduleInfo.params["CCAThreshold"] = "int";
 
-        QList<QString> handledEvents;
-        handledEvents += "newMessage";
-        handledEvents += "SFD_RX_Up";
-        handledEvents += "SFD_RX_Down";
-        handledEvents += "SFD_TX_Up";
-        handledEvents += "SFD_TX_Down";
-        moduleInfo.handledEvents += handledEvents;
+        moduleInfo.handledEvents += "newMessage";
+        moduleInfo.handledEvents += "SFD_RX_Up";
+        moduleInfo.handledEvents += "SFD_RX_Down";
+        moduleInfo.handledEvents += "SFD_TX_Up";
+        moduleInfo.handledEvents += "SFD_TX_Down";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
