@@ -22,12 +22,12 @@ public:
         moduleInfo.name = "Scene";
         moduleInfo.version = "0.1";
         moduleInfo.description = "";
-        moduleInfo.exportInterface = "IRadioChannel";
-        QList<QString> dependence;
-        dependence += "INodesFactory";
-        dependence += "INode";
-        dependence += "IEvent";
-        moduleInfo.importInterfaces = dependence;
+        moduleInfo.exportInterface = "IScene";
+
+        moduleInfo.importInterfaces += "INodesFactory";
+        moduleInfo.importInterfaces += "INode";
+        moduleInfo.importInterfaces += "IEvent";
+        
         moduleInfo.params["xSize"] = "double";
         moduleInfo.params["ySize"] = "double";
         moduleInfo.params["nodeNum"] = "int";
