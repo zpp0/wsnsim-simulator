@@ -7,6 +7,8 @@
 
 #include "event.h"
 
+#include "env.h"
+
 #include "simulator.h"
 
 // quint64 Event::count = 0;
@@ -22,7 +24,7 @@ void EventFactory::post(IModule* author, QString name, VirtualTime time, QVarian
     // TODO: bufferization
     Event* event = new Event();
     event->name = name;
-    event->time = time;
+    event->time = Env::time + time;
     event->params = params;
 
     Simulator::postEvent(author, event);
