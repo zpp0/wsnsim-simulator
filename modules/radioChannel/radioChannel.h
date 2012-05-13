@@ -29,7 +29,7 @@ public:
         moduleInfo.importInterfaces += "IScene";
         moduleInfo.importInterfaces += "Irtx";
         moduleInfo.importInterfaces += "IEvent";
-        moduleInfo.handledEvents += "nodePowerUp"
+        moduleInfo.handledEvents += "nodePowerUp";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
@@ -43,7 +43,7 @@ public:
 
 private:
     double rssi(INode* sender, INode* listener);
-    void nodesHearTest();
+    void nodesHearingUpdate(INode* node);
     void changeLink(bool add, INode* node1, INode* node2, double rssi);
     bool hear(double rssi, INode* listener);
 
@@ -54,9 +54,9 @@ private:
 
     ISimulator* m_simulator;
 
+    QVector<INode*> m_radioNodes;
     QHash<INode*, QVector<INode*> > m_nodesLinks;
     QHash<INode*, QVector<QByteArray> > m_nodesLocalChannel;
 };
-// Q_EXPORT_PLUGIN(radioChannel)
 
 #endif // RADIOCHANNEL_H
