@@ -39,6 +39,7 @@ public:
                                   QMap<QString, QString> params);
 
     /* virtual */ int dimension();
+    /* virtual */ INode* node(NodeID nodeID);
     /* virtual */ double* coord(INode* node);
     /* virtual */ double* size();
     /* virtual */ double distance(INode* node1, INode* node2);

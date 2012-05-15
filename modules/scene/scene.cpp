@@ -93,6 +93,13 @@ int Scene::dimension()
     return 2;
 }
 
+INode* Scene::node(NodeID nodeID)
+{
+    foreach(INode* node, m_nodes)
+        if (node->ID() == nodeID)
+            return node;
+}
+
 double* Scene::coord(INode* node)
 {
     return m_nodesCoords[node];
