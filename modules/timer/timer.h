@@ -11,40 +11,40 @@
 
 #include "ITimer.h"
 
-#include "node.h"
+#include "INode.h"
+#include "IEnv.h"
+#include "IEvent.h"
 
 class Timer : public ITimer
 {
     Q_OBJECT
-	Q_INTERFACES(ITimer)
+    Q_INTERFACES(ITimer)
 
 public:
-    // TODO: DELETE THIS
-    // Timer(NodeID parentID) : m_parentID(parent);
-    virtual QString moduleName() const;
-	virtual QString moduleVersion() const;
-    virtual QString moduleDescription() const;
+    Timer()
+    {
+        moduleInfo.name = "Timer";
+        moduleInfo.version = "0.1";
+        moduleInfo.description = "";
+        moduleInfo.exportInterface = "ITimer";
 
-	virtual bool moduleInit(QList<ModuleParam> params);
+        moduleInfo.importInterfaces += "INode";
+        moduleInfo.importInterfaces += "IEnv";
+        moduleInfo.importInterfaces += "IEvent";
+    }
 
-    virtual QList<QString> moduleExportInterfaces() const;
-    virtual QList<QString> moduleImportInterfaces() const;
+    /* virtual */ bool moduleInit(ISimulator* isimulator,
+                                  QMap<QString, QString> params);
 
-    virtual QString deviceName() const;
-    virtual QList<InterruptHandler> interrupts();
-
-    void setParentNode(Node* parent) { m_parent = parent; }
-
-    virtual VirtualTime getValue();
-    virtual void setValue(VirtualTime newTime);
-    virtual void start(VirtualTime timeout, void (*timerInterrupt)(void*, QString), void* object, QString type);
-    virtual void stop(InterruptHandler timerInterrupt);
+    /* virtual */ VirtualTime getValue();
+    /* virtual */ void setValue(VirtualTime newTime);
+    /* virtual */ void start(VirtualTime timeout, QString type);
+    /* virtual */ void stop(QString type);
 
 private:
-    // TODO: DELETE THIS
-    Node* m_parent;
-
+    IEvent* m_event;
+    IEnv* m_env;
+    INode* m_parentNode;
 };
-// Q_EXPORT_PLUGIN(Timer);
 
 #endif // TIMER_H
