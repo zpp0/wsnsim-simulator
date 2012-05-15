@@ -24,6 +24,7 @@ void EventFactory::post(IModule* author, QString name, VirtualTime time, QVarian
     // TODO: bufferization
     Event* event = new Event();
     event->name = name;
+    event->author = author;
     event->time = Env::time + time;
     event->params = params;
 

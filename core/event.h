@@ -10,9 +10,12 @@
 
 #include "types.h"
 
+#include "IModule.h"
+
 struct Event
 {
     QString name;
+    IModule* author;
     // TODO: move to core
     // bool priority;
     // TODO: move to core
@@ -23,8 +26,6 @@ struct Event
 };
 
 #include "IEvent.h"
-
-#include "IModule.h"
 
 struct EventFactory : public IEvent
 {
