@@ -27,6 +27,7 @@ public:
     }
 
     virtual int dimension() = 0;
+    virtual INode* node(NodeID nodeID);
     virtual double* coord(INode* node) = 0;
     virtual double* size() = 0;
     virtual double distance(INode* node1, INode* node2) = 0;
