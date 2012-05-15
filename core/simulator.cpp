@@ -246,6 +246,11 @@ void Simulator::eval()
             Log::write(nextEvent);
 
         foreach (IModule* handler, m_eventHandlers[nextEvent->name])
+            // FIXME: ugly
+            if ((!m_nodesModules.contains(handler))
+                || (m_nodesModules.contains(handler)
+                    // FIXME: very ugly
+                    && m_nodesModules[handler]->ID() == nextEvent->params[0]))
             handler->eventHandler(nextEvent->name, nextEvent->params);
 
         VirtualTime remainingTime = m_maxGlobalTime - nextEvent->time;
