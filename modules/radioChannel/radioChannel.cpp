@@ -105,11 +105,12 @@ void radioChannel::eventHandler(QString eventName, QVariantList params)
 {
     if (eventName == "nodePowerUp")
         // FIXME: very ugly
-        nodePowerUp_Event((INode*)params[0].value<void*>(), params[1].toDouble(), params[2].toDouble());
+        nodePowerUp_Event(params[0].toUInt(), params[1].toDouble(), params[2].toDouble());
 }
 
-void radioChannel::nodePowerUp_Event(INode* node, double coordx, double coordy)
+void radioChannel::nodePowerUp_Event(NodeID nodeID, double coordx, double coordy)
 {
+    INode* node = m_scene->node(nodeID);
     nodesHearingUpdate(node);
     m_radioNodes += node;
 }

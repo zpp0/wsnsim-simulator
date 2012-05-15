@@ -47,7 +47,7 @@ private:
     void changeLink(bool add, INode* node1, INode* node2, double rssi);
     bool hear(double rssi, INode* listener);
 
-    void nodePowerUp_Event(INode* node, double coordx, double coordy);
+    void nodePowerUp_Event(NodeID nodeID, double coordx, double coordy);
 
     IScene* m_scene;
     IEvent* m_event;
