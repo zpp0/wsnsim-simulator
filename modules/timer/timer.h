@@ -15,10 +15,10 @@
 #include "IEnv.h"
 #include "IEvent.h"
 
-class Timer : public ITimer
+class Timer : public QObject, public ITimer
 {
     Q_OBJECT
-    Q_INTERFACES(ITimer)
+    Q_INTERFACES(IModule)
 
 public:
     Timer()
@@ -41,6 +41,8 @@ public:
     /* virtual */ void start(VirtualTime timeout, QString type);
     /* virtual */ void stop(QString type);
 
+    /* virtual */ void eventHandler(QString eventName, QVariantList params) {}
+    
 private:
     IEvent* m_event;
     IEnv* m_env;

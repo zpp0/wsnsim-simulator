@@ -13,10 +13,10 @@
 
 #include "types.h"
 
-class ITimer : public IHardware, public QObject
+class ITimer : public IHardware
 {
-    Q_OBJECT
 public:
+    virtual ~ITimer() {}
     ITimer()
     {
         interfaceInfo.name = "ITimer";
@@ -29,7 +29,5 @@ public:
     virtual void start(VirtualTime timeout, QString type) = 0;
     virtual void stop(QString type) = 0;
 };
-Q_DECLARE_INTERFACE(ITimer,
-                    "simulator.ITimer/0.1")
 
 #endif // ITIMER_H

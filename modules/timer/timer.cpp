@@ -35,3 +35,7 @@ void Timer::stop(QString type)
 {
     // TODO: do
 }
+
+QT_BEGIN_NAMESPACE
+Q_EXPORT_PLUGIN2(timer, Timer);
+QT_END_NAMESPACE
