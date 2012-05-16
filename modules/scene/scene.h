@@ -11,10 +11,10 @@
 
 #include "IScene.h"
 
-class Scene : public IScene
+class Scene : public QObject, public IScene
 {
     Q_OBJECT
-    Q_INTERFACES(IScene)
+    Q_INTERFACES(IModule)
 
 public:
     Scene()
@@ -32,7 +32,7 @@ public:
         moduleInfo.params["ySize"] = "double";
         moduleInfo.params["nodeNum"] = "int";
         moduleInfo.params["nodePowerUpTimeRange"] = "ULong";
-        moduleInfo.params["isRandomEnabled"] = "bool";
+        moduleInfo.params["isRandomEnabled"] = "int";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
@@ -44,6 +44,7 @@ public:
     /* virtual */ double* size();
     /* virtual */ double distance(INode* node1, INode* node2);
 
+    /* virtual */ void eventHandler(QString eventName, QVariantList params){}
 private:
     int isSameCoords(double coord[2]);
 

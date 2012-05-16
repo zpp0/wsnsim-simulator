@@ -126,3 +126,7 @@ double Scene::distance(INode* node1, INode* node2)
 {
     return m_distances[node1][node2];
 }
+
+QT_BEGIN_NAMESPACE
+Q_EXPORT_PLUGIN2(scene, Scene);
+QT_END_NAMESPACE
