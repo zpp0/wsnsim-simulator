@@ -15,10 +15,10 @@
 #include "INode.h"
 #include "IEvent.h"
 
-class RTX : public Irtx
+class RTX : public QObject, public Irtx
 {
     Q_OBJECT
-    Q_INTERFACES(Irtx)
+    Q_INTERFACES(IModule)
 
 public:
     RTX()

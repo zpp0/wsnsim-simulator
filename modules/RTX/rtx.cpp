@@ -183,3 +183,7 @@ void RTX::SFD_TX_Down_Event()
 {
     m_state = rtxState_Free;
 }
+
+QT_BEGIN_NAMESPACE
+Q_EXPORT_PLUGIN2(rtx, RTX);
+QT_END_NAMESPACE

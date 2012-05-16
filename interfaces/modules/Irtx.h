@@ -11,10 +11,10 @@
 
 #include "IHardware.h"
 
-class Irtx : public IHardware, public QObject
+class Irtx : public IHardware
 {
-    Q_OBJECT
 public:
+    ~Irtx() {}
     Irtx()
     {
         interfaceInfo.name = "Irtx";
@@ -54,7 +54,5 @@ public:
     virtual int RXSensivity() const = 0;
 
 };
-Q_DECLARE_INTERFACE(Irtx,
-                    "simulator.Irtx/0.1");
 
 #endif // IRTX_H
