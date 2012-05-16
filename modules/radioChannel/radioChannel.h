@@ -14,10 +14,10 @@
 #include "IScene.h"
 #include "IEvent.h"
 
-class radioChannel : public IRadioChannel
+class radioChannel : public QObject, public IRadioChannel
 {
     Q_OBJECT
-    Q_INTERFACES(IRadioChannel)
+    Q_INTERFACES(IModule)
 
 public:
     radioChannel()

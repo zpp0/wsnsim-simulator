@@ -43,6 +43,8 @@ double radioChannel::aroundPower(INode* listener)
     // взять все передаваемые сообщения внутри канала
     // получить ID передающих узлов
     // посчитать максимальное RSSI от этих узлов
+    // NOTE: test
+    return 55;
 }
 
 double radioChannel::rssi(INode* sender, INode* listener)
@@ -114,3 +116,7 @@ void radioChannel::nodePowerUp_Event(NodeID nodeID, double coordx, double coordy
     nodesHearingUpdate(node);
     m_radioNodes += node;
 }
+
+QT_BEGIN_NAMESPACE
+Q_EXPORT_PLUGIN2(radioChannel, radioChannel);
+QT_END_NAMESPACE

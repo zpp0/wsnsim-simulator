@@ -15,9 +15,8 @@
 
 #include "types.h"
 
-class IRadioChannel : public IEnvironment, public QObject
+class IRadioChannel : public IEnvironment
 {
-    Q_OBJECT
 public:
     IRadioChannel()
     {
@@ -34,7 +33,5 @@ public:
     virtual double aroundPower(INode* node) = 0;
 
 };
-Q_DECLARE_INTERFACE(IRadioChannel,
-                    "simulator.IRadioChannel/0.1")
 
 #endif // IRADIOCHANNEL_H
