@@ -5,6 +5,8 @@
 TEMPLATE = lib
 CONFIG  += plugin
 TARGET = 
+DESTDIR = ../../../bin/
+OBJECTS_DIR = ./debug
 DEPENDPATH += .
 INCLUDEPATH += . ../../interfaces/core/ ../../interfaces/modules/
 
