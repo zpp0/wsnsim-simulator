@@ -24,5 +24,9 @@ struct IModule : public Interface
 
     virtual void eventHandler(QString eventName, QVariantList params) = 0;
 };
+QT_BEGIN_NAMESPACE
+Q_DECLARE_INTERFACE(IModule,
+                    "simulator.IModule/1.0");
+QT_END_NAMESPACE
 
 #endif // IMODULE_H
