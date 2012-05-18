@@ -39,6 +39,8 @@ public:
     void eval();
 
 private:
+    static ISimulator* m_this;
+    
     ProjectParams loadProject(QString file);
     
     // максимально-возможное время работы симулятора
@@ -48,6 +50,7 @@ private:
     static QMap<INode*, QMap<QString, IModule*> > m_nodeInterfaces;
 
     // node modules
+    static QList<QPluginLoader*> m_nodesLoaders;
     static QMap<IModule*, Node*> m_nodesModules;
 
     // nodes list
@@ -56,8 +59,7 @@ private:
     // Events names list
     QList<QString> m_events;
 
-    // FIXME: is it works with IModule?
-    QMap<QString, QList<IModule*> > m_eventHandlers;
+    static QMap<QString, QList<IModule*> > m_eventHandlers;
     
     // Priority events list
     static QList<QString> m_priorityEvents;
@@ -71,6 +73,8 @@ private:
     static QMap<QString, quint64> m_eventCount;
     
     static eventQueue m_queue;
+
+    static ProjectParams m_projectParams;
 };
 
 #endif // SIMULATOR_H
