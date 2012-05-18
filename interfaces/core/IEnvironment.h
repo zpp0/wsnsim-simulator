@@ -13,6 +13,7 @@
 
 struct IEnvironment : public IModule
 {
+    IEnvironment() { interfaceInfo.type = InterfaceType_Environment; }
 	virtual ~IEnvironment() {}
 };
 

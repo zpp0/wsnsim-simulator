@@ -13,6 +13,7 @@
 
 struct IHardware : public IModule
 {
+    IHardware() { interfaceInfo.type = InterfaceType_Hardware; }
 	virtual ~IHardware() {}
 };
 
