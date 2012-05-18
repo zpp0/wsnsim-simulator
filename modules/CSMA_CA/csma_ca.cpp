@@ -12,6 +12,7 @@ bool CSMA_CA::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
 {
     m_parentNode = (INode*)isimulator->getCoreInterface(this, "INode");
     m_rtx = (Irtx*)isimulator->getNodeInterface(this, m_parentNode, "Irtx");
+    m_timer = (ITimer*)isimulator->getNodeInterface(this, m_parentNode, "ITimer");
     m_event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
 
     qsrand((long)this);
