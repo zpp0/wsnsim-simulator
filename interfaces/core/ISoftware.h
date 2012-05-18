@@ -13,6 +13,7 @@
 
 struct ISoftware : public IModule
 {
+    ISoftware() { interfaceInfo.type = InterfaceType_Software; }
 	virtual ~ISoftware() {}
 };
 
