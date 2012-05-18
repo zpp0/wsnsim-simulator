@@ -56,10 +56,9 @@ void CSMA_CA::eventHandler(QString name, QVariantList params)
 void CSMA_CA::timerInterrupt()
 {
     if (m_rtx->CCA()) {
+        m_rtx->startTX(m_message);
         m_event->post(this, "CSMA_success", 0,
                       QVariantList() << m_parentNode->ID());
-
-        m_rtx->startTX(m_message);
     }
 
     else {
