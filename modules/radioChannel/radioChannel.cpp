@@ -44,7 +44,7 @@ double radioChannel::aroundPower(INode* listener)
     // получить ID передающих узлов
     // посчитать максимальное RSSI от этих узлов
     // NOTE: test
-    return 55;
+    return !(m_nodesLocalChannel[listener].size() > 1);
 }
 
 double radioChannel::rssi(INode* sender, INode* listener)
