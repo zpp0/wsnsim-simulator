@@ -50,6 +50,8 @@ struct InterfaceInfo
     // (eventName, (eventParam, eventParamType))
     QMap<QString, QList<QPair<QString, QString> > > events;
     QList<QString> proirityEvents;
+    // (eventName, groupName)
+    QMap<QString, QString> eventGroups;
 };
 
 #endif // TYPES_H
