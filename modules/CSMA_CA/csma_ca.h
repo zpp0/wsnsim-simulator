@@ -62,13 +62,6 @@ private:
 
     int m_BE;
     int m_NB;
-
-    static const int ByteSendingTime =  32;
-    static const int macMinBE = 3;
-    static const int aMaxBE = 5;
-    static const int macMaxCSMABackoffs = 4;
-    static const int aUnitBackoffPeriod = 20;
-    static const int pauseTime = aUnitBackoffPeriod/2 * ByteSendingTime;
 };
 
 #endif // CSMA_CA_H
