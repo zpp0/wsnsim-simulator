@@ -8,6 +8,13 @@
 
 #include "csma_ca.h"
 
+static const int ByteSendingTime =  32;
+static const int macMinBE = 3;
+static const int aMaxBE = 5;
+static const int macMaxCSMABackoffs = 4;
+static const int aUnitBackoffPeriod = 20;
+static const int pauseTime = aUnitBackoffPeriod/2 * ByteSendingTime;
+
 bool CSMA_CA::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
 {
     m_parentNode = (INode*)isimulator->getCoreInterface(this, "INode");
