@@ -50,7 +50,7 @@ private:
     static QMap<INode*, QMap<QString, IModule*> > m_nodeInterfaces;
 
     // node modules
-    static QList<QPluginLoader*> m_nodesLoaders;
+    static QList<QString> m_nodesLoaders;
     static QMap<IModule*, Node*> m_nodesModules;
 
     // nodes list

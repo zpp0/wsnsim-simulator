@@ -22,7 +22,8 @@
 QMap<QString, IModule*> Simulator::m_envInterfaces;
 QMap<INode*, QMap<QString, IModule*> > Simulator::m_nodeInterfaces;
 QList<QString> Simulator::m_priorityEvents;
-QList<QPluginLoader*> Simulator::m_nodesLoaders;
+// QList<QPluginLoader*> Simulator::m_nodesLoaders;
+QList<QString> Simulator::m_nodesLoaders;
 QMap<IModule*, Node*> Simulator::m_nodesModules;
 QList<Node*> Simulator::m_nodes;
 QMap<QString, QList<IModule*> > Simulator::m_eventHandlers;
@@ -53,7 +54,7 @@ ICore* Simulator::getCoreInterface(IModule* receiver, QString name)
             interface = (ICore*)(INode*)m_nodesModules[receiver];
     }
 
-    qDebug() << "module" << receiver->moduleInfo.name << "get interface" << name << interface;
+    // qDebug() << "module" << receiver->moduleInfo.name << "get interface" << name << interface;
     
     return interface;
 }
@@ -90,7 +91,7 @@ IModule* Simulator::getEnvInterface(IModule* receiver, QString interfaceName)
     if (receiver->moduleInfo.importInterfaces.contains(interfaceName))
         interface = m_envInterfaces[interfaceName];
 
-    qDebug() << "module" << receiver->moduleInfo.name << "get interface" << interfaceName << interface;
+    // qDebug() << "module" << receiver->moduleInfo.name << "get interface" << interfaceName << interface;
     
     return interface;
 }
@@ -102,7 +103,7 @@ IModule* Simulator::getNodeInterface(IModule* receiver, INode* node, QString int
     if (receiver->moduleInfo.importInterfaces.contains(interfaceName))
         interface = m_nodeInterfaces[node][interfaceName];
 
-    qDebug() << "module" << receiver->moduleInfo.name << "get interface" << interfaceName << interface;
+    // qDebug() << "module" << receiver->moduleInfo.name << "get interface" << interfaceName << interface;
     
     return interface;
 }
@@ -110,9 +111,18 @@ IModule* Simulator::getNodeInterface(IModule* receiver, INode* node, QString int
 void Simulator::registerNode(Node* node)
 {
     m_nodes += node;
-    foreach (QPluginLoader* loader, m_nodesLoaders) {
-        QObject* plugin = loader->instance();
+
+    qDebug() << "new node" << node;
+    
+    foreach (QString plugin, m_nodesLoaders) {
+        QString path = QDir::currentPath() + "/.trash/" + plugin + QString::number(node->ID());
+        QFile file(QDir::currentPath() + "/modules/" + plugin);
+        file.copy(path);
+        QPluginLoader loader(path);
+        QObject* plugin = loader.instance();
         IModule* module = qobject_cast<IModule *>(plugin);
+        
+        qDebug() << "created module" << module << module->moduleInfo.name << "for node" << node->ID();
 
         m_nodesModules[module] = node;
 
@@ -120,7 +130,8 @@ void Simulator::registerNode(Node* node)
 
     }
 
-    foreach (IModule* module, m_nodesModules.keys()) {
+    // foreach (IModule* module, m_nodesModules.keys()) {
+    foreach (IModule* module, m_nodeInterfaces[node].values()) {
         QMap<QString, QString> params;
         foreach (ModuleParams moduleParams, m_projectParams.modulesParams) {
             if (moduleParams.moduleName == module->moduleInfo.name) {
@@ -129,7 +140,7 @@ void Simulator::registerNode(Node* node)
             }
         }
 
-        qDebug() << "init" << module->moduleInfo.name;
+        qDebug() << "init" << module << module->moduleInfo.name;
 
         module->moduleInit(m_this, params);
 
@@ -158,6 +169,13 @@ Simulator::Simulator(QString projectFileName)
 
     Log::init(m_projectParams.simulatorParams.logFile, events);
 
+    QDir trash(QDir::currentPath() + "/.trash");
+    trash.mkdir(QDir::currentPath() + "/.trash");
+    foreach (QString fileName, trash.entryList()) {
+        QFile file(QDir::currentPath() + "/.trash/" + fileName);
+        file.remove();
+    }
+    
     m_loggableEvents = m_events;
         
     m_maxGlobalTime = m_projectParams.simulatorParams.maxTime;
@@ -167,8 +185,8 @@ Simulator::Simulator(QString projectFileName)
 
     qDebug() << "plugins" << plugins;
     
-    foreach(QString plugin, plugins) {
-        QPluginLoader* loader = new QPluginLoader(QDir::currentPath() + "/modules/" + plugin);
+    foreach(QString pluginName, plugins) {
+        QPluginLoader* loader = new QPluginLoader(QDir::currentPath() + "/modules/" + pluginName);
         QObject* plugin = loader->instance();
         IModule* module = qobject_cast<IModule *>(plugin);
         
@@ -183,7 +201,7 @@ Simulator::Simulator(QString projectFileName)
         else if (module->interfaceInfo.type == InterfaceType_Hardware
                  || module->interfaceInfo.type == InterfaceType_Software) {
             qDebug() << "node module init wirh delay" << module->moduleInfo.name;            
-            m_nodesLoaders += loader;
+            m_nodesLoaders += pluginName;
             delete module;
         }
     }
@@ -243,8 +261,8 @@ void Simulator::eval()
     
     Event* nextEvent;
 
-    foreach(INode* node, m_nodeInterfaces.keys())
-        qDebug() << "nodeID" << node->ID();
+    // foreach(INode* node, m_nodeInterfaces.keys())
+    //     qDebug() << "nodeID" << node->ID();
     
     // для всех событий из очереди
     // извлекаем событие и отправляем соответствующее сообщение
@@ -288,21 +306,17 @@ void Simulator::eval()
             Log::write(nextEvent);
 
         foreach (IModule* handler, m_eventHandlers[nextEvent->name]) {
-            qDebug() << "handler" << handler << handler->moduleInfo.name;
-        }
-        
-        foreach (IModule* handler, m_eventHandlers[nextEvent->name]) {
             if (!m_nodesModules.contains(handler))
                 handler->eventHandler(nextEvent->name, nextEvent->params);
             
             else if (m_nodesModules.contains(handler)
                      && m_nodesModules[handler]->ID() == nextEvent->params[0].toInt()) {
 
-                qDebug() << "module" << handler->moduleInfo.name
-                         << "event nodeID" << nextEvent->params[0].toInt()
-                         << "nodeID" << m_nodesModules[handler]->ID()
-                         << "try to handle event" << nextEvent->name
-                         << "time" << Env::time;
+                // qDebug() << "module" << handler->moduleInfo.name
+                //          << "event nodeID" << nextEvent->params[0].toInt()
+                //          << "nodeID" << m_nodesModules[handler]->ID()
+                //          << "try to handle event" << nextEvent->name
+                //          << "time" << Env::time;
 
                 handler->eventHandler(nextEvent->name, nextEvent->params);
             }
@@ -332,5 +346,12 @@ void Simulator::eval()
 
     // TODO: to separate initialisation and uninitialisation from evaluation
     Log::uninit();
+    QDir trash(QDir::currentPath() + "/.trash");
+
+    foreach (QString fileName, trash.entryList()) {
+        QFile file(QDir::currentPath() + "/.trash/" + fileName);
+        file.remove();
+    }
+    trash.remove(QDir::currentPath() + "/.trash");
 
 }
