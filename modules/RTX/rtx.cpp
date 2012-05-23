@@ -97,7 +97,8 @@ void RTX::waitTXEnd()
 
 bool RTX::CCA()
 {
-    bool state = m_channel->aroundPower(m_parentNode) < m_CCAThreshold;
+    // bool state = m_channel->aroundPower(m_parentNode) < m_CCAThreshold;
+    bool state = m_channel->aroundPower(m_parentNode) == 1;
 
     qDebug() << "in CCA test" << state;
 
