@@ -20,8 +20,8 @@ public:
     ITimer()
     {
         interfaceInfo.name = "ITimer";
-        interfaceInfo.events["timerInterrupt"]["NodeID"] = "NodeID";
-        interfaceInfo.events["timerInterrupt"]["Type"] = "String";
+        interfaceInfo.events["timerInterrupt"]["NodeID"] = "uint16";
+        interfaceInfo.events["timerInterrupt"]["Type"] = "string";
     }
 
     virtual VirtualTime getValue() = 0;

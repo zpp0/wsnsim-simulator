@@ -21,9 +21,9 @@ public:
     IRadioChannel()
     {
         interfaceInfo.name = "IRadioChannel";
-        interfaceInfo.events["ChangeLink"]["NodeID"] = "NodeID";
-        interfaceInfo.events["ChangeLink"]["NodeID2"] = "NodeID2";
-        interfaceInfo.events["newMessage"]["NodeID"] = "NodeID";
+        interfaceInfo.events["ChangeLink"]["NodeID"] = "uint16";
+        interfaceInfo.events["ChangeLink"]["NodeID2"] = "uint16";
+        interfaceInfo.events["newMessage"]["NodeID"] = "uint16";
         interfaceInfo.events["newMessage"]["message"] = "byteArray";
         interfaceInfo.events["newMessage"]["RSSI"] = "double";
     }

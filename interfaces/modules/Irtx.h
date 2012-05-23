@@ -19,25 +19,25 @@ public:
     {
         interfaceInfo.name = "Irtx";
 
-        interfaceInfo.events["SFD_RX_Up"]["NodeID"] = "NodeID";
+        interfaceInfo.events["SFD_RX_Up"]["NodeID"] = "uint16";
         interfaceInfo.events["SFD_RX_Up"]["message"] = "byteArray";
         interfaceInfo.events["SFD_RX_Up"]["RSSI"] = "double";
 
-        interfaceInfo.events["SFD_RX_Down"]["NodeID"] = "NodeID";
+        interfaceInfo.events["SFD_RX_Down"]["NodeID"] = "uint16";
         interfaceInfo.events["SFD_RX_Down"]["message"] = "byteArray";
 
-        interfaceInfo.events["SFD_TX_Up"]["NodeID"] = "NodeID";
+        interfaceInfo.events["SFD_TX_Up"]["NodeID"] = "uint16";
         interfaceInfo.events["SFD_TX_Up"]["message"] = "byteArray";
         interfaceInfo.events["SFD_TX_Up"]["TXPower"] = "double";
 
-        interfaceInfo.events["SFD_TX_Down"]["NodeID"] = "NodeID";
+        interfaceInfo.events["SFD_TX_Down"]["NodeID"] = "uint16";
 
-        interfaceInfo.events["Collision"]["NodeID"] = "NodeID";
+        interfaceInfo.events["Collision"]["NodeID"] = "uint16";
 
-        interfaceInfo.events["CCATest"]["NodeID"] = "NodeID";
-        interfaceInfo.events["CCATest"]["State"] = "int";
+        interfaceInfo.events["CCATest"]["NodeID"] = "uint16";
+        interfaceInfo.events["CCATest"]["State"] = "uint8";
 
-        interfaceInfo.events["message_dropped"]["NodeID"] = "NodeID";
+        interfaceInfo.events["message_dropped"]["NodeID"] = "uint16";
     }
 
     virtual void setTXPower(int power) = 0;

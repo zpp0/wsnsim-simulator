@@ -21,14 +21,14 @@ public:
     {
         interfaceInfo.name = "ICSMA_CA";
 
-        interfaceInfo.events["CSMA_delay"]["NodeID"] = "NodeID";
-        interfaceInfo.events["CSMA_delay"]["BE"] = "uint";
-        interfaceInfo.events["CSMA_delay"]["NB"] = "uint";
-        interfaceInfo.events["CSMA_delay"]["delay"] = "uint";
+        interfaceInfo.events["CSMA_delay"]["NodeID"] = "uint16";
+        interfaceInfo.events["CSMA_delay"]["BE"] = "uint8";
+        interfaceInfo.events["CSMA_delay"]["NB"] = "uint8";
+        interfaceInfo.events["CSMA_delay"]["delay"] = "uint64";
 
-        interfaceInfo.events["CSMA_begin"]["NodeID"] = "NodeID";
-        interfaceInfo.events["CSMA_success"]["NodeID"] = "NodeID";
-        interfaceInfo.events["CSMA_fail"]["NodeID"] = "NodeID";
+        interfaceInfo.events["CSMA_begin"]["NodeID"] = "uint16";
+        interfaceInfo.events["CSMA_success"]["NodeID"] = "uint16";
+        interfaceInfo.events["CSMA_fail"]["NodeID"] = "uint16";
     }
 
     virtual void sendMessage(byteArray message) = 0;

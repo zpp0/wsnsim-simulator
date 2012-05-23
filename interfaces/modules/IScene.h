@@ -21,7 +21,7 @@ public:
     IScene()
     {
         interfaceInfo.name = "IScene";
-        interfaceInfo.events["nodePowerUp"]["NodeID"] = "NodeID";
+        interfaceInfo.events["nodePowerUp"]["NodeID"] = "uint16";
         interfaceInfo.events["nodePowerUp"]["coordx"] = "double";
         interfaceInfo.events["nodePowerUp"]["coordy"] = "double";
     }
