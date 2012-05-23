@@ -25,7 +25,7 @@ public:
                                            << qMakePair(QString("NodeID2"), QString("uint16"));
 
         interfaceInfo.events["newMessage"] << qMakePair(QString("NodeID"), QString("uint16"))
-                                           << qMakePair(QString("message"), QString("byteArray"))
+                                           << qMakePair(QString("message"), QString("ByteArray"))
                                            << qMakePair(QString("RSSI"), QString("double"));
     }
 

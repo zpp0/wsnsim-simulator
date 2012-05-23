@@ -43,7 +43,7 @@ void Log::init(QString logFilePath,
         qDebug() << event;
         
         foreach (QString argType, eventArgTypes[event]) {
-            qDebug() << argType;
+
 
             LogDataType type = UNKNOWN_TYPE;
             if (argType == "uint8")          type = UINT8_TYPE;
@@ -53,8 +53,10 @@ void Log::init(QString logFilePath,
             else if (argType == "int32")     type = INT32_TYPE;
             else if (argType == "bool")      type = BOOL_TYPE;
             else if (argType == "double")    type = DOUBLE_TYPE;
-            else if (argType == "byteArray") type = BYTE_ARRAY_TYPE;
+            else if (argType == "ByteArray") type = BYTE_ARRAY_TYPE;
             else if (argType == "string")    type = STRING_TYPE;
+
+            qDebug() << argType << type;
 
             m_eventArgTypes[event] += type;
         }
@@ -111,16 +113,17 @@ void Log::write(Event* event)
         {
             qDebug() << "b";
             QByteArray array = event->params[i].toByteArray();
-            (*m_logStream) << (quint8)array.length();
-            (*m_logStream).writeRawData(array.constData(), array.length());
+            qDebug() << "array" << array << array.size();
+            (*m_logStream) << (quint8)array.size();
+            (*m_logStream).writeRawData(array.constData(), array.size());
             break;
         }
         case STRING_TYPE:
         {
             qDebug() << "s";
             QString string = event->params[i].toString();
-            (*m_logStream) << (quint16)string.length();
-            (*m_logStream).writeRawData(string.toUtf8().constData(), string.length());
+            (*m_logStream) << (quint16)string.size();
+            (*m_logStream).writeRawData(string.toUtf8().constData(), string.size());
             break;
         }
         }

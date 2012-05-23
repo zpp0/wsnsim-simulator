@@ -20,14 +20,14 @@ public:
         interfaceInfo.name = "Irtx";
 
         interfaceInfo.events["SFD_RX_Up"] << qMakePair(QString("NodeID"), QString("uint16"))
-                                          << qMakePair(QString("message"), QString("byteArray"))
+                                          << qMakePair(QString("message"), QString("ByteArray"))
                                           << qMakePair(QString("RSSI"), QString("double"));
         
         interfaceInfo.events["SFD_RX_Down"] << qMakePair(QString("NodeID"), QString("uint16"))
-                                            << qMakePair(QString("message"), QString("byteArray"));
+                                            << qMakePair(QString("message"), QString("ByteArray"));
 
         interfaceInfo.events["SFD_TX_Up"] << qMakePair(QString("NodeID"), QString("uint16"))
-                                          << qMakePair(QString("message"), QString("byteArray"))
+                                          << qMakePair(QString("message"), QString("ByteArray"))
                                           << qMakePair(QString("TXPower"), QString("double"));
 
         interfaceInfo.events["SFD_TX_Down"] << qMakePair(QString("NodeID"), QString("uint16"));
