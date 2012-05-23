@@ -47,9 +47,9 @@ struct InterfaceInfo
 
     // events
     // TODO: do eventParamType as enum
-    // TODO: add priority
     // (eventName, (eventParam, eventParamType))
-    QMap<QString, QMap<QString, QString> > events;
+    QMap<QString, QList<QPair<QString, QString> > > events;
+    QList<QString> proirityEvents;
 };
 
 #endif // TYPES_H

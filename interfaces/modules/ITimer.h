@@ -20,8 +20,8 @@ public:
     ITimer()
     {
         interfaceInfo.name = "ITimer";
-        interfaceInfo.events["timerInterrupt"]["NodeID"] = "uint16";
-        interfaceInfo.events["timerInterrupt"]["Type"] = "string";
+        interfaceInfo.events["timerInterrupt"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                               << qMakePair(QString("Type"), QString("string"));
     }
 
     virtual VirtualTime getValue() = 0;

@@ -21,9 +21,9 @@ public:
     IScene()
     {
         interfaceInfo.name = "IScene";
-        interfaceInfo.events["nodePowerUp"]["NodeID"] = "uint16";
-        interfaceInfo.events["nodePowerUp"]["coordx"] = "double";
-        interfaceInfo.events["nodePowerUp"]["coordy"] = "double";
+        interfaceInfo.events["nodePowerUp"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                            << qMakePair(QString("coordx"), QString("double"))
+                                            << qMakePair(QString("coordy"), QString("double"));
     }
 
     virtual int dimension() = 0;

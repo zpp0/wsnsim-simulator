@@ -21,11 +21,12 @@ public:
     IRadioChannel()
     {
         interfaceInfo.name = "IRadioChannel";
-        interfaceInfo.events["ChangeLink"]["NodeID"] = "uint16";
-        interfaceInfo.events["ChangeLink"]["NodeID2"] = "uint16";
-        interfaceInfo.events["newMessage"]["NodeID"] = "uint16";
-        interfaceInfo.events["newMessage"]["message"] = "byteArray";
-        interfaceInfo.events["newMessage"]["RSSI"] = "double";
+        interfaceInfo.events["ChangeLink"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                           << qMakePair(QString("NodeID2"), QString("uint16"));
+
+        interfaceInfo.events["newMessage"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                           << qMakePair(QString("message"), QString("byteArray"))
+                                           << qMakePair(QString("RSSI"), QString("double"));
     }
 
     virtual void send(INode* node, byteArray message) = 0;

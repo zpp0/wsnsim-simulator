@@ -21,14 +21,14 @@ public:
     {
         interfaceInfo.name = "ICSMA_CA";
 
-        interfaceInfo.events["CSMA_delay"]["NodeID"] = "uint16";
-        interfaceInfo.events["CSMA_delay"]["BE"] = "uint8";
-        interfaceInfo.events["CSMA_delay"]["NB"] = "uint8";
-        interfaceInfo.events["CSMA_delay"]["delay"] = "uint64";
+        interfaceInfo.events["CSMA_delay"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                           << qMakePair(QString("BE"), QString("int32"))
+                                           << qMakePair(QString("NB"), QString("int32"))
+                                           << qMakePair(QString("delay"), QString("uint64"));
 
-        interfaceInfo.events["CSMA_begin"]["NodeID"] = "uint16";
-        interfaceInfo.events["CSMA_success"]["NodeID"] = "uint16";
-        interfaceInfo.events["CSMA_fail"]["NodeID"] = "uint16";
+        interfaceInfo.events["CSMA_begin"] << qMakePair(QString("NodeID"), QString("uint16"));
+        interfaceInfo.events["CSMA_success"] << qMakePair(QString("NodeID"), QString("uint16"));
+        interfaceInfo.events["CSMA_fail"] << qMakePair(QString("NodeID"), QString("uint16"));
     }
 
     virtual void sendMessage(byteArray message) = 0;

@@ -19,25 +19,25 @@ public:
     {
         interfaceInfo.name = "Irtx";
 
-        interfaceInfo.events["SFD_RX_Up"]["NodeID"] = "uint16";
-        interfaceInfo.events["SFD_RX_Up"]["message"] = "byteArray";
-        interfaceInfo.events["SFD_RX_Up"]["RSSI"] = "double";
+        interfaceInfo.events["SFD_RX_Up"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                          << qMakePair(QString("message"), QString("byteArray"))
+                                          << qMakePair(QString("RSSI"), QString("double"));
+        
+        interfaceInfo.events["SFD_RX_Down"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                            << qMakePair(QString("message"), QString("byteArray"));
 
-        interfaceInfo.events["SFD_RX_Down"]["NodeID"] = "uint16";
-        interfaceInfo.events["SFD_RX_Down"]["message"] = "byteArray";
+        interfaceInfo.events["SFD_TX_Up"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                          << qMakePair(QString("message"), QString("byteArray"))
+                                          << qMakePair(QString("TXPower"), QString("double"));
 
-        interfaceInfo.events["SFD_TX_Up"]["NodeID"] = "uint16";
-        interfaceInfo.events["SFD_TX_Up"]["message"] = "byteArray";
-        interfaceInfo.events["SFD_TX_Up"]["TXPower"] = "double";
+        interfaceInfo.events["SFD_TX_Down"] << qMakePair(QString("NodeID"), QString("uint16"));
 
-        interfaceInfo.events["SFD_TX_Down"]["NodeID"] = "uint16";
+        interfaceInfo.events["Collision"] << qMakePair(QString("NodeID"), QString("uint16"));
 
-        interfaceInfo.events["Collision"]["NodeID"] = "uint16";
+        interfaceInfo.events["CCATest"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                        << qMakePair(QString("State"), QString("uint16"));
 
-        interfaceInfo.events["CCATest"]["NodeID"] = "uint16";
-        interfaceInfo.events["CCATest"]["State"] = "uint8";
-
-        interfaceInfo.events["message_dropped"]["NodeID"] = "uint16";
+        interfaceInfo.events["message_dropped"] << qMakePair(QString("NodeID"), QString("uint16"));
     }
 
     virtual void setTXPower(int power) = 0;
