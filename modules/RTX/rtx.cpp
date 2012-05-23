@@ -73,7 +73,7 @@ void RTX::startTX(byteArray message)
         m_channel->send(m_parentNode, message);
 
         m_event->post(this, "SFD_TX_Up", timeTXEnd,
-                      QVariantList() << m_parentNode->ID());
+                      QVariantList() << m_parentNode->ID() << message << m_TXPower);
     }
 }
 
