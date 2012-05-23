@@ -149,6 +149,11 @@ void Simulator::registerNode(Node* node)
     }
 }
 
+bool argsSort(const QMap<QString,QString>  &s1 , const QMap<QString,QString> &s2)
+{
+    return s1["ID"].toInt() < s2["ID"].toInt();
+}
+
 Simulator::Simulator(QString projectFileName)
 {
     m_this = this;
@@ -157,6 +162,7 @@ Simulator::Simulator(QString projectFileName)
 
     // getting events <name, ID>
     QMap<QString, EventID> events;
+    QMap<QString, QList<QString > > eventArgTypes;
 
     // TODO: now we can count events
     
@@ -165,9 +171,13 @@ Simulator::Simulator(QString projectFileName)
         EventID eventID = params.eventInfo["ID"].toUInt();
         events[eventName] = eventID;
         m_events += eventName;
+        QList<EventArgument> arguments = params.arguments;
+        qSort(arguments.begin(), arguments.end(), argsSort);
+        foreach (EventArgument arg, arguments)
+            eventArgTypes[eventName] += arg["type"];
     }
 
-    Log::init(m_projectParams.simulatorParams.logFile, events);
+    Log::init(m_projectParams.simulatorParams.logFile, events, eventArgTypes);
 
     QDir trash(QDir::currentPath() + "/.trash");
     trash.mkdir(QDir::currentPath() + "/.trash");
@@ -188,6 +198,8 @@ Simulator::Simulator(QString projectFileName)
     foreach(QString pluginName, plugins) {
         QPluginLoader* loader = new QPluginLoader(QDir::currentPath() + "/modules/" + pluginName);
         QObject* plugin = loader->instance();
+        qDebug() << plugin << loader->errorString();
+        
         IModule* module = qobject_cast<IModule *>(plugin);
         
         qDebug() << module << module->interfaceInfo.type;

@@ -12,19 +12,21 @@
 #include <QFile>
 
 #include "event.h"
+#include "logDataTypes.h"
 
 class Log
 {
 public:
-    // TODO: remove second argument?
-    static void init(QString logFilePath, QMap<QString, EventID> events);
+    static void init(QString logFilePath,
+                     QMap<QString, EventID> events,
+                     QMap<QString, QList<QString> > eventArgTypes);
     static void uninit();
 
-    // TODO: return bool if event was successfully recorded
     static void write(Event* event);
     
 private:
     static QMap<QString, EventID> m_events;
+    static QMap<QString, QList<LogDataType> > m_eventArgTypes;
     static QFile* m_log;
     static QDataStream* m_logStream;
 
