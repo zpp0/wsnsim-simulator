@@ -238,7 +238,11 @@ Simulator::Simulator(QString projectFileName)
 
 ProjectParams Simulator::loadProject (QString projectFileName)
 {
-    QLibrary projectDataLib("./libprojectData");
+    QDir myDir(QDir::currentPath());
+    QStringList projectLib = myDir.entryList(QStringList() << "*projectData.so" << "*projectData.dll");
+
+    QLibrary projectDataLib(QDir::currentPath() + "/" + projectLib[0]);
+
     projectDataLib.load();
 
     if(!projectDataLib.isLoaded()) {
