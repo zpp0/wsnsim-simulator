@@ -4,6 +4,8 @@ TEMPLATE = app
 TARGET = simulator
 INCLUDEPATH += . ../../libs/projectData
 
+CONFIG += console
+
 # Input
 HEADERS += env.h event.h eventQueue.h log.h node.h simulator.h
 SOURCES += env.cpp \
