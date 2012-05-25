@@ -16,11 +16,10 @@ bool Scene::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     double y_size = params["ySize"].toDouble();
     int nodesNum = params["nodeNum"].toInt();
     VirtualTime nodePowerUpTimeRange = params["nodePowerUpTimeRange"].toULong();
-    bool isRandomEnabled = params["isRandomEnabled"].toInt();
 
     qDebug("Scene params gotten:");
-    qDebug("xsize: %f ysize: %f nodes: %i nodePowerUpTimeRange: %llu isRandomEnabled: %i",
-           x_size, y_size, nodesNum, nodePowerUpTimeRange, isRandomEnabled);
+    qDebug("xsize: %f ysize: %f nodes: %i nodePowerUpTimeRange: %llu",
+           x_size, y_size, nodesNum, nodePowerUpTimeRange);
 
     // размеры среды
     m_size[0] = x_size;

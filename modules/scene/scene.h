@@ -32,7 +32,6 @@ public:
         moduleInfo.params["ySize"] = "double";
         moduleInfo.params["nodeNum"] = "int";
         moduleInfo.params["nodePowerUpTimeRange"] = "ULong";
-        moduleInfo.params["isRandomEnabled"] = "int";
 
         moduleInfo.paramDescription["xSize"] = "Ширина сцены (double)"
         moduleInfo.paramDescription["ySize"] = "Высота сцены (double)"
