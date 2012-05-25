@@ -28,7 +28,7 @@ public:
     {
         moduleInfo.name = "NodePHY";
         moduleInfo.version = "0.1";
-        moduleInfo.description = "Программа инициализации узла. Узел отправляет широковещательные сообщения \"Hello\" с периодом \"sendMessagePeriod\"";
+        moduleInfo.description = "Программа инициализации узла.\nУзел отправляет широковещательные сообщения \"Hello\" с периодом \"sendMessagePeriod\"";
         moduleInfo.exportInterface = "INodePHY";
 
         moduleInfo.importInterfaces += "Irtx";
