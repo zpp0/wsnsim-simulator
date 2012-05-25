@@ -38,7 +38,7 @@ public:
 
         moduleInfo.params["sendMessagePeriod"] = "quint64";
 
-        moduleInfo.paramDescription["sendMessagePeriod"] = "Период отправки сообщения \"Hello\" в мкс";
+        moduleInfo.paramDescription["sendMessagePeriod"] = "Период отправки сообщения \"Hello\" в мкс (uint64)";
         
         moduleInfo.handledEvents += "nodePowerUp";
         moduleInfo.handledEvents += "timerInterrupt";
