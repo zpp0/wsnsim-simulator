@@ -23,7 +23,7 @@ class RTX : public QObject, public Irtx
 public:
     RTX()
     {
-        moduleInfo.name = "RTX ";
+        moduleInfo.name = "RTX";
         moduleInfo.version = "0.1";
         moduleInfo.description = "Приемник-передатчик стандарта IEEE802.15.4";
         moduleInfo.exportInterface = "Irtx";
