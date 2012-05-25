@@ -28,7 +28,7 @@ public:
     {
         moduleInfo.name = "NodePHY";
         moduleInfo.version = "0.1";
-        moduleInfo.description = "";
+        moduleInfo.description = "Программа инициализации узла. Узел отправляет широковещательные сообщения \"Hello\" с периодом \"sendMessagePeriod\"";
         moduleInfo.exportInterface = "INodePHY";
 
         moduleInfo.importInterfaces += "Irtx";
@@ -37,6 +37,8 @@ public:
         moduleInfo.importInterfaces += "INode";
 
         moduleInfo.params["sendMessagePeriod"] = "quint64";
+
+        moduleInfo.paramDescription["sendMessagePeriod"] = "Период отправки сообщения \"Hello\" в мкс";
         
         moduleInfo.handledEvents += "nodePowerUp";
         moduleInfo.handledEvents += "timerInterrupt";

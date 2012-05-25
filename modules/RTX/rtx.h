@@ -25,7 +25,7 @@ public:
     {
         moduleInfo.name = "RTX ";
         moduleInfo.version = "0.1";
-        moduleInfo.description = "";
+        moduleInfo.description = "Приемник-передатчик стандарта IEEE802.15.4";
         moduleInfo.exportInterface = "Irtx";
 
         moduleInfo.importInterfaces += "INode";
@@ -35,6 +35,10 @@ public:
         moduleInfo.params["RXSensivity"] = "int";
         moduleInfo.params["TXPower"] = "int";
         moduleInfo.params["CCAThreshold"] = "int";
+
+        moduleInfo.paramDescription["RXSensivity"] = "Чувствительность приемника в dBm (int)";
+        moduleInfo.paramDescription["TXPower"] = "Мощность передатчика в dBm (int)";
+        moduleInfo.paramDescription["CCAThreshold"] = "Пороговая мощность CCA в dBm (int)";
 
         moduleInfo.handledEvents += "newMessage";
         moduleInfo.handledEvents += "SFD_RX_Up";

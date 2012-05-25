@@ -28,7 +28,7 @@ public:
     {
         moduleInfo.name = "CSMA_CA";
         moduleInfo.version = "0.1";
-        moduleInfo.description = "";
+        moduleInfo.description = "Программа алгоритма CSMA-CA";
         moduleInfo.exportInterface = "ICSMA_CA";
 
         moduleInfo.importInterfaces += "Irtx";

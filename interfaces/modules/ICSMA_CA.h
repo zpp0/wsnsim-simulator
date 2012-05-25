@@ -29,6 +29,11 @@ public:
         interfaceInfo.events["CSMA_begin"] << qMakePair(QString("NodeID"), QString("uint16"));
         interfaceInfo.events["CSMA_success"] << qMakePair(QString("NodeID"), QString("uint16"));
         interfaceInfo.events["CSMA_fail"] << qMakePair(QString("NodeID"), QString("uint16"));
+
+        interfaceInfo.eventDescription["CSMA_begin"] = "Запущен алгоритм CSMA-CA";
+        interfaceInfo.eventDescription["CSMA_delay"] = "Задержка алгоритма CSMA-CA. Аргументы - NE, BE и время ожидания в мкс";
+        interfaceInfo.eventDescription["CSMA_success"] = "Успешное завершение алгоритма CSMA-CA";
+        interfaceInfo.eventDescription["CSMA_fail"] = "Безуспешное завершение алгоритма CSMA-CA";
     }
 
     virtual void sendMessage(byteArray message) = 0;

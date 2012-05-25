@@ -24,7 +24,7 @@ public:
     {
         moduleInfo.name = "Radio Channel";
         moduleInfo.version = "0.1";
-        moduleInfo.description = "";
+        moduleInfo.description = "Радиоканал в частотном диапазоне 2.4ГГц";
         moduleInfo.exportInterface = "IRadioChannel";
         moduleInfo.importInterfaces += "IScene";
         moduleInfo.importInterfaces += "Irtx";

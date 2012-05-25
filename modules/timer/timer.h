@@ -25,7 +25,7 @@ public:
     {
         moduleInfo.name = "Timer";
         moduleInfo.version = "0.1";
-        moduleInfo.description = "";
+        moduleInfo.description = "Модель точных часов";
         moduleInfo.exportInterface = "ITimer";
 
         moduleInfo.importInterfaces += "INode";

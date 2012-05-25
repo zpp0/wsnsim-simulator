@@ -38,6 +38,14 @@ public:
                                         << qMakePair(QString("State"), QString("uint16"));
 
         interfaceInfo.events["message_dropped"] << qMakePair(QString("NodeID"), QString("uint16"));
+
+        interfaceInfo.eventDescription["SFD_RX_Up"] = "Прерывание по линии SFD по началу приема сообщения";
+        interfaceInfo.eventDescription["SFD_RX_Down"] = "Прерывание по линии SFD по окончанию приема сообщения";
+        interfaceInfo.eventDescription["SFD_TX_Up"] = "Прерывание по линии SFD по началу передачи сообщения";
+        interfaceInfo.eventDescription["SFD_TX_Down"] = "Прерывание по линии SFD по окончанию передачи сообщения";
+        interfaceInfo.eventDescription["Collision"] = "При приеме сообщения произошла коллизия";
+        interfaceInfo.eventDescription["CCATest"] = "Проверка состояния канала";
+        interfaceInfo.eventDescription["message_dropped"] = "Узел прекратил прием сообщения. Либо произошла коллизия, либо пришло сообщение с большей мощностью";
     }
 
     virtual void setTXPower(int power) = 0;

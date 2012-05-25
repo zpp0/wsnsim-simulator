@@ -27,6 +27,9 @@ public:
         interfaceInfo.events["newMessage"] << qMakePair(QString("NodeID"), QString("uint16"))
                                            << qMakePair(QString("message"), QString("ByteArray"))
                                            << qMakePair(QString("RSSI"), QString("double"));
+
+        interfaceInfo.eventDescription["newMessage"] = "На радио приемник-передатчик узла начало приходить новое сообщение";
+        interfaceInfo.eventDescription["ChangeLink"] = "Изменение матрицы слышимости";
     }
 
     virtual void send(INode* node, byteArray message) = 0;

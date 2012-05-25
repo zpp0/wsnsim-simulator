@@ -21,7 +21,7 @@ public:
     {
         moduleInfo.name = "Scene";
         moduleInfo.version = "0.1";
-        moduleInfo.description = "";
+        moduleInfo.description = "Двухмерная сцена. Определяет положение узлов в пространстве";
         moduleInfo.exportInterface = "IScene";
 
         moduleInfo.importInterfaces += "INodesFactory";
@@ -33,6 +33,11 @@ public:
         moduleInfo.params["nodeNum"] = "int";
         moduleInfo.params["nodePowerUpTimeRange"] = "ULong";
         moduleInfo.params["isRandomEnabled"] = "int";
+
+        moduleInfo.paramDescription["xSize"] = "Ширина сцены (double)"
+        moduleInfo.paramDescription["ySize"] = "Высота сцены (double)"
+        moduleInfo.paramDescription["nodeNum"] = "Количество узлов в сцене (uint16)"
+        moduleInfo.paramDescription["nodePowerUpTimeRange"] = "Максимальное время включения узлов (uint64)"
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,

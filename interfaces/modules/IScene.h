@@ -24,6 +24,8 @@ public:
         interfaceInfo.events["nodePowerUp"] << qMakePair(QString("NodeID"), QString("uint16"))
                                             << qMakePair(QString("coordx"), QString("double"))
                                             << qMakePair(QString("coordy"), QString("double"));
+
+        interfaceInfo.eventDescription["nodePowerUp"] = "Узел включен. Аргументы - координаты узла";
     }
 
     virtual int dimension() = 0;

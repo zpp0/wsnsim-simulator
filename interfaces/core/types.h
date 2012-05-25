@@ -15,7 +15,6 @@ typedef quint64 VirtualTime;
 typedef quint16 NodeID;
 typedef quint8 EventID;
 typedef QByteArray byteArray;
-typedef void(*InterruptHandler)();
 
 struct ModuleInfo
 {
@@ -28,6 +27,7 @@ struct ModuleInfo
     QList<QString> importInterfaces;
     // name and types of input params
     QMap<QString, QString> params;
+    QMap<QString, QString> paramDescription;
     QList<QString> handledEvents;
 };
 
@@ -52,6 +52,7 @@ struct InterfaceInfo
     QList<QString> proirityEvents;
     // (eventName, groupName)
     QMap<QString, QString> eventGroups;
+    QMap<QString, QString> eventDescription;
 };
 
 #endif // TYPES_H
