@@ -1,6 +1,8 @@
 /**
  *
- * ISensor.h
+ * File: ISensor.h
+ * Description: Sensor interface
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 
@@ -14,11 +16,22 @@
 class ISensor : public IHardware
 {
 public:
+    ~ISensor() {}
+    ISensor()
+    {
+        interfaceInfo.name = "ISensor";
+
+        interfaceInfo.events["measuring_start"]
+            << qMakePair(QString("NodeID"), QString("uint16"))
+            << qMakePair(QString("measuringTime"), QString("uint64"));
+
+        interfaceInfo.events["measuring_get_result"]
+            << qMakePair(QString("NodeID"), QString("uint16"))
+            << qMakePair(QString("measureResult"), QString("double"));
+
+    }
 
     virtual double measure() = 0;
 };
-
-Q_DECLARE_INTERFACE(ISensor,
-                    "simulator.ISensor/0.1");
 
 #endif // IRTX_H
