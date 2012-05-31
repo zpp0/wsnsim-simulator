@@ -13,13 +13,13 @@
 
 #include "IHardware.h"
 
-class ISensor : public IHardware
+class IAsyncSensor : public IHardware
 {
 public:
-    ~ISensor() {}
-    ISensor()
+    ~IAsyncSensor() {}
+    IAsyncSensor()
     {
-        interfaceInfo.name = "ISensor";
+        interfaceInfo.name = "IAsyncSensor";
 
         interfaceInfo.events["measuring_start"]
             << qMakePair(QString("NodeID"), QString("uint16"));
@@ -31,7 +31,7 @@ public:
 
     }
 
-    virtual double measure() = 0;
+    virtual void measure() = 0;
 };
 
 #endif // IRTX_H
