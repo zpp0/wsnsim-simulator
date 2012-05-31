@@ -22,11 +22,11 @@ public:
         interfaceInfo.name = "ISensor";
 
         interfaceInfo.events["measuring_start"]
-            << qMakePair(QString("NodeID"), QString("uint16"))
-            << qMakePair(QString("measuringTime"), QString("uint64"));
+            << qMakePair(QString("NodeID"), QString("uint16"));
 
         interfaceInfo.events["measuring_get_result"]
             << qMakePair(QString("NodeID"), QString("uint16"))
+            << qMakePair(QString("sensorName"), QString("string"))
             << qMakePair(QString("measureResult"), QString("double"));
 
     }
