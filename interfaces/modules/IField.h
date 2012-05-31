@@ -16,10 +16,12 @@
 class IField : public IEnvironment
 {
 public:
+    IField()
+    {
+        interfaceInfo.name = "IField";
+    }
+
     virtual double measure(double* coord, VirtualTime time) = 0;
 };
-
-Q_DECLARE_INTERFACE(IField,
-                    "simulator.IField/0.1")
 
 #endif // IFIELD_H
