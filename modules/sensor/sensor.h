@@ -1,6 +1,8 @@
 /**
  *
- * sensor.h
+ * File: sensor.h
+ * Description: Sensor module
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 
@@ -12,42 +14,50 @@
 #include "ISensor.h"
 #include "IField.h"
 
-// FIXME: delete this
 #include "IScene.h"
+#include "INode.h"
+#include "IEvent.h"
+#include "IEnv.h"
 
-#include "node.h"
-
-class Sensor : public ISensor
+class Sensor : public QObject, public ISensor
 {
     Q_OBJECT
-	Q_INTERFACES(ISensor)
+	Q_INTERFACES(IModule)
 
 public:
-    virtual QString moduleName() const;
-	virtual QString moduleVersion() const;
-    virtual QString moduleDescription() const;
+    Sensor()
+    {
+        moduleInfo.name = "Sensor";
+        moduleInfo.version = "0.1";
+        moduleInfo.description = "Точный датчик измеряемой величины с не бесконечной скоростью измерения";
+        moduleInfo.exportInterface = "ISensor";
 
-	virtual bool moduleInit(QList<ModuleParam> params);
+        moduleInfo.importInterfaces += "INode";
+        moduleInfo.importInterfaces += "IScene";
+        moduleInfo.importInterfaces += "IField";
+        moduleInfo.importInterfaces += "IEvent";
+        moduleInfo.importInterfaces += "IEnv";
 
-    virtual QString deviceName() const;
-    virtual QList<InterruptHandler> interrupts();
+        moduleInfo.params["measuringTimeMu"] = "uint64";
+        moduleInfo.params["measuringTimeSigma"] = "uint64";
 
-    virtual QList<QString> moduleExportInterfaces() const;
-    virtual QList<QString> moduleImportInterfaces() const;
+        moduleInfo.paramDescription["measuringTimeMu"] = "Параметр Mu нормального распределения в мкс (uint64)";
+        moduleInfo.paramDescription["measuringTimeSigma"] = "Параметр Sigma нормального распределения (uint64)";
 
-    // FIXME: DELETEA!!!1
-    void setParentNode(Node* parentNode) { m_parentNode = parentNode; }
+    }
+
+    /* virtual */ bool moduleInit(ISimulator* isimulator,
+                                  QMap<QString, QString> params);
 
     virtual double measure();
 
 private:
-
     IField* m_field;
     IScene* m_scene;
-
-    Node* m_parentNode;
+    IEvent* m_event;
+    IEnv* m_env;
+    INode* m_parentNode;
 
 };
-// Q_EXPORT_PLUGIN(Sensor);
 
 #endif // SENSOR_H
