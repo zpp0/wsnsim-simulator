@@ -6,39 +6,27 @@
 
 #include "temperature.h"
 
-QString Temperature::moduleName() const
+bool Temperature::moduleInit(ISimulator* isimulator,
+                             QMap<QString, QString> params)
 {
-    return "Temperature";
-}
+    m_mu = params["temperatureMu"].toInt();
+    m_sigma = params["measuringTimeSigma"].toInt();
 
-QString Temperature::moduleVersion() const
-{
-    return "0.1";
-}
-
-QString Temperature::moduleDescription() const
-{
-    return "Модуль температуры";
-}
-
-bool Temperature::moduleInit(QList<ModuleParam> params)
-{
+    srand((long)this);
+    
     return true;
-}
-
-QList<QString> Temperature::moduleExportInterfaces() const
-{
-    QList<QString> tmp;
-    return tmp;
-}
-
-QList<QString> Temperature::moduleImportInterfaces() const
-{
-    QList<QString> interfaces;
-    return interfaces;
 }
 
 double Temperature::measure(double* coord, VirtualTime time)
 {
-    return 27;
+    double x = rand();
+    double y = rand();
+
+    double z = cos(2 * M_PI * x) * sqrt(-2 * log(y));
+        
+    return m_mu + m_sigma * z;
 }
+
+QT_BEGIN_NAMESPACE
+Q_EXPORT_PLUGIN2(temperature, Temperature);
+QT_END_NAMESPACE

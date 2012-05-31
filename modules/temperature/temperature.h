@@ -11,23 +11,36 @@
 
 #include "IField.h"
 
-class Temperature : public IField
+class Temperature : public QObject, public IField
 {
+    Q_OBJECT
+	Q_INTERFACES(IModule)
+
 public:
-    virtual QString moduleName() const;
-	virtual QString moduleVersion() const;
-    virtual QString moduleDescription() const;
+    Temperature()
+    {
+        moduleInfo.name = "Temperature";
+        moduleInfo.version = "0.1";
+        moduleInfo.description = "Температура среды";
+        moduleInfo.exportInterface = "IField";
 
-	virtual bool moduleInit(QList<ModuleParam> params);
+        moduleInfo.params["temperatureMu"] = "int32";
+        moduleInfo.params["temperatureSigma"] = "int32";
 
-    virtual QString deviceName() const;
-    virtual QList<InterruptHandler> interrupts();
+        moduleInfo.paramDescription["temperatureMu"] = "Параметр Mu нормального распределения в градусах (int32)";
+        moduleInfo.paramDescription["temperatureSigma"] = "Параметр Sigma нормального распределения в градусах (int32)";
+    }
 
-    virtual QList<QString> moduleExportInterfaces() const;
-    virtual QList<QString> moduleImportInterfaces() const;
+    /* virtual */ bool moduleInit(ISimulator* isimulator,
+                                  QMap<QString, QString> params);
+    
+    /* virtual */ double measure(double* coord, VirtualTime time);
 
-    virtual double measure(double* coord, VirtualTime time) = 0;
+    /* virtual */ void eventHandler(QString name, QVariantList params) {}
+    
+private:
+    int m_mu;
+    int m_sigma;
 };
-// Q_EXPORT_PLUGIN(Temperature);
 
 #endif // TEMPERATURE_H
