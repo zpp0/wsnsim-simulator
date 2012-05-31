@@ -39,6 +39,7 @@ public:
         moduleInfo.importInterfaces += "IField";
         moduleInfo.importInterfaces += "IEvent";
         moduleInfo.importInterfaces += "IEnv";
+        moduleInfo.importInterfaces += "INode";
 
         moduleInfo.params["measuringTimeMu"] = "uint64";
         moduleInfo.params["measuringTimeSigma"] = "uint64";
