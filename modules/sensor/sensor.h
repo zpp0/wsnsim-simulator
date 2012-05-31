@@ -11,7 +11,8 @@
 
 #include <QtCore>
 
-#include "ISensor.h"
+#include "IAsyncSensor.h"
+
 #include "IField.h"
 
 #include "IScene.h"
@@ -19,7 +20,7 @@
 #include "IEvent.h"
 #include "IEnv.h"
 
-class Sensor : public QObject, public ISensor
+class Sensor : public QObject, public IAsyncSensor
 {
     Q_OBJECT
 	Q_INTERFACES(IModule)
@@ -30,7 +31,8 @@ public:
         moduleInfo.name = "Sensor";
         moduleInfo.version = "0.1";
         moduleInfo.description = "Точный датчик измеряемой величины с не бесконечной скоростью измерения";
-        moduleInfo.exportInterface = "ISensor";
+
+        moduleInfo.exportInterface = "IAsyncSensor";
 
         moduleInfo.importInterfaces += "INode";
         moduleInfo.importInterfaces += "IScene";
@@ -44,12 +46,15 @@ public:
         moduleInfo.paramDescription["measuringTimeMu"] = "Параметр Mu нормального распределения в мкс (uint64)";
         moduleInfo.paramDescription["measuringTimeSigma"] = "Параметр Sigma нормального распределения (uint64)";
 
+        moduleInfo.handledEvents += "measuring_start";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
                                   QMap<QString, QString> params);
 
-    virtual double measure();
+    /* virtual */ void eventHandler(QString name, QVariantList params);
+    
+    /* virtual */ void measure();
 
 private:
     IField* m_field;
@@ -58,6 +63,10 @@ private:
     IEnv* m_env;
     INode* m_parentNode;
 
+    QString m_sensorName;
+    
+    quint64 m_mu;
+    quint64 m_sigma;
 };
 
 #endif // SENSOR_H

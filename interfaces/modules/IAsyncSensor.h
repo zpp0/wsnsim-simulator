@@ -13,11 +13,11 @@
 
 #include "IHardware.h"
 
-class ISensor : public IHardware
+class IAsyncSensor : public IHardware
 {
 public:
-    ~ISensor() {}
-    ISensor()
+    ~IAsyncSensor() {}
+    IAsyncSensor()
     {
         interfaceInfo.name = "IAsyncSensor";
 
