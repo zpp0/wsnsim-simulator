@@ -14,9 +14,7 @@
 #include "INodeInit.h"
 
 #include "INode.h"
-#include "Irtx.h"
 #include "ITimer.h"
-#include "ICSMA_CA.h"
 
 class NodePHY : public QObject, public INodePHY
 {
@@ -28,22 +26,18 @@ public:
     {
         moduleInfo.name = "NodePHY";
         moduleInfo.version = "0.1";
-        moduleInfo.description = "Программа инициализации узла.\nУзел отправляет широковещательные сообщения \"Hello\" с периодом \"sendMessagePeriod\"";
+        moduleInfo.description = "Программа инициализации узла";
         moduleInfo.exportInterface = "INodePHY";
 
-        moduleInfo.importInterfaces += "Irtx";
-        moduleInfo.importInterfaces += "ICSMA_CA";
         moduleInfo.importInterfaces += "ITimer";
         moduleInfo.importInterfaces += "INode";
 
-        moduleInfo.params["sendMessagePeriod"] = "quint64";
+        moduleInfo.params["wakeUpPeriod"] = "quint64";
 
-        moduleInfo.paramDescription["sendMessagePeriod"] = "Период отправки сообщения \"Hello\" в мкс (uint64)";
+        moduleInfo.paramDescription["wakeUpPeriod"] = "Период пробуждения узла в мкс (uint64)";
         
         moduleInfo.handledEvents += "nodePowerUp";
         moduleInfo.handledEvents += "timerInterrupt";
-        moduleInfo.handledEvents += "CSMA_success";
-        moduleInfo.handledEvents += "CSMA_fail";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
@@ -55,15 +49,10 @@ public:
 
 private:
 
-    VirtualTime m_sendMessagePeriod;
+    VirtualTime m_wakeUpPeriod;
 
-    void trySendMessage();
-    
     INode* m_parentNode;
-    
-    Irtx* m_rtx;
     ITimer* m_timer;
-    ICSMA_CA* m_csma;
 };
 
 #endif // NODEPHY_H
