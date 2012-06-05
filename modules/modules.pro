@@ -1,8 +1,11 @@
 TEMPLATE = subdirs
 
 SUBDIRS = CSMA_CA \
-          nodePHY \
+#          nodePHY \
           radioChannel \
           RTX \
           scene \
-          timer
+          timer \
+          sensor \
+          temperature \
+          ctp
