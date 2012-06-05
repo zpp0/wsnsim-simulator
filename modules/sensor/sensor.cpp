@@ -27,10 +27,10 @@ bool Sensor::moduleInit(ISimulator* isimulator,
 
 void Sensor::measure()
 {
-    double x = rand();
-    double y = rand();
+    double x = ((double)rand()) / ((double) RAND_MAX);
+    double y = ((double)rand()) / ((double) RAND_MAX);
 
-    double z = cos(2 * M_PI * x) * sqrt(2 * log(y));
+    double z = cos(2 * M_PI * x) * sqrt(-2 * log(y));
 
     qDebug() << "delay" << x << y << z;
 
