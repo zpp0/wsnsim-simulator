@@ -32,6 +32,8 @@ void CSMA_CA::sendMessage(byteArray message)
     m_event->post(this, "CSMA_begin", 0,
                   QVariantList() << m_parentNode->ID());
 
+    m_rtx->setPower(false);
+
     m_message = message;
 
     // сбрасываем переменные алгоритма CSMA-CA
@@ -65,6 +67,7 @@ void CSMA_CA::timerInterrupt()
 {
     if (m_rtx->CCA()) {
         m_rtx->startTX(m_message);
+        m_rtx->setPower(true);
         m_event->post(this, "CSMA_success", 0,
                       QVariantList() << m_parentNode->ID());
     }
@@ -82,9 +85,11 @@ void CSMA_CA::timerInterrupt()
             m_timer->start(wait, "CSMA-CA");
         }
 
-        else
+        else {
+            m_rtx->setPower(true);
             m_event->post(this, "CSMA_fail", 0,
                           QVariantList() << m_parentNode->ID());
+        }
     }
 }
 
