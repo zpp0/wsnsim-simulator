@@ -30,6 +30,8 @@ public:
         moduleInfo.importInterfaces += "Irtx";
         moduleInfo.importInterfaces += "IEvent";
         moduleInfo.handledEvents += "nodePowerUp";
+        moduleInfo.handledEvents += "Collision";
+        moduleInfo.handledEvents += "MessageReceived";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,

@@ -68,13 +68,15 @@ void radioChannel::nodesHearingUpdate(INode* node)
 
         // проверяем слышат ли друг друга узлы с адресами mac1 и mac2 на расстоянии d
         if ((hear(rssi_value, listener) == true)
-            && m_nodesLinks[node].indexOf(listener) == -1)
+            && m_nodesLinks[node].indexOf(listener) == -1) {
             changeLink(true, node, listener, rssi_value);
-
+            changeLink(true, listener, node, rssi_value);
+        }
         // если не слышат, но раньше слышали
         else if ((hear(rssi_value, listener) == false)
-                 && m_nodesLinks[node].indexOf(listener) != -1)
-            changeLink(false, node, listener, rssi_value);
+                 && m_nodesLinks[node].indexOf(listener) != -1) {
+            changeLink(false, listener, node, rssi_value);
+        }
     }
 }
 
@@ -108,6 +110,15 @@ void radioChannel::eventHandler(QString eventName, QVariantList params)
     if (eventName == "nodePowerUp")
         // FIXME: very ugly
         nodePowerUp_Event(params[0].toUInt(), params[1].toDouble(), params[2].toDouble());
+
+    if (eventName == "Collision"
+        || eventName == "MessageReceived") {
+
+        NodeID nodeID = params[0].toUInt();
+        INode* node = m_scene->node(nodeID);
+
+        m_nodesLocalChannel[node].clear();
+    }
 }
 
 void radioChannel::nodePowerUp_Event(NodeID nodeID, double coordx, double coordy)
