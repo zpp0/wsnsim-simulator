@@ -19,8 +19,8 @@ double Temperature::measure(double* coord, VirtualTime time)
 {
     srand((long)this + time + (long)coord);
 
-    double x = rand();
-    double y = rand();
+    double x = ((double)rand()) / ((double) RAND_MAX);
+    double y = ((double)rand()) / ((double) RAND_MAX);
 
     double z = cos(2 * M_PI * x) * sqrt(2 * log(y));
 
