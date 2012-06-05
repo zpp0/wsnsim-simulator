@@ -60,8 +60,12 @@ public:
     /* virtual */ void waitTXEnd();
     /* virtual */ bool CCA();
 
+    /* virtual */ quint64 getLongAddr();
+
     /* virtual */ int TXPower();
     /* virtual */ int RXSensivity() const;
+
+    /* virtual */ rtxState state();
 
     /* virtual */ void eventHandler(QString name, QVariantList params);
 
@@ -87,13 +91,7 @@ private:
 
     double m_currentRX_RSSI;
 
-    enum rtxState
-    {
-        rtxState_OFF,
-        rtxState_Free,
-        rtxState_RXON,
-        rtxState_TXON
-    };
+    quint64 m_longAddr;
 
     rtxState m_state;
 };
