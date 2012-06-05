@@ -19,7 +19,7 @@ bool Sensor::moduleInit(ISimulator* isimulator,
     m_sigma = params["measuringTimeSigma"].toULong();
 
     m_sensorName = "temperatureSensor";
-    
+
     srand((long)this);
 
     return true;
@@ -30,10 +30,12 @@ void Sensor::measure()
     double x = rand();
     double y = rand();
 
-    double z = cos(2 * M_PI * x) * sqrt(-2 * log(y));
+    double z = cos(2 * M_PI * x) * sqrt(2 * log(y));
+
+    qDebug() << "delay" << x << y << z;
 
     VirtualTime delay = m_mu + m_sigma * z;
-    
+
     m_event->post(this, "measuring_start", delay,
                   QVariantList() << m_parentNode->ID());
 }
@@ -44,6 +46,7 @@ void Sensor::eventHandler(QString name, QVariantList params)
         double value = m_field->measure(m_scene->coord(m_parentNode),
                                         m_env->globalTime());
 
+        qDebug() << "asd";
         m_event->post(this, "measuring_get_result", 0,
                       QVariantList() << m_parentNode->ID() << m_sensorName << value);
     }
