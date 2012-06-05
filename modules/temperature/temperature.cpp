@@ -9,22 +9,25 @@
 bool Temperature::moduleInit(ISimulator* isimulator,
                              QMap<QString, QString> params)
 {
-    m_mu = params["temperatureMu"].toInt();
-    m_sigma = params["measuringTimeSigma"].toInt();
+    m_mu = params["temperatureMu"].toDouble();
+    m_sigma = params["temperatureSigma"].toDouble();
 
-    srand((long)this);
-    
     return true;
 }
 
 double Temperature::measure(double* coord, VirtualTime time)
 {
+    srand((long)this + time + (long)coord);
+
     double x = rand();
     double y = rand();
 
-    double z = cos(2 * M_PI * x) * sqrt(-2 * log(y));
-        
-    return m_mu + m_sigma * z;
+    double z = cos(2 * M_PI * x) * sqrt(2 * log(y));
+
+    qDebug() << "random z" << z << m_mu + m_sigma * (z-6);
+
+    // FIXME: wtf? z = random + 6
+    return m_mu + m_sigma * (z-6);
 }
 
 QT_BEGIN_NAMESPACE

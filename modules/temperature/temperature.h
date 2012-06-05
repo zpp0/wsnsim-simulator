@@ -24,8 +24,8 @@ public:
         moduleInfo.description = "Температура среды";
         moduleInfo.exportInterface = "IField";
 
-        moduleInfo.params["temperatureMu"] = "int32";
-        moduleInfo.params["temperatureSigma"] = "int32";
+        moduleInfo.params["temperatureMu"] = "double";
+        moduleInfo.params["temperatureSigma"] = "double";
 
         moduleInfo.paramDescription["temperatureMu"] = "Параметр Mu нормального распределения в градусах (int32)";
         moduleInfo.paramDescription["temperatureSigma"] = "Параметр Sigma нормального распределения в градусах (int32)";
@@ -39,8 +39,8 @@ public:
     /* virtual */ void eventHandler(QString name, QVariantList params) {}
     
 private:
-    int m_mu;
-    int m_sigma;
+    double m_mu;
+    double m_sigma;
 };
 
 #endif // TEMPERATURE_H
