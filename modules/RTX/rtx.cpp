@@ -30,6 +30,12 @@ bool RTX::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     m_TXPower = TXPower;
     m_CCAThreshold = CCAThreshold;
 
+    qsrand((long)this);
+
+    m_longAddr = qrand();
+    m_longAddr = (m_longAddr << 32) + qrand();
+    qDebug() << "longAddr" << m_longAddr;
+
     return true;
 }
 
@@ -61,6 +67,11 @@ void RTX::startTX(byteArray message)
     if (m_state == rtxState_Free) {
         qDebug() << "in startTX node" << m_parentNode->ID();
 
+        message.prepend(message.size());
+        message.prepend(0x7A);
+        char preambula[] = "0000"; //{0, 0, 0, 0};
+        message.prepend(preambula);
+
         m_event->post(this, "SFD_TX_Up", 0,
                       QVariantList() << m_parentNode->ID() << message << m_TXPower);
 
@@ -72,13 +83,20 @@ void RTX::startTX(byteArray message)
 
         m_channel->send(m_parentNode, message);
 
-        m_event->post(this, "SFD_TX_Up", timeTXEnd,
-                      QVariantList() << m_parentNode->ID() << message << m_TXPower);
+        m_event->post(this, "SFD_TX_Down", timeTXEnd,
+                      QVariantList() << m_parentNode->ID());
     }
+    else
+        qDebug() << "not in startTX node" << m_parentNode->ID();
 }
 
 void RTX::startTX(byteArray message, void (*handler)())
 {
+    message.prepend(message.size());
+    message.prepend(0x7A);
+    char preambula[] = "0000"; //{0, 0, 0, 0};
+    message.prepend(preambula);
+
     m_event->post(this, "SFD_TX_Up", 0,
                   QVariantList() << m_parentNode->ID() << message << m_TXPower);
 
@@ -127,7 +145,8 @@ void RTX::eventHandler(QString name, QVariantList params)
     if (name == "SFD_RX_Up")
         SFD_RX_Up_Event(params[1].toByteArray(), params[2].toDouble());
     if (name == "SFD_RX_Down")
-        SFD_RX_Down_Event(params[1].toByteArray());
+        if (m_state == rtxState_RXON)
+            SFD_RX_Down_Event(params[1].toByteArray());
     if (name == "SFD_TX_Up")
         SFD_TX_Up_Event(params[1].toByteArray(), params[2].toDouble());
     if (name == "SFD_TX_Down")
@@ -162,17 +181,20 @@ void RTX::SFD_RX_Up_Event(byteArray message, double RSSI)
 {
     m_state = rtxState_RXON;
     m_currentRX_RSSI = RSSI;
+
     m_event->post(this, "SFD_RX_Down", message.length() * 32,
                   QVariantList() << m_parentNode->ID() << message);
 }
 
 void RTX::SFD_RX_Down_Event(byteArray message)
 {
+    m_state = rtxState_Free;
+    QByteArray new_message = message.mid(6);
     // FIXME: ugly code
     // TODO: IEvent->post can return some value which can help to delete event from queue
-    if (m_state == rtxState_RXON)
-        m_event->post(this, "MessageReceived", 0,
-                      QVariantList() << m_parentNode->ID() << message);
+    m_event->post(this, "MessageReceived", 0,
+                  QVariantList() << m_parentNode->ID() << new_message);
+
 }
 
 void RTX::SFD_TX_Up_Event(byteArray message, double TXPower)
@@ -183,6 +205,18 @@ void RTX::SFD_TX_Up_Event(byteArray message, double TXPower)
 void RTX::SFD_TX_Down_Event()
 {
     m_state = rtxState_Free;
+    m_event->post(this, "MessageSended", 0,
+                  QVariantList() << m_parentNode->ID());
+}
+
+quint64 RTX::getLongAddr()
+{
+    return m_longAddr;
+}
+
+rtxState RTX::state()
+{
+    return m_state;
 }
 
 QT_BEGIN_NAMESPACE
