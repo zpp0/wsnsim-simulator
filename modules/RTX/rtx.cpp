@@ -205,7 +205,7 @@ void RTX::SFD_TX_Up_Event(byteArray message, double TXPower)
 void RTX::SFD_TX_Down_Event()
 {
     m_state = rtxState_Free;
-    m_event->post(this, "MessageSended", 0,
+    m_event->post(this, "MessageSent", 0,
                   QVariantList() << m_parentNode->ID());
 }
 

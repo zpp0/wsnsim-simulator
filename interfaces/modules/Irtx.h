@@ -50,7 +50,7 @@ public:
         interfaceInfo.events["MessageReceived"] << qMakePair(QString("NodeID"), QString("uint16"))
                                                 << qMakePair(QString("message"), QString("ByteArray"));
 
-        interfaceInfo.events["MessageSended"] << qMakePair(QString("NodeID"), QString("uint16"));
+        interfaceInfo.events["MessageSent"] << qMakePair(QString("NodeID"), QString("uint16"));
 
         interfaceInfo.eventDescription["SFD_RX_Up"] = "Прерывание по линии SFD по началу приема сообщения";
         interfaceInfo.eventDescription["SFD_RX_Down"] = "Прерывание по линии SFD по окончанию приема сообщения";

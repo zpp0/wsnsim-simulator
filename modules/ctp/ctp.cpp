@@ -63,8 +63,8 @@ void CTP::eventHandler(QString name, QVariantList params)
         recognizeMessage(params[1].toByteArray());
     }
 
-    if (name == "MessageSended") {
-        qDebug() << "MessageSended" << m_needSendAck;
+    if (name == "MessageSent") {
+        qDebug() << "MessageSent" << m_needSendAck;
         if (m_parentNode->ID() != 0) {
             if (m_needSendAck == true) {
                 m_needSendAck = false;
@@ -105,6 +105,9 @@ void CTP::recognizeMessage(byteArray message)
         if (m_seqNums.contains(seqNum))
             return;
 
+        m_event->post(this, "measureRequestReceived", 0,
+                      QVariantList() << m_parentNode->ID() << sender << seqNum);
+
         m_seqNum = seqNum;
         qDebug() << "node" << QString::number(m_parentNode->ID()) << "set seqnum as" << QString::number(m_seqNum);
         m_seqNums += seqNum;
@@ -112,9 +115,6 @@ void CTP::recognizeMessage(byteArray message)
             m_seqNums.pop_front();
 
         m_parent = sender;
-
-        m_event->post(this, "measureRequestReceived", 0,
-                      QVariantList() << m_parentNode->ID() << sender << seqNum);
 
         sendMeasureReq(seqNum);
 
@@ -138,7 +138,7 @@ void CTP::recognizeMessage(byteArray message)
             if (m_parentNode->ID() != 0)
                 sendMeasureAck(value, sender, m_parent, seqNum);
             else
-                m_event->post(this, "measureSendUART", 0,
+                m_event->post(this, "measureSentUART", 0,
                               QVariantList() << m_parentNode->ID() << sender << seqNum << value);
         }
 
@@ -169,7 +169,7 @@ void CTP::sendMeasureReq(quint8 seqNum)
 
     m_csma->sendMessage(message);
 
-    m_event->post(this, "measureRequestSended", 0,
+    m_event->post(this, "measureRequestSent", 0,
                       QVariantList() << m_parentNode->ID() << m_longAddr << seqNum);
 }
 
@@ -193,7 +193,7 @@ void CTP::sendMeasureAck(double measuringValue, quint64 sender, quint64 receiver
 
     m_csma->sendMessage(message);
 
-    m_event->post(this, "measureAckSended", 0,
+    m_event->post(this, "measureAckSent", 0,
                   QVariantList() << m_parentNode->ID() << receiver << sender << seqNum << measuringValue);
 }
 

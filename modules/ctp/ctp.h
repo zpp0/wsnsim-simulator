@@ -46,7 +46,7 @@ public:
         moduleInfo.importInterfaces += "IEvent";
 
         moduleInfo.handledEvents += "CSMA_fail";
-        moduleInfo.handledEvents += "MessageSended";
+        moduleInfo.handledEvents += "MessageSent";
         moduleInfo.handledEvents += "MessageReceived";
         moduleInfo.handledEvents += "nodePowerUp";
         moduleInfo.handledEvents += "timerInterrupt";

@@ -21,7 +21,7 @@ public:
     {
         interfaceInfo.name = "ICTP";
 
-        interfaceInfo.events["measureRequestSended"]
+        interfaceInfo.events["measureRequestSent"]
             << qMakePair(QString("NodeID"), QString("uint16"))
             << qMakePair(QString("sender"), QString("uint64"))
             << qMakePair(QString("seqNum"), QString("uint16"));
@@ -31,7 +31,7 @@ public:
             << qMakePair(QString("sender"), QString("uint64"))
             << qMakePair(QString("seqNum"), QString("uint16"));
 
-        interfaceInfo.events["measureAckSended"]
+        interfaceInfo.events["measureAckSent"]
             << qMakePair(QString("NodeID"), QString("uint16"))
             << qMakePair(QString("listener"), QString("uint64"))
             << qMakePair(QString("sender"), QString("uint64"))
@@ -44,7 +44,7 @@ public:
             << qMakePair(QString("seqNum"), QString("uint16"))
             << qMakePair(QString("value"), QString("double"));
 
-        interfaceInfo.events["measureSendUART"]
+        interfaceInfo.events["measureSentUART"]
             << qMakePair(QString("NodeID"), QString("uint16"))
             << qMakePair(QString("sender"), QString("uint64"))
             << qMakePair(QString("seqNum"), QString("uint16"))
