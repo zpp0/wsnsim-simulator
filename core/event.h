@@ -19,7 +19,7 @@ struct Event
     // TODO: move to core
     // bool priority;
     // TODO: move to core
-    // bool recordable;
+    bool recordable;
     VirtualTime time;
     // WARNING: in params can be written anything
     QVariantList params;

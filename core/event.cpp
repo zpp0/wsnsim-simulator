@@ -26,6 +26,10 @@ void EventFactory::post(IModule* author, QString name, VirtualTime time, QVarian
     event->name = name;
     event->author = author;
     event->time = Env::time + time;
+    if (time == 0)
+        event->recordable = false;
+    else
+        event->recordable = true;
     event->params = params;
 
     Simulator::postEvent(author, event);

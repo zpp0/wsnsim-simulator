@@ -27,6 +27,9 @@ QList<QString> Simulator::m_nodesLoaders;
 QMap<IModule*, Node*> Simulator::m_nodesModules;
 QList<Node*> Simulator::m_nodes;
 QMap<QString, QList<IModule*> > Simulator::m_eventHandlers;
+
+QList<QString> Simulator::m_loggableEvents;
+
 // FIXME: delete this
 ISimulator* Simulator::m_this;
 QMap<QString, quint64> Simulator::m_eventCount;
@@ -75,6 +78,9 @@ void Simulator::postEvent(IModule* author, Event* event)
         // TODO: notify queue about it
     }
 
+    if (event->recordable == false)
+        if (m_loggableEvents.contains(event->name))
+            Log::write(event);
 
     // TODO: add author argument?
     // TODO: add priority argument
@@ -318,8 +324,9 @@ void Simulator::eval()
             // TODO: generate priority not loggable event timeChanged()
         }
 
-        if (m_loggableEvents.contains(nextEvent->name))
-            Log::write(nextEvent);
+        if (nextEvent->recordable == true)
+            if (m_loggableEvents.contains(nextEvent->name))
+                Log::write(nextEvent);
 
         foreach (IModule* handler, m_eventHandlers[nextEvent->name]) {
             if (!m_nodesModules.contains(handler))

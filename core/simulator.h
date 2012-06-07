@@ -66,7 +66,7 @@ private:
     
     // Loggable events list
     // events are contained in this list can be written to log
-    QList<QString> m_loggableEvents;
+    static QList<QString> m_loggableEvents;
 
     // events counts
     // <eventName, count>
