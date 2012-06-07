@@ -23,30 +23,30 @@ public:
 
         interfaceInfo.events["measureRequestSent"]
             << qMakePair(QString("NodeID"), QString("uint16"))
-            << qMakePair(QString("sender"), QString("uint64"))
+            << qMakePair(QString("senderMACAddr"), QString("uint64"))
             << qMakePair(QString("seqNum"), QString("uint16"));
 
         interfaceInfo.events["measureRequestReceived"]
             << qMakePair(QString("NodeID"), QString("uint16"))
-            << qMakePair(QString("sender"), QString("uint64"))
+            << qMakePair(QString("senderMACAddr"), QString("uint64"))
             << qMakePair(QString("seqNum"), QString("uint16"));
 
         interfaceInfo.events["measureAckSent"]
             << qMakePair(QString("NodeID"), QString("uint16"))
-            << qMakePair(QString("listener"), QString("uint64"))
-            << qMakePair(QString("sender"), QString("uint64"))
+            << qMakePair(QString("listenerMACAddr"), QString("uint64"))
+            << qMakePair(QString("senderMACAddr"), QString("uint64"))
             << qMakePair(QString("seqNum"), QString("uint16"))
             << qMakePair(QString("value"), QString("double"));
 
         interfaceInfo.events["measureAckReceived"]
             << qMakePair(QString("NodeID"), QString("uint16"))
-            << qMakePair(QString("sender"), QString("uint64"))
+            << qMakePair(QString("senderMACAddr"), QString("uint64"))
             << qMakePair(QString("seqNum"), QString("uint16"))
             << qMakePair(QString("value"), QString("double"));
 
         interfaceInfo.events["measureSentUART"]
             << qMakePair(QString("NodeID"), QString("uint16"))
-            << qMakePair(QString("sender"), QString("uint64"))
+            << qMakePair(QString("senderMACAddr"), QString("uint64"))
             << qMakePair(QString("seqNum"), QString("uint16"))
             << qMakePair(QString("value"), QString("double"));
 
