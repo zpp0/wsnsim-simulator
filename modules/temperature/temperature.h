@@ -27,8 +27,8 @@ public:
         moduleInfo.params["temperatureMu"] = "double";
         moduleInfo.params["temperatureSigma"] = "double";
 
-        moduleInfo.paramDescription["temperatureMu"] = "Параметр Mu нормального распределения в градусах (int32)";
-        moduleInfo.paramDescription["temperatureSigma"] = "Параметр Sigma нормального распределения в градусах (int32)";
+        moduleInfo.paramDescription["temperatureMu"] = "Случайная температура. Параметр Mu нормального распределения в градусах (int32)";
+        moduleInfo.paramDescription["temperatureSigma"] = "Случайная температура. Параметр Sigma нормального распределения в градусах (int32)";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,

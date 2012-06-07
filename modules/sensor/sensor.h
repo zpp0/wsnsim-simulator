@@ -30,7 +30,7 @@ public:
     {
         moduleInfo.name = "Sensor";
         moduleInfo.version = "0.1";
-        moduleInfo.description = "Точный датчик измеряемой величины с не бесконечной скоростью измерения";
+        moduleInfo.description = "Точный датчик измеряемой величины с конечной скоростью измерения";
 
         moduleInfo.exportInterface = "IAsyncSensor";
 
@@ -44,8 +44,8 @@ public:
         moduleInfo.params["measuringTimeMu"] = "uint64";
         moduleInfo.params["measuringTimeSigma"] = "uint64";
 
-        moduleInfo.paramDescription["measuringTimeMu"] = "Параметр Mu нормального распределения в мкс (uint64)";
-        moduleInfo.paramDescription["measuringTimeSigma"] = "Параметр Sigma нормального распределения (uint64)";
+        moduleInfo.paramDescription["measuringTimeMu"] = "Время проведения измерения. Параметр Mu нормального распределения в мкс (uint64)";
+        moduleInfo.paramDescription["measuringTimeSigma"] = "Время проведения измерения. Параметр Sigma нормального распределения (uint64)";
 
         moduleInfo.handledEvents += "measuring_start";
     }

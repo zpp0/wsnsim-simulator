@@ -26,7 +26,7 @@ bool CTP::moduleInit(ISimulator* isimulator,
     m_event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
                     qDebug() << m_event;
 
-    m_wakeUpPeriod = params["wakeUpPeriod"].toULong();
+    m_wakeUpPeriod = params["messageSendingPeriod"].toULong();
 
     m_seqNum = 0;
 
@@ -38,9 +38,9 @@ bool CTP::moduleInit(ISimulator* isimulator,
 void CTP::eventHandler(QString name, QVariantList params)
 {
     if (name == "timerInterrupt")
-        if (params[1].toString() == "wakeUp") {
+        if (params[1].toString() == "messageSending") {
             sendMeasureReq(++m_seqNum);
-            m_timer->start(m_wakeUpPeriod, "wakeUp");
+            m_timer->start(m_wakeUpPeriod, "messageSending");
         }
 
     if (name == "measuring_get_result") {
@@ -55,7 +55,7 @@ void CTP::eventHandler(QString name, QVariantList params)
     if (name == "nodePowerUp") {
         m_longAddr = m_rtx->getLongAddr();
         if (m_parentNode->ID() == 0)
-            m_timer->start(m_wakeUpPeriod, "wakeUp");
+            m_timer->start(m_wakeUpPeriod, "messageSending");
     }
 
     if (name == "MessageReceived") {

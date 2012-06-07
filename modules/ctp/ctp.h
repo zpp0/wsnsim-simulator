@@ -34,9 +34,9 @@ public:
 
         moduleInfo.exportInterface = "ICTP";
 
-        moduleInfo.params["wakeUpPeriod"] = "quint64";
+        moduleInfo.params["messageSendingPeriod"] = "quint64";
 
-        moduleInfo.paramDescription["wakeUpPeriod"] = "Период пробуждения узла в мкс (uint64)";
+        moduleInfo.paramDescription["messageSendingPeriod"] = "Период отправки сообщений в мкс (uint64)";
 
         moduleInfo.importInterfaces += "INode";
         moduleInfo.importInterfaces += "ITimer";

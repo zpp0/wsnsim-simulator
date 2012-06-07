@@ -33,10 +33,10 @@ public:
         moduleInfo.params["nodeNum"] = "int";
         moduleInfo.params["nodePowerUpTimeRange"] = "ULong";
 
-        moduleInfo.paramDescription["xSize"] = "Ширина сцены (double)";
-        moduleInfo.paramDescription["ySize"] = "Высота сцены (double)";
+        moduleInfo.paramDescription["xSize"] = "Ширина сцены в м (double)";
+        moduleInfo.paramDescription["ySize"] = "Высота сцены в м (double)";
         moduleInfo.paramDescription["nodeNum"] = "Количество узлов в сцене (uint16)";
-        moduleInfo.paramDescription["nodePowerUpTimeRange"] = "Максимальное время включения узлов (uint64)";
+        moduleInfo.paramDescription["nodePowerUpTimeRange"] = "Максимальное время включения узлов (равномерное распределение) в мкс (uint64)";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
