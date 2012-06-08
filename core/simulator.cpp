@@ -299,10 +299,9 @@ void Simulator::eval()
         if (nextEvent->time >= m_maxGlobalTime) {
             if (completionPersent < 100) {
                 completionPersent = 100;
-                std::cout << "\r" << std::unitbuf << completionPersent << "%";
+                std::cout << "\r" << completionPersent << "%" << std::unitbuf;
             }
             delete nextEvent;
-
 
             // int count = 1;
             // while (Env::queue.pop() != NULL)
@@ -350,7 +349,7 @@ void Simulator::eval()
 
         if (completionPersent != currentPercent) {
             completionPersent = currentPercent;
-            std::cout << "\r" << std::unitbuf << completionPersent << "%";
+            std::cout << "\r" << completionPersent << "%" << std::unitbuf;
         }
         
         delete nextEvent;
