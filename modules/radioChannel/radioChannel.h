@@ -32,6 +32,7 @@ public:
         moduleInfo.handledEvents += "nodePowerUp";
         moduleInfo.handledEvents += "Collision";
         moduleInfo.handledEvents += "MessageReceived";
+        moduleInfo.handledEvents += "message_dropped";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,

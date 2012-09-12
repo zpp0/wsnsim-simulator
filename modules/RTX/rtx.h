@@ -94,6 +94,8 @@ private:
     quint64 m_longAddr;
 
     rtxState m_state;
+
+    bool m_uglycrap;
 };
 
 #endif // RTX_H

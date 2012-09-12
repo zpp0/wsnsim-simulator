@@ -118,7 +118,7 @@ bool RTX::CCA()
     // bool state = m_channel->aroundPower(m_parentNode) < m_CCAThreshold;
     bool state = m_channel->aroundPower(m_parentNode) == 1;
 
-    qDebug() << "in CCA test" << state;
+    qDebug() << "in CCA test" << state << "on node" << m_parentNode->ID();
 
     m_event->post(this, "CCATest", 0,
                   QVariantList() << m_parentNode->ID() << state);
@@ -148,53 +148,80 @@ void RTX::eventHandler(QString name, QVariantList params)
         if (m_state == rtxState_RXON)
             SFD_RX_Down_Event(params[1].toByteArray());
     if (name == "SFD_TX_Up")
-        SFD_TX_Up_Event(params[1].toByteArray(), params[2].toDouble());
+        if (m_state == rtxState_Free)
+            SFD_TX_Up_Event(params[1].toByteArray(), params[2].toDouble());
     if (name == "SFD_TX_Down")
-        SFD_TX_Down_Event();
+        if (m_state == rtxState_TXON)
+            SFD_TX_Down_Event();
 }
 
 void RTX::newMessageEvent(byteArray message, double RSSI)
 {
-    if (m_state == rtxState_Free)
+    if (m_state == rtxState_Free) {
         m_event->post(this, "SFD_RX_Up", 0,
                       QVariantList() << m_parentNode->ID() << message << RSSI);
+        qDebug() << "120912" << "node" << m_parentNode->ID() << "get new message";
+    }
 
-    else if ((m_state == rtxState_RXON) && (abs(RSSI - m_currentRX_RSSI) < 0.01)) {
-        m_event->post(this, "message_dropped", 0,
-                      QVariantList() << m_parentNode->ID());
+
+    else if (m_state == rtxState_RXON) {
         m_state = rtxState_Free;
         m_currentRX_RSSI = 0;
         m_event->post(this, "Collision", 0,
                       QVariantList() << m_parentNode->ID());
+        qDebug() << "120912" << "collision on node" << m_parentNode->ID();
     }
+        
+    
+    // else if ((m_state == rtxState_RXON) && (abs(RSSI - m_currentRX_RSSI) < 0.01)) {
+    //     m_event->post(this, "message_dropped", 0,
+    //                   QVariantList() << m_parentNode->ID() << message);
+    //     m_state = rtxState_Free;
+    //     m_currentRX_RSSI = 0;
+    //     m_event->post(this, "Collision", 0,
+    //                   QVariantList() << m_parentNode->ID());
+    //     qDebug() << "120912" << "collision on node" << m_parentNode->ID();
+    // }
 
-    else if ((m_state == rtxState_RXON) && (RSSI > m_currentRX_RSSI)) {
+    // else if ((m_state == rtxState_RXON) && (RSSI > m_currentRX_RSSI)) {
+    //     m_event->post(this, "message_dropped", 0,
+    //                   QVariantList() << m_parentNode->ID() << message);
+    //     m_state = rtxState_Free;
+    //     m_event->post(this, "SFD_RX_Up", 0,
+    //                   QVariantList() << m_parentNode->ID() << message << RSSI);
+    //     qDebug() << "120912" << "node" << m_parentNode->ID() << "start to receiving new message";
+    // }
+    else {
         m_event->post(this, "message_dropped", 0,
-                      QVariantList() << m_parentNode->ID());
-        m_state = rtxState_Free;
-        m_event->post(this, "SFD_RX_Up", 0,
-                      QVariantList() << m_parentNode->ID() << message << RSSI);
+                      QVariantList() << m_parentNode->ID() << message);
     }
+    
 }
 
 void RTX::SFD_RX_Up_Event(byteArray message, double RSSI)
 {
-    m_state = rtxState_RXON;
-    m_currentRX_RSSI = RSSI;
+    if (m_state == rtxState_Free) {
+        
+        m_state = rtxState_RXON;
+        m_currentRX_RSSI = RSSI;
 
-    m_event->post(this, "SFD_RX_Down", message.length() * 32,
-                  QVariantList() << m_parentNode->ID() << message);
+        m_event->post(this, "SFD_RX_Down", message.length() * 32,
+                      QVariantList() << m_parentNode->ID() << message);
+    }
+    
 }
 
 void RTX::SFD_RX_Down_Event(byteArray message)
 {
-    m_state = rtxState_Free;
-    QByteArray new_message = message.mid(6);
-    // FIXME: ugly code
-    // TODO: IEvent->post can return some value which can help to delete event from queue
-    m_event->post(this, "MessageReceived", 0,
-                  QVariantList() << m_parentNode->ID() << new_message);
-
+    if (m_state == rtxState_RXON) {
+        m_state = rtxState_Free;
+        QByteArray new_message = message.mid(6);
+        // FIXME: ugly code
+        // TODO: IEvent->post can return some value which can help to delete event from queue
+        m_event->post(this, "MessageReceived", 0,
+                      QVariantList() << m_parentNode->ID() << new_message);
+        qDebug() << "120912" << "node" << m_parentNode->ID() << "receive new message";
+    }
 }
 
 void RTX::SFD_TX_Up_Event(byteArray message, double TXPower)

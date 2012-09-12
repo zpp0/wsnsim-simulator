@@ -45,7 +45,8 @@ public:
         interfaceInfo.events["CCATest"] << qMakePair(QString("NodeID"), QString("uint16"))
                                         << qMakePair(QString("State"), QString("uint16"));
 
-        interfaceInfo.events["message_dropped"] << qMakePair(QString("NodeID"), QString("uint16"));
+        interfaceInfo.events["message_dropped"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                                << qMakePair(QString("message"), QString("ByteArray"));
 
         interfaceInfo.events["MessageReceived"] << qMakePair(QString("NodeID"), QString("uint16"))
                                                 << qMakePair(QString("message"), QString("ByteArray"));
