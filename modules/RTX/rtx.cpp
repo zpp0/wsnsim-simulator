@@ -17,10 +17,12 @@ bool RTX::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     int RXSensivity;
     int TXPower;
     int CCAThreshold;
+    bool useIDasMACAddr;
 
     RXSensivity = params["RXSensivity"].toInt();
     TXPower = params["TXPower"].toInt();
     CCAThreshold = params["CCAThreshold"].toInt();
+    useIDasMACAddr = params["Use node ID as longAddr"].toInt();
 
     qDebug("RTX params gotten:");
     qDebug("RXSensivity: %i TXPower: %i CCAThreshold: %i",
@@ -30,10 +32,15 @@ bool RTX::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     m_TXPower = TXPower;
     m_CCAThreshold = CCAThreshold;
 
-    qsrand((long)this);
+    if (useIDasMACAddr)
+        m_longAddr = m_parentNode->ID();
 
-    m_longAddr = qrand();
-    m_longAddr = (m_longAddr << 32) + qrand();
+    else {
+        qsrand((long)this);
+
+        m_longAddr = qrand();
+        m_longAddr = (m_longAddr << 32) + qrand();
+    }
     qDebug() << "longAddr" << m_longAddr;
 
     return true;

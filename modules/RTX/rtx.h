@@ -35,10 +35,12 @@ public:
         moduleInfo.params["RXSensivity"] = "int";
         moduleInfo.params["TXPower"] = "int";
         moduleInfo.params["CCAThreshold"] = "int";
+        moduleInfo.params["Use node ID as longAddr"] = "bool";
 
         moduleInfo.paramDescription["RXSensivity"] = "Чувствительность приемника в dBm (int)";
         moduleInfo.paramDescription["TXPower"] = "Мощность передатчика в dBm (int)";
         moduleInfo.paramDescription["CCAThreshold"] = "Пороговая мощность CCA в dBm (int)";
+        moduleInfo.paramDescription["Use node ID as longAddr"] = "Использовать ID узла в качестве его MAC адреса (bool)";
 
         moduleInfo.handledEvents += "newMessage";
         moduleInfo.handledEvents += "SFD_RX_Up";
