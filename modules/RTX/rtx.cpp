@@ -68,9 +68,9 @@ void RTX::startTX(byteArray message)
         qDebug() << "in startTX node" << m_parentNode->ID();
 
         message.prepend(message.size());
-        message.prepend(0x7A);
-        char preambula[] = "0000"; //{0, 0, 0, 0};
-        message.prepend(preambula);
+        // message.prepend(0x7A);
+        // char preambula[] = "0000"; //{0, 0, 0, 0};
+        // message.prepend(preambula);
 
         m_event->post(this, "SFD_TX_Up", 0,
                       QVariantList() << m_parentNode->ID() << message << m_TXPower);
@@ -78,7 +78,7 @@ void RTX::startTX(byteArray message)
         m_state = rtxState_TXON;
         qDebug() << "radio state set TXON";
 
-        timeTXEnd = message.size() * 32;
+        timeTXEnd = (message.size() + 5) * 32;
         // qDebug() << "timeEnd set";
 
         m_channel->send(m_parentNode, message);
@@ -92,10 +92,11 @@ void RTX::startTX(byteArray message)
 
 void RTX::startTX(byteArray message, void (*handler)())
 {
-    message.prepend(message.size());
-    message.prepend(0x7A);
-    char preambula[] = "0000"; //{0, 0, 0, 0};
-    message.prepend(preambula);
+
+    // message.prepend(message.size());
+    // message.prepend(0x7A);
+    // char preambula[] = "0000"; //{0, 0, 0, 0};
+    // message.prepend(preambula);
 
     m_event->post(this, "SFD_TX_Up", 0,
                   QVariantList() << m_parentNode->ID() << message << m_TXPower);
