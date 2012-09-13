@@ -53,9 +53,15 @@ void RTX::setPower(bool on)
 {
     if (on && m_state == rtxState_OFF)
         m_state = rtxState_Free;
-    // else if (!on && m_state == rtxState_RXON)
-    else if (!on)
+    else if (!on) {
+        if (m_state == rtxState_RXON)
+            m_event->post(this, "message_dropped", 0,
+                          QVariantList() << m_parentNode->ID() << QByteArray());
+        if (m_state == rtxState_TXON)
+            // TODO: drop messages from all listeners
+            ;
         m_state = rtxState_OFF;
+    }
 }
 
 void RTX::setCCAThreshold(int threshold)
