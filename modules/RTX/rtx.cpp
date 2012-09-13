@@ -143,7 +143,8 @@ void RTX::eventHandler(QString name, QVariantList params)
         // FIXME: static type checking
         newMessageEvent(params[1].toByteArray(), params[2].toDouble());
     if (name == "SFD_RX_Up")
-        SFD_RX_Up_Event(params[1].toByteArray(), params[2].toDouble());
+        if (m_state != rtxState_TXON)
+            SFD_RX_Up_Event(params[1].toByteArray(), params[2].toDouble());
     if (name == "SFD_RX_Down")
         if (m_state == rtxState_RXON)
             SFD_RX_Down_Event(params[1].toByteArray());

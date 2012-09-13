@@ -27,12 +27,16 @@ void radioChannel::send(INode* sender, byteArray message)
 
         qDebug() << "add to local node channel" << listener->ID();
 
-        m_nodesLocalChannel[listener] += message;
+        Irtx* rtx = (Irtx*)m_simulator->getNodeInterface(this, listener, "Irtx");
 
-        double rssi_value = rssi(sender, listener);
+        if (rtx->state() != rtxState_TXON) {
+            m_nodesLocalChannel[listener] += message;
 
-        m_event->post(this, "newMessage", 0,
-                      QVariantList() << listener->ID() << message << rssi_value);
+            double rssi_value = rssi(sender, listener);
+
+            m_event->post(this, "newMessage", 0,
+                          QVariantList() << listener->ID() << message << rssi_value);
+        }
     }
 }
 
