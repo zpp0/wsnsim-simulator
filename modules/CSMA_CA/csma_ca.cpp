@@ -29,10 +29,10 @@ bool CSMA_CA::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
 
 void CSMA_CA::sendMessage(byteArray message)
 {
+    m_rtx->setPower(false);
+
     m_event->post(this, "CSMA_begin", 0,
                   QVariantList() << m_parentNode->ID());
-
-    m_rtx->setPower(false);
 
     m_message = message;
 
@@ -69,8 +69,8 @@ void CSMA_CA::timerInterrupt()
         m_event->post(this, "CSMA_success", 0,
                       QVariantList() << m_parentNode->ID());
 
-        m_rtx->startTX(m_message);
         m_rtx->setPower(true);
+        m_rtx->startTX(m_message);
     }
 
     else {
