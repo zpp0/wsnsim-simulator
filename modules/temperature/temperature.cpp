@@ -22,12 +22,11 @@ double Temperature::measure(double* coord, VirtualTime time)
     double x = ((double)rand()) / ((double) RAND_MAX);
     double y = ((double)rand()) / ((double) RAND_MAX);
 
-    double z = cos(2 * M_PI * x) * sqrt(2 * log(y));
+    double z = cos(2 * M_PI * x) * sqrt(-2 * log(y));
 
-    qDebug() << "random z" << z << m_mu + m_sigma * (z-6);
+    qDebug() << "random z" << z << m_mu + m_sigma * z;
 
-    // FIXME: wtf? z = random + 6
-    return m_mu + m_sigma * (z-6);
+    return m_mu + m_sigma * z;
 }
 
 QT_BEGIN_NAMESPACE
