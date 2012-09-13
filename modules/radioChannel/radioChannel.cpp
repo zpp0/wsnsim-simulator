@@ -27,24 +27,29 @@ void radioChannel::send(INode* sender, byteArray message)
 
         qDebug() << "add to local node channel" << listener->ID();
 
-        m_nodesLocalChannel[listener] += message;
+        Irtx* rtx = (Irtx*)m_simulator->getNodeInterface(this, listener, "Irtx");
 
-        double rssi_value = rssi(sender, listener);
+        if (rtx->state() != rtxState_TXON) {
+            m_nodesLocalChannel[listener] += message;
 
-        m_event->post(this, "newMessage", 0,
-                      QVariantList() << listener->ID() << message << rssi_value);
+            double rssi_value = rssi(sender, listener);
+
+            m_event->post(this, "newMessage", 0,
+                          QVariantList() << listener->ID() << message << rssi_value);
+        }
     }
 }
 
 double radioChannel::aroundPower(INode* listener)
 {
+    qDebug() << "120912" << "listener" << listener->ID() << "messages in local channel" << m_nodesLocalChannel[listener].size();
     // TODO: написать
     // получить локальный канал узла listener
     // взять все передаваемые сообщения внутри канала
     // получить ID передающих узлов
     // посчитать максимальное RSSI от этих узлов
     // NOTE: test
-    return !(m_nodesLocalChannel[listener].size() > 1);
+    return m_nodesLocalChannel[listener].size() == 0;
 }
 
 double radioChannel::rssi(INode* sender, INode* listener)
@@ -112,13 +117,29 @@ void radioChannel::eventHandler(QString eventName, QVariantList params)
         nodePowerUp_Event(params[0].toUInt(), params[1].toDouble(), params[2].toDouble());
 
     if (eventName == "Collision"
-        || eventName == "MessageReceived") {
+        || eventName == "MessageReceived"
+        || eventName == "message_dropped") {
 
         NodeID nodeID = params[0].toUInt();
         INode* node = m_scene->node(nodeID);
 
+        qDebug() << "120912" << "local channel of node" << nodeID << "contains" << m_nodesLocalChannel[node].size() << "messages";
+        qDebug() << "120912" << "clean local channel on node" << nodeID;
+
         m_nodesLocalChannel[node].clear();
+
+        qDebug() << "120912" << "local channel of node" << nodeID << "contains" << m_nodesLocalChannel[node].size() << "messages";
+
     }
+
+    // if (eventName == "message_dropped") {
+    //     NodeID nodeID = params[0].toUInt();
+    //     INode* node = m_scene->node(nodeID);
+
+    //     int messageIndex = m_nodesLocalChannel[node].indexOf(params[1].toByteArray());
+    //     if (messageIndex != -1)
+    //         m_nodesLocalChannel[node].remove(messageIndex);
+    // }
 }
 
 void radioChannel::nodePowerUp_Event(NodeID nodeID, double coordx, double coordy)
