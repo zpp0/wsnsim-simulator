@@ -125,7 +125,9 @@ void radioChannel::eventHandler(QString eventName, QVariantList params)
 
         qDebug() << "120912" << "local channel of node" << nodeID << "contains" << m_nodesLocalChannel[node].size() << "messages";
         qDebug() << "120912" << "clean local channel on node" << nodeID;
+
         m_nodesLocalChannel[node].clear();
+
         qDebug() << "120912" << "local channel of node" << nodeID << "contains" << m_nodesLocalChannel[node].size() << "messages";
 
     }

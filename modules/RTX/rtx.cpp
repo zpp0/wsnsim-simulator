@@ -164,19 +164,7 @@ void RTX::newMessageEvent(byteArray message, double RSSI)
         qDebug() << "120912" << "node" << m_parentNode->ID() << "get new message";
     }
 
-
-    else if (m_state == rtxState_RXON) {
-        m_state = rtxState_Free;
-        m_currentRX_RSSI = 0;
-        m_event->post(this, "Collision", 0,
-                      QVariantList() << m_parentNode->ID());
-        qDebug() << "120912" << "collision on node" << m_parentNode->ID();
-    }
-        
-    
-    // else if ((m_state == rtxState_RXON) && (abs(RSSI - m_currentRX_RSSI) < 0.01)) {
-    //     m_event->post(this, "message_dropped", 0,
-    //                   QVariantList() << m_parentNode->ID() << message);
+    // else if (m_state == rtxState_RXON) {
     //     m_state = rtxState_Free;
     //     m_currentRX_RSSI = 0;
     //     m_event->post(this, "Collision", 0,
@@ -184,14 +172,25 @@ void RTX::newMessageEvent(byteArray message, double RSSI)
     //     qDebug() << "120912" << "collision on node" << m_parentNode->ID();
     // }
 
-    // else if ((m_state == rtxState_RXON) && (RSSI > m_currentRX_RSSI)) {
-    //     m_event->post(this, "message_dropped", 0,
-    //                   QVariantList() << m_parentNode->ID() << message);
-    //     m_state = rtxState_Free;
-    //     m_event->post(this, "SFD_RX_Up", 0,
-    //                   QVariantList() << m_parentNode->ID() << message << RSSI);
-    //     qDebug() << "120912" << "node" << m_parentNode->ID() << "start to receiving new message";
-    // }
+    else if ((m_state == rtxState_RXON) && (abs(RSSI - m_currentRX_RSSI) < 0.01)) {
+        m_event->post(this, "message_dropped", 0,
+                      QVariantList() << m_parentNode->ID() << message);
+        m_state = rtxState_Free;
+        m_currentRX_RSSI = 0;
+        m_event->post(this, "Collision", 0,
+                      QVariantList() << m_parentNode->ID());
+        qDebug() << "120912" << "collision on node" << m_parentNode->ID();
+    }
+
+    else if ((m_state == rtxState_RXON) && (RSSI > m_currentRX_RSSI)) {
+        m_event->post(this, "message_dropped", 0,
+                      QVariantList() << m_parentNode->ID() << message);
+        m_state = rtxState_Free;
+        m_event->post(this, "SFD_RX_Up", 0,
+                      QVariantList() << m_parentNode->ID() << message << RSSI);
+        qDebug() << "120912" << "node" << m_parentNode->ID() << "start to receiving new message";
+    }
+
     else {
         m_event->post(this, "message_dropped", 0,
                       QVariantList() << m_parentNode->ID() << message);
