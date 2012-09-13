@@ -52,8 +52,9 @@ void RTX::setChannel(int newChannel)
 void RTX::setPower(bool on)
 {
     if (on && m_state == rtxState_OFF)
-        m_state = rtxState_RXON;
-    else if (!on && m_state == rtxState_RXON)
+        m_state = rtxState_Free;
+    // else if (!on && m_state == rtxState_RXON)
+    else if (!on)
         m_state = rtxState_OFF;
 }
 
