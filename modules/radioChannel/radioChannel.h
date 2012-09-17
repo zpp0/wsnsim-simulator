@@ -39,8 +39,8 @@ public:
                                   QMap<QString, QString> params);
 
     /* virtual */ void send(INode* sender, byteArray message);
-    /* virtual */ byteArray listen(INode* listener);
     /* virtual */ double aroundPower(INode* listener);
+    /* virtual */ bool isConnected(INode* node1, INode* node2);
 
     /* virtual */ void eventHandler(QString eventName, QVariantList params);
 

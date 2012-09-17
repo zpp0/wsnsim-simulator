@@ -110,6 +110,11 @@ bool radioChannel::hear(double rssi, INode* listener)
     return rssi > rtx->RXSensivity();
 }
 
+bool radioChannel::isConnected(INode* node1, INode* node2)
+{
+    return (m_nodesLinks[node1].indexOf(node2) > -1) ? true : false;
+}
+
 void radioChannel::eventHandler(QString eventName, QVariantList params)
 {
     if (eventName == "nodePowerUp")
