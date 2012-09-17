@@ -32,11 +32,13 @@ public:
         moduleInfo.params["ySize"] = "double";
         moduleInfo.params["nodeNum"] = "int";
         moduleInfo.params["nodePowerUpTimeRange"] = "ULong";
+        moduleInfo.params["Network connectivity"] = "int";
 
         moduleInfo.paramDescription["xSize"] = "Ширина сцены в м (double)";
         moduleInfo.paramDescription["ySize"] = "Высота сцены в м (double)";
         moduleInfo.paramDescription["nodeNum"] = "Количество узлов в сцене (uint16)";
         moduleInfo.paramDescription["nodePowerUpTimeRange"] = "Максимальное время включения узлов (равномерное распределение) в мкс (uint64)";
+        moduleInfo.paramDescription["Network connectivity"] = "Генерировать связную сеть если установлено значение 1";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
