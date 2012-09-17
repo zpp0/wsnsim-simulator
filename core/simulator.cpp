@@ -368,12 +368,15 @@ void Simulator::eval()
 
     // TODO: to separate initialisation and uninitialisation from evaluation
     Log::uninit();
-    QDir trash(QDir::currentPath() + "/.trash");
 
-    foreach (QString fileName, trash.entryList()) {
-        QFile file(QDir::currentPath() + "/.trash/" + fileName);
-        file.remove();
-    }
-    trash.remove(QDir::currentPath() + "/.trash");
+    QString trashDirPath = QDir::currentPath() + "/.trash";
+    QDir trash(trashDirPath);
+
+    foreach (QString fileName, trash.entryList(QDir::NoDotAndDotDot | QDir::Files))
+        if (!trash.remove(fileName))
+            qDebug() << "can't delete file" << fileName;
+
+    if (!trash.rmdir(trashDirPath))
+        qDebug() << "can't delete trash directory";
 
 }
