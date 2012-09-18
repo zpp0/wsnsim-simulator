@@ -61,6 +61,8 @@ double radioChannel::rssi(INode* sender, INode* listener)
     // qDebug() << "get rtx interface from node" << rtx;
     double rssi = rtx->TXPower() + 10 * log10(pow(LAMBDA/(4*M_PI*dist), 2));
 
+    qDebug() << "RSSI from node" << sender->ID() << "to node" << listener->ID() << "=" << rssi;
+
     return rssi;
 }
 
@@ -110,16 +112,76 @@ bool radioChannel::hear(double rssi, INode* listener)
     return rssi > rtx->RXSensivity();
 }
 
-bool radioChannel::isConnected(INode* node1, INode* node2)
+bool radioChannel::isNetworkConnected(QVector<INode*> nodes)
 {
-    return (m_nodesLinks[node1].indexOf(node2) > -1) ? true : false;
+    qDebug() << "in isNetworkConnected";
+
+    qDebug() << nodes.size();
+    const int size = nodes.size();
+    QVector<QVector<bool> > nodesLinks;
+    qDebug() << nodes.size();
+    nodesLinks.resize(size);
+    nodesLinks.fill(QVector<bool>(size));
+
+    for(int i = 0; i < nodes.size(); i++)
+        qDebug() << "nodes" << i << "size" << nodesLinks[i].size();
+
+    qDebug() << "local matrix created";
+
+    for (int i = 0; i < nodes.size(); i++) {
+        for (int j = 0; j < nodes.size(); j++) {
+            if (i == j) {
+                nodesLinks[i][j] = true;
+                continue;
+            }
+            double rssi_value = rssi(nodes[i], nodes[j]);
+            if (hear(rssi_value, nodes[j]))
+                nodesLinks[i][j] = true;
+            else
+                nodesLinks[i][j] = false;
+        }
+    }
+
+    qDebug() << "matrix of network connectivity created";
+
+    bool connected = true;
+
+    for (int i = 0; i < nodesLinks.size(); i++)
+        for (int j = i+1; j < nodesLinks.size(); j++)
+            if (!isPathExist(i, j, nodesLinks)) {
+                connected = false;
+                break;
+            }
+
+    return connected;
+}
+
+bool radioChannel::isPathExist(int i, int j, QVector<QVector<bool> > nodesLinks)
+{
+    qDebug() << "in isPathExist";
+
+    if (nodesLinks[i][j] == true)
+        return true;
+
+    qDebug() << "nodes" << i << "and" << j << "not connected directly";
+
+    for (int k = i+1; k < nodesLinks.size(); k++)
+        if (nodesLinks[i][k] == true)
+            if (isPathExist(k, j, nodesLinks)) {
+                qDebug() << "there is path between" << i << "," << k << "and" << j;
+                return true;
+            }
+
+    qDebug() << "there is no path between" << i << "and" << j;
+
+    return false;
 }
 
 void radioChannel::eventHandler(QString eventName, QVariantList params)
 {
     if (eventName == "nodePowerUp")
         // FIXME: very ugly
-        nodePowerUp_Event(params[0].toUInt(), params[1].toDouble(), params[2].toDouble());
+        nodePowerUp_Event(params[0].toUInt());
 
     if (eventName == "Collision"
         || eventName == "MessageReceived"
@@ -147,7 +209,7 @@ void radioChannel::eventHandler(QString eventName, QVariantList params)
     // }
 }
 
-void radioChannel::nodePowerUp_Event(NodeID nodeID, double coordx, double coordy)
+void radioChannel::nodePowerUp_Event(NodeID nodeID)
 {
     INode* node = m_scene->node(nodeID);
     nodesHearingUpdate(node);
