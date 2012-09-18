@@ -21,10 +21,12 @@ public:
     IScene()
     {
         interfaceInfo.name = "IScene";
+        interfaceInfo.events["creatingScene"];
         interfaceInfo.events["nodePowerUp"] << qMakePair(QString("NodeID"), QString("uint16"))
                                             << qMakePair(QString("coordx"), QString("double"))
                                             << qMakePair(QString("coordy"), QString("double"));
 
+        interfaceInfo.eventDescription["creatingScene"] = "Создание сцены и размещение узлов";
         interfaceInfo.eventDescription["nodePowerUp"] = "Узел включен. Аргументы - координаты узла";
     }
 

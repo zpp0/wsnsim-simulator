@@ -11,6 +11,10 @@
 
 #include "IScene.h"
 
+#include "INodesFactory.h"
+#include "IEvent.h"
+#include "IRadioChannel.h"
+
 class Scene : public QObject, public IScene
 {
     Q_OBJECT
@@ -28,6 +32,8 @@ public:
         moduleInfo.importInterfaces += "INode";
         moduleInfo.importInterfaces += "IEvent";
         moduleInfo.importInterfaces += "IRadioChannel";
+
+        moduleInfo.handledEvents += "creatingScene";
         
         moduleInfo.params["xSize"] = "double";
         moduleInfo.params["ySize"] = "double";
@@ -51,7 +57,8 @@ public:
     /* virtual */ double* size();
     /* virtual */ double distance(INode* node1, INode* node2);
 
-    /* virtual */ void eventHandler(QString eventName, QVariantList params){}
+    /* virtual */ void eventHandler(QString eventName, QVariantList params);
+
 private:
     int isSameCoords(double coord[2]);
 
@@ -59,6 +66,14 @@ private:
     void calculateDistances();
 
     double m_size[2];
+
+    bool m_connectivity;
+    int m_nodesNum;
+    VirtualTime m_nodePowerUpTimeRange;
+
+    INodesFactory* m_factory;
+    IRadioChannel* m_channel;
+    IEvent* m_event;
 
     QVector<INode*> m_nodes;
     QHash<INode*, double*> m_nodesCoords;

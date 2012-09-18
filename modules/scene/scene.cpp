@@ -6,14 +6,6 @@
 
 #include "scene.h"
 
-#include "INodesFactory.h"
-
-#include "IEvent.h"
-
-#include "IRadioChannel.h"
-
-#include "assert.h"
-
 bool Scene::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
 {
     double x_size = params["xSize"].toDouble();
@@ -30,58 +22,18 @@ bool Scene::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     m_size[0] = x_size;
     m_size[1] = y_size;
 
-    INodesFactory* factory = (INodesFactory*)isimulator->getCoreInterface(this, "INodesFactory");
-    // создаем узлы
-    // запоминаем созданные узлы и их координаты в объекте среды
+    m_nodesNum = nodesNum;
+    m_nodePowerUpTimeRange = nodePowerUpTimeRange;
+    m_connectivity = connectivity;
+    
+    m_factory = (INodesFactory*)isimulator->getCoreInterface(this, "INodesFactory");
+    m_event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
+    
+    if (m_connectivity)
+        m_channel = (IRadioChannel*)isimulator->getEnvInterface(this, "IRadioChannel");
 
-    // для всех параметров узлов из массива
-    for (int i = 0; i < nodesNum; i++) {
-
-        // создаем узел
-        INode* nodeNew = factory->create();
-
-        // получаем координаты узла
-        double* coords = new double[2];
-
-        m_nodes += nodeNew;
-        m_nodesCoords[nodeNew] = coords;
-    }
-
-    qsrand(QDateTime::currentDateTime().toTime_t());
-
-    if (connectivity) {
-        IRadioChannel* channel = (IRadioChannel*)isimulator->getEnvInterface(this, "IRadioChannel");
-        assert(channel != NULL);
-
-        do {
-            foreach (INode* node, m_nodes)
-                generateCoords(m_nodesCoords[node]);
-
-            calculateDistances();
-
-            qDebug() << "m_nodes size()" << m_nodes.size();
-        } while (!channel->isNetworkConnected(m_nodes));
-    }
-    else {
-        foreach (INode* node, m_nodes)
-            generateCoords(m_nodesCoords[node]);
-        calculateDistances();
-    }
-
-    IEvent* event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
-
-    for (int i = 0; i < nodesNum; i++) {
-
-        VirtualTime nodePowerUpTime = ((double)qrand() / RAND_MAX) * nodePowerUpTimeRange;
-
-        qDebug() << "nodeNew" << m_nodes[i]->ID()
-                 << "coords" << m_nodesCoords[m_nodes[i]][0] << m_nodesCoords[m_nodes[i]][1]
-                 << "time" << nodePowerUpTime;
-
-        event->post(this, "nodePowerUp", nodePowerUpTime,
-                    QVariantList() << m_nodes[i]->ID() << m_nodesCoords[m_nodes[i]][0] << m_nodesCoords[m_nodes[i]][1]);
-    }
-
+    m_event->post(this, "creatingScene", 0, QVariantList());
+    
     // успешная инициализация
     return true;
 }
@@ -154,6 +106,57 @@ void Scene::calculateDistances()
 double Scene::distance(INode* node1, INode* node2)
 {
     return m_distances[node1][node2];
+}
+
+void Scene::eventHandler(QString eventName, QVariantList params)
+{
+    if (eventName == "creatingScene") {
+
+        // создаем узлы
+        // запоминаем созданные узлы и их координаты в объекте среды
+
+        // для всех параметров узлов из массива
+        for (int i = 0; i < m_nodesNum; i++) {
+
+            // создаем узел
+            INode* nodeNew = m_factory->create();
+
+            // получаем координаты узла
+            double* coords = new double[2];
+
+            m_nodes += nodeNew;
+            m_nodesCoords[nodeNew] = coords;
+        }
+
+        if (m_connectivity) {
+
+            do {
+                foreach (INode* node, m_nodes)
+                    generateCoords(m_nodesCoords[node]);
+
+                calculateDistances();
+
+                qDebug() << "m_nodes size()" << m_nodes.size();
+            } while (!m_channel->isNetworkConnected(m_nodes));
+        }
+        else {
+            foreach (INode* node, m_nodes)
+                generateCoords(m_nodesCoords[node]);
+            calculateDistances();
+        }
+
+        for (int i = 0; i < m_nodesNum; i++) {
+
+            VirtualTime nodePowerUpTime = ((double)qrand() / RAND_MAX) * m_nodePowerUpTimeRange;
+
+            qDebug() << "nodeNew" << m_nodes[i]->ID()
+                     << "coords" << m_nodesCoords[m_nodes[i]][0] << m_nodesCoords[m_nodes[i]][1]
+                     << "time" << nodePowerUpTime;
+
+            m_event->post(this, "nodePowerUp", nodePowerUpTime,
+                          QVariantList() << m_nodes[i]->ID() << m_nodesCoords[m_nodes[i]][0] << m_nodesCoords[m_nodes[i]][1]);
+        }
+    }
 }
 
 QT_BEGIN_NAMESPACE
