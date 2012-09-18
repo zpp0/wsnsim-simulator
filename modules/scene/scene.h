@@ -27,6 +27,7 @@ public:
         moduleInfo.importInterfaces += "INodesFactory";
         moduleInfo.importInterfaces += "INode";
         moduleInfo.importInterfaces += "IEvent";
+        moduleInfo.importInterfaces += "IRadioChannel";
         
         moduleInfo.params["xSize"] = "double";
         moduleInfo.params["ySize"] = "double";
@@ -53,6 +54,9 @@ public:
     /* virtual */ void eventHandler(QString eventName, QVariantList params){}
 private:
     int isSameCoords(double coord[2]);
+
+    void generateCoords(double *coord);
+    void calculateDistances();
 
     double m_size[2];
 
