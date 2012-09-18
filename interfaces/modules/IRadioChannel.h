@@ -33,9 +33,10 @@ public:
     }
 
     virtual void send(INode* node, byteArray message) = 0;
-    virtual bool isConnected(INode* node1, INode* node2) = 0;
 
     virtual double aroundPower(INode* node) = 0;
+
+    virtual bool isNetworkConnected(QVector<INode*> nodes) = 0;
 
 };
 
