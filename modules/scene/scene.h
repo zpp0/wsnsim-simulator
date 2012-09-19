@@ -34,18 +34,20 @@ public:
         moduleInfo.importInterfaces += "IRadioChannel";
 
         moduleInfo.handledEvents += "creatingScene";
-        
+
         moduleInfo.params["xSize"] = "double";
         moduleInfo.params["ySize"] = "double";
         moduleInfo.params["nodeNum"] = "int";
         moduleInfo.params["nodePowerUpTimeRange"] = "ULong";
         moduleInfo.params["Network connectivity"] = "int";
+        moduleInfo.params["Place nodes in line"] = "int";
 
-        moduleInfo.paramDescription["xSize"] = "Ширина сцены в м (double)";
-        moduleInfo.paramDescription["ySize"] = "Высота сцены в м (double)";
+        moduleInfo.paramDescription["xSize"] = "Длина сцены в м (double)";
+        moduleInfo.paramDescription["ySize"] = "Ширина сцены в м (double)";
         moduleInfo.paramDescription["nodeNum"] = "Количество узлов в сцене (uint16)";
         moduleInfo.paramDescription["nodePowerUpTimeRange"] = "Максимальное время включения узлов (равномерное распределение) в мкс (uint64)";
         moduleInfo.paramDescription["Network connectivity"] = "Генерировать связную сеть если установлено значение 1";
+        moduleInfo.paramDescription["Place nodes in line"] = "Если значение этого поля равно 1, узлы располагаются в линию с расстоянием в 250м";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,
@@ -70,6 +72,7 @@ private:
     bool m_connectivity;
     int m_nodesNum;
     VirtualTime m_nodePowerUpTimeRange;
+    bool m_placeInLine;
 
     INodesFactory* m_factory;
     IRadioChannel* m_channel;

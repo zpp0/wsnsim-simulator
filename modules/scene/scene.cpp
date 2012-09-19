@@ -13,6 +13,7 @@ bool Scene::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     int nodesNum = params["nodeNum"].toInt();
     VirtualTime nodePowerUpTimeRange = params["nodePowerUpTimeRange"].toULong();
     bool connectivity = params["Network connectivity"].toInt();
+    bool placeInLine = params["Place nodes in line"].toInt();
 
     qDebug("Scene params gotten:");
     qDebug("xsize: %f ysize: %f nodes: %i nodePowerUpTimeRange: %llu",
@@ -25,7 +26,9 @@ bool Scene::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     m_nodesNum = nodesNum;
     m_nodePowerUpTimeRange = nodePowerUpTimeRange;
     m_connectivity = connectivity;
-    
+
+    m_placeInLine = placeInLine;
+
     m_factory = (INodesFactory*)isimulator->getCoreInterface(this, "INodesFactory");
     m_event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
     
@@ -131,8 +134,14 @@ void Scene::eventHandler(QString eventName, QVariantList params)
         if (m_connectivity) {
 
             do {
-                foreach (INode* node, m_nodes)
-                    generateCoords(m_nodesCoords[node]);
+                if (!m_placeInLine)
+                    foreach (INode* node, m_nodes)
+                        generateCoords(m_nodesCoords[node]);
+                else
+                    for (int i = 0; i < m_nodesNum; i++) {
+                        m_nodesCoords[m_nodes[i]][0] = i*250;
+                        m_nodesCoords[m_nodes[i]][1] = 0;
+                    }
 
                 calculateDistances();
 
@@ -140,8 +149,15 @@ void Scene::eventHandler(QString eventName, QVariantList params)
             } while (!m_channel->isNetworkConnected(m_nodes));
         }
         else {
-            foreach (INode* node, m_nodes)
-                generateCoords(m_nodesCoords[node]);
+            if (!m_placeInLine)
+                foreach (INode* node, m_nodes)
+                    generateCoords(m_nodesCoords[node]);
+            else
+                for (int i = 0; i < m_nodesNum; i++) {
+                    m_nodesCoords[m_nodes[i]][0] = i*250;
+                    m_nodesCoords[m_nodes[i]][1] = 0;
+                }
+
             calculateDistances();
         }
 
