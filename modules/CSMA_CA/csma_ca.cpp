@@ -22,7 +22,7 @@ bool CSMA_CA::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
     m_timer = (ITimer*)isimulator->getNodeInterface(this, m_parentNode, "ITimer");
     m_event = (IEvent*)isimulator->getCoreInterface(this, "IEvent");
 
-    qsrand((long)this);
+    // qsrand((long)this);
 
     return true;
 }
@@ -34,7 +34,12 @@ void CSMA_CA::sendMessage(byteArray message)
     m_event->post(this, "CSMA_begin", 0,
                   QVariantList() << m_parentNode->ID());
 
-    m_message = message;
+    m_message = QByteArray(message);
+
+    qDebug() << "CSMA send message1" << m_message;
+    qDebug() << &m_message << this;
+    for (int i = 0; i < m_message.size(); i++)
+        qDebug() << QString::number(m_message[i]);
 
     // сбрасываем переменные алгоритма CSMA-CA
     m_BE = macMinBE;
@@ -46,10 +51,19 @@ void CSMA_CA::sendMessage(byteArray message)
                   QVariantList() << m_parentNode->ID() << m_BE << m_NB << wait);
 
     m_timer->start(wait, "CSMA-CA");
+
+    qDebug() << "CSMA sending message2" << m_message << &m_message;
+    for (int i = 0; i < m_message.size(); i++)
+        qDebug() << QString::number(m_message[i]);
+
 }
 
 VirtualTime CSMA_CA::delay()
 {
+    qDebug() << "CSMA sending message3" << m_message << &m_message;
+    for (int i = 0; i < m_message.size(); i++)
+        qDebug() << QString::number(m_message[i]);
+
     int periods = qrand() % (int)(pow(2, m_BE) - 1);
     VirtualTime wait = periods * aUnitBackoffPeriod * ByteSendingTime / 2;
     return wait;
@@ -59,18 +73,33 @@ void CSMA_CA::eventHandler(QString name, QVariantList params)
 {
     // FIXME: ugly code
     if (name == "timerInterrupt")
-        if (params[1].toString() == "CSMA-CA")
+        if (params[1].toString() == "CSMA-CA") {
+            qDebug() << "CSMA sending message4" << m_message;
+            qDebug() << &m_message << this;
+            for (int i = 0; i < m_message.size(); i++)
+                qDebug() << QString::number(m_message[i]);
+
             timerInterrupt();
+        }
 }
 
 void CSMA_CA::timerInterrupt()
 {
+    qDebug() << "CSMA sending message5" << m_message << &m_message;
+    for (int i = 0; i < m_message.size(); i++)
+        qDebug() << QString::number(m_message[i]);
+
     if (m_rtx->CCA()) {
         m_event->post(this, "CSMA_success", 0,
                       QVariantList() << m_parentNode->ID());
 
+        qDebug() << "CSMACA sending message" << m_message << &m_message;
+        for (int i = 0; i < m_message.size(); i++)
+            qDebug() << QString::number(m_message[i]);
+
         m_rtx->setPower(true);
         m_rtx->startTX(m_message);
+
     }
 
     else {

@@ -32,6 +32,8 @@ void radioChannel::send(INode* sender, byteArray message)
         if (rtx->state() != rtxState_TXON) {
             m_nodesLocalChannel[listener] += message;
 
+            qDebug() << "new mesage in channel" << message;
+
             double rssi_value = rssi(sender, listener);
 
             m_event->post(this, "newMessage", 0,

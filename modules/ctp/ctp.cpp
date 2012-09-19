@@ -80,18 +80,24 @@ void CTP::eventHandler(QString name, QVariantList params)
 
 void CTP::recognizeMessage(byteArray message)
 {
-    quint8 messageType = message[0];
+    qDebug() << "recognise message" << message;
 
-    QByteArray senderArr = message.mid(1, 19);
-    quint64 sender = senderArr.toULong();
-    // quint64 sender = message[1];
+    for (int i = 0; i < message.size(); i++)
+        qDebug() << QString::number(message[i]);
+
+    quint8 messageType = message[1];
+
+    // QByteArray senderArr = message.mid(1, 19);
+    // quint64 sender = senderArr.toULong();
+    quint64 sender = message[2];
     // for (int i = 2; i < 9; i++)
     //     sender = (sender << 8) + message[i];
 
     // qDebug() << sender;
 
-    QByteArray seqNumArr = message.mid(20, 1);
-    quint8 seqNum = seqNumArr.toInt();
+    // QByteArray seqNumArr = message.mid(20, 1);
+    // quint8 seqNum = seqNumArr.toInt();
+    quint8 seqNum = message[3];
 
     qDebug() << "etetet" << sender << seqNum << messageType;
 
@@ -124,10 +130,12 @@ void CTP::recognizeMessage(byteArray message)
 
     case CTPMessageType_Ack:
     {
-        QByteArray receiverArr = message.mid(21, 19);
-        quint64 receiver = receiverArr.toULong();
-        QByteArray valueArr = message.mid(40);
-        double value = valueArr.toDouble();
+        // QByteArray receiverArr = message.mid(21, 19);
+        // quint64 receiver = receiverArr.toULong();
+        quint64 receiver = message[4];
+        // QByteArray valueArr = message.mid(40);
+        // double value = valueArr.toDouble();
+        double value = message[5];
 
         qDebug() << "tetete" << receiver << value;
 
@@ -150,20 +158,30 @@ void CTP::recognizeMessage(byteArray message)
 
 void CTP::sendMeasureReq(quint8 seqNum)
 {
-    char arr[80];
+    // char arr[80];
 
-    sprintf(arr, "%c%0llu%0u",
-            CTPMessageType_Request,
-            m_longAddr,
-            seqNum);
+    // sprintf(arr, "%c%llu%u",
+    //         CTPMessageType_Request,
+    //         m_longAddr,
+    //         seqNum);
 
+    // char arr[3] = { CTPMessageType_Request, (quint8)m_longAddr, seqNum };
     // qDebug() << "arr" << arr << "addr" << m_rtx->getLongAddr() << "seqnum" << seqNum;
 
-    QByteArray message(arr);
-    // QByteArray message;
-    // message.append(CTPMessageType_Request);
-    // message.append(QByteArray::number(m_rtx->getLongAddr(), 16));
-    // message.append(seqNum);
+
+    // QByteArray message = QByteArray::fromRawData(arr, 3);
+    // QByteArray message(arr);
+    QByteArray message;
+
+    message.append(CTPMessageType_Request);
+    message.append(m_longAddr);
+    // message.append(0);
+    message.append(seqNum);
+
+    qDebug() << "sending message" << message;
+
+    for (int i = 0; i < message.size(); i++)
+        qDebug() << QString::number(message[i]);
 
     m_message = message;
 
@@ -175,18 +193,34 @@ void CTP::sendMeasureReq(quint8 seqNum)
 
 void CTP::sendMeasureAck(double measuringValue, quint64 sender, quint64 receiver, quint8 seqNum)
 {
-    char arr[100];
+    // char arr[100];
+    // char arr[5] = { CTPMessageType_Ack, (quint8)sender, seqNum, (quint8)receiver, (quint8)measuringValue };
 
-    sprintf(arr, "%c%0llu%0u%0llu%f",
-            CTPMessageType_Ack,
-            sender,
-            seqNum,
-            receiver,
-            measuringValue);
+    // sprintf(arr, "%c%llu%u%llu%f",
+    //         CTPMessageType_Ack,
+    //         sender,
+    //         seqNum,
+    //         receiver,
+    //         measuringValue);
 
     // qDebug() << "arr" << arr;
 
-    QByteArray message(arr);
+    // QByteArray message = QByteArray::fromRawData(arr, strlen(arr));
+    // QByteArray message = QByteArray::fromRawData(arr, 5);
+    QByteArray message;
+    message += CTPMessageType_Ack;
+    message += (quint8)sender;
+    message += seqNum;
+    message += (quint8)receiver;
+    message += (quint8)measuringValue;
+
+    qDebug() << "ack message" << message;
+
+    for (int i = 0; i < message.size(); i++)
+        qDebug() << QString::number(message[i]);
+
+
+    // QByteArray message(arr);
     // QByteArray message;
 
     m_message = message;

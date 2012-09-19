@@ -36,8 +36,6 @@ bool RTX::moduleInit(ISimulator* isimulator, QMap<QString, QString> params)
         m_longAddr = m_parentNode->ID();
 
     else {
-        qsrand((long)this);
-
         m_longAddr = qrand();
         m_longAddr = (m_longAddr << 32) + qrand();
     }
@@ -80,6 +78,10 @@ void RTX::startTX(byteArray message)
         // char preambula[] = "0000"; //{0, 0, 0, 0};
         // message.prepend(preambula);
 
+        qDebug() << "TX sending message" << message;
+        for (int i = 0; i < message.size(); i++)
+            qDebug() << QString::number(message[i]);
+
         m_event->post(this, "SFD_TX_Up", 0,
                       QVariantList() << m_parentNode->ID() << message << m_TXPower);
 
@@ -88,6 +90,8 @@ void RTX::startTX(byteArray message)
 
         timeTXEnd = (message.size() + 5) * 32;
         // qDebug() << "timeEnd set";
+
+        qDebug() << "TX message" << message;
 
         m_channel->send(m_parentNode, message);
 
@@ -204,38 +208,42 @@ void RTX::newMessageEvent(byteArray message, double RSSI)
         m_event->post(this, "message_dropped", 0,
                       QVariantList() << m_parentNode->ID() << message);
     }
-    
+
 }
 
 void RTX::SFD_RX_Up_Event(byteArray message, double RSSI)
 {
     if (m_state == rtxState_Free) {
-        
+
         m_state = rtxState_RXON;
         m_currentRX_RSSI = RSSI;
+
+        qDebug() << "SFD_RX_UP message" << message;
 
         m_event->post(this, "SFD_RX_Down", message.length() * 32,
                       QVariantList() << m_parentNode->ID() << message);
     }
-    
+
 }
 
 void RTX::SFD_RX_Down_Event(byteArray message)
 {
     if (m_state == rtxState_RXON) {
         m_state = rtxState_Free;
-        QByteArray new_message = message.mid(6);
+        // QByteArray new_message = message.mid(6);
         // FIXME: ugly code
         // TODO: IEvent->post can return some value which can help to delete event from queue
         m_event->post(this, "MessageReceived", 0,
-                      QVariantList() << m_parentNode->ID() << new_message);
-        qDebug() << "120912" << "node" << m_parentNode->ID() << "receive new message";
+                      // QVariantList() << m_parentNode->ID() << new_message);
+                      QVariantList() << m_parentNode->ID() << message);
+        qDebug() << "120912" << "node" << m_parentNode->ID() << "receive new message" << message;
     }
 }
 
 void RTX::SFD_TX_Up_Event(byteArray message, double TXPower)
 {
     m_state = rtxState_TXON;
+    qDebug() << "SFD TX UP message" << message;
 }
 
 void RTX::SFD_TX_Down_Event()
