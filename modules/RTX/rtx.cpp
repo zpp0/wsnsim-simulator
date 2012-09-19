@@ -139,7 +139,7 @@ bool RTX::CCA()
 
     qDebug() << "in CCA test" << state << "on node" << m_parentNode->ID();
 
-    m_event->post(this, "CCATest", 0,
+    m_event->post(this, "CCA", 0,
                   QVariantList() << m_parentNode->ID() << state);
 
     return state;
@@ -158,7 +158,7 @@ int RTX::RXSensivity() const
 void RTX::eventHandler(QString name, QVariantList params)
 {
     // FIXME: ugly code
-    if (name == "newMessage")
+    if (name == "newMessageInChannel")
         // FIXME: static type checking
         newMessageEvent(params[1].toByteArray(), params[2].toDouble());
     if (name == "SFD_RX_Up")

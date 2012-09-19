@@ -50,7 +50,7 @@ public:
         moduleInfo.handledEvents += "MessageReceived";
         moduleInfo.handledEvents += "nodePowerUp";
         moduleInfo.handledEvents += "timerInterrupt";
-        moduleInfo.handledEvents += "measuring_get_result";
+        moduleInfo.handledEvents += "gotMeasuringResult";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,

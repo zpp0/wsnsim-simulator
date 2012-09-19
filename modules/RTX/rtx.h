@@ -42,7 +42,7 @@ public:
         moduleInfo.paramDescription["CCAThreshold"] = "Пороговая мощность CCA в dBm (int)";
         moduleInfo.paramDescription["Use node ID as longAddr"] = "Использовать ID узла в качестве его MAC адреса (bool)";
 
-        moduleInfo.handledEvents += "newMessage";
+        moduleInfo.handledEvents += "newMessageInChannel";
         moduleInfo.handledEvents += "SFD_RX_Up";
         moduleInfo.handledEvents += "SFD_RX_Down";
         moduleInfo.handledEvents += "SFD_TX_Up";

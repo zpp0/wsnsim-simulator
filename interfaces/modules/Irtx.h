@@ -42,8 +42,8 @@ public:
 
         interfaceInfo.events["Collision"] << qMakePair(QString("NodeID"), QString("uint16"));
 
-        interfaceInfo.events["CCATest"] << qMakePair(QString("NodeID"), QString("uint16"))
-                                        << qMakePair(QString("State"), QString("uint16"));
+        interfaceInfo.events["CCA"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                    << qMakePair(QString("State"), QString("uint16"));
 
         interfaceInfo.events["message_dropped"] << qMakePair(QString("NodeID"), QString("uint16"))
                                                 << qMakePair(QString("message"), QString("ByteArray"));
@@ -58,7 +58,7 @@ public:
         interfaceInfo.eventDescription["SFD_TX_Up"] = "Прерывание по линии SFD по началу передачи сообщения";
         interfaceInfo.eventDescription["SFD_TX_Down"] = "Прерывание по линии SFD по окончанию передачи сообщения";
         interfaceInfo.eventDescription["Collision"] = "При приеме сообщения произошла коллизия";
-        interfaceInfo.eventDescription["CCATest"] = "Проверка состояния канала";
+        interfaceInfo.eventDescription["CCA"] = "Проверка состояния канала";
         interfaceInfo.eventDescription["message_dropped"] = "Узел прекратил прием сообщения. Либо произошла коллизия, либо пришло сообщение с большей мощностью";
     }
 

@@ -43,7 +43,7 @@ void CTP::eventHandler(QString name, QVariantList params)
             m_timer->start(m_wakeUpPeriod, "messageSending");
         }
 
-    if (name == "measuring_get_result") {
+    if (name == "gotMeasuringResult") {
         m_currentMeasuringValue = params[2].toDouble();
         qDebug() << "measuring_get_result" << "state" << m_rtx->state();
         if (m_rtx->state() != rtxState_Free)
@@ -146,7 +146,7 @@ void CTP::recognizeMessage(byteArray message)
             if (m_parentNode->ID() != 0)
                 sendMeasureAck(value, sender, m_parent, seqNum);
             else
-                m_event->post(this, "measureSentUART", 0,
+                m_event->post(this, "sentMeasuringDataToUART", 0,
                               QVariantList() << m_parentNode->ID() << sender << seqNum << value);
         }
 

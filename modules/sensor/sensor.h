@@ -47,7 +47,7 @@ public:
         moduleInfo.paramDescription["measuringTimeMu"] = "Время проведения измерения. Параметр Mu нормального распределения в мкс (uint64)";
         moduleInfo.paramDescription["measuringTimeSigma"] = "Время проведения измерения. Параметр Sigma нормального распределения (uint64)";
 
-        moduleInfo.handledEvents += "measuring_start";
+        moduleInfo.handledEvents += "measuringStart";
     }
 
     /* virtual */ bool moduleInit(ISimulator* isimulator,

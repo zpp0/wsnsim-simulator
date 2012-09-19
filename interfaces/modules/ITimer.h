@@ -23,7 +23,7 @@ public:
         interfaceInfo.events["timerInterrupt"] << qMakePair(QString("NodeID"), QString("uint16"))
                                                << qMakePair(QString("Type"), QString("string"));
 
-        interfaceInfo.eventDescription["CSMA_begin"] = "Прерывание по таймеру. Аргумент - причина прерывания";
+        interfaceInfo.eventDescription["timerInterrupt"] = "Прерывание по таймеру. Аргумент - причина прерывания";
     }
 
     virtual VirtualTime getValue() = 0;

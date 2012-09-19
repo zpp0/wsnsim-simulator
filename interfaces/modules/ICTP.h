@@ -44,7 +44,7 @@ public:
             << qMakePair(QString("seqNum"), QString("uint16"))
             << qMakePair(QString("value"), QString("double"));
 
-        interfaceInfo.events["measureSentUART"]
+        interfaceInfo.events["sentMeasuringDataToUART"]
             << qMakePair(QString("NodeID"), QString("uint16"))
             << qMakePair(QString("senderMACAddr"), QString("uint64"))
             << qMakePair(QString("seqNum"), QString("uint16"))

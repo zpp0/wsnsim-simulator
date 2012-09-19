@@ -24,11 +24,11 @@ public:
         interfaceInfo.events["ChangeLink"] << qMakePair(QString("NodeID"), QString("uint16"))
                                            << qMakePair(QString("NodeID2"), QString("uint16"));
 
-        interfaceInfo.events["newMessage"] << qMakePair(QString("NodeID"), QString("uint16"))
-                                           << qMakePair(QString("message"), QString("ByteArray"))
-                                           << qMakePair(QString("RSSI"), QString("double"));
+        interfaceInfo.events["newMessageInChannel"] << qMakePair(QString("NodeID"), QString("uint16"))
+                                                    << qMakePair(QString("message"), QString("ByteArray"))
+                                                    << qMakePair(QString("RSSI"), QString("double"));
 
-        interfaceInfo.eventDescription["newMessage"] = "На радио приемник-передатчик узла начало приходить новое сообщение";
+        interfaceInfo.eventDescription["newMessageInChannel"] = "В канале узла появилось новое сообщение";
         interfaceInfo.eventDescription["ChangeLink"] = "Изменение матрицы слышимости";
     }
 

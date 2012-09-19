@@ -36,18 +36,18 @@ void Sensor::measure()
 
     VirtualTime delay = m_mu + m_sigma * z;
 
-    m_event->post(this, "measuring_start", delay,
+    m_event->post(this, "measuringStart", delay,
                   QVariantList() << m_parentNode->ID());
 }
 
 void Sensor::eventHandler(QString name, QVariantList params)
 {
-    if (name == "measuring_start") {
+    if (name == "measuringStart") {
         double value = m_field->measure(m_scene->coord(m_parentNode),
                                         m_env->globalTime());
 
         qDebug() << "asd";
-        m_event->post(this, "measuring_get_result", 0,
+        m_event->post(this, "gotMeasuringResult", 0,
                       QVariantList() << m_parentNode->ID() << m_sensorName << value);
     }
 }
