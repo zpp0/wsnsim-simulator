@@ -193,8 +193,29 @@ Simulator::Simulator(QString projectFileName)
     }
     
     m_loggableEvents = m_events;
-        
+
     m_maxGlobalTime = m_projectParams.simulatorParams.maxTime;
+
+    switch (m_projectParams.simulatorParams.timeUnits) {
+    case years:
+        m_maxGlobalTime *= 12;
+    case months:
+        m_maxGlobalTime *= 30;
+    case w:
+        m_maxGlobalTime *= 7;
+    case d:
+        m_maxGlobalTime *= 24;
+    case h:
+        m_maxGlobalTime *= 60;
+    case m:
+        m_maxGlobalTime *= 60;
+    case s:
+        m_maxGlobalTime *= 1000;
+    case ms:
+        m_maxGlobalTime *= 1000;
+    default:
+        break;
+    }
 
     QDir myDir(QDir::currentPath() + "/modules");
     QStringList plugins = myDir.entryList(QStringList() << "*.so" << "*.dll");
