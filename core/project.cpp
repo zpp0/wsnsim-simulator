@@ -24,14 +24,14 @@ int Project::load()
 {
     QLibrary projectDataLibrary("./projectData");
 
-    if (!projectDataLib.load()) {
+    if (!projectDataLibrary.load()) {
         m_errorString = projectDataLibrary.errorString();
         return 0;
     }
 
     // FIXME: make it easy
     typedef ProjectParams(*projectDataLoad) (QString& projectFileName, QString* errorMessage);
-    projectDataLoad pd = (projectDataLoad) projectDataLib.resolve("load");
+    projectDataLoad pd = (projectDataLoad) projectDataLibrary.resolve("load");
 
     m_projectParams = pd(m_projectFileName, &m_errorString);
 
@@ -44,7 +44,12 @@ int Project::load()
     // TODO: check errors
 }
 
-int Project::initLog(QString &errorString)
+bool argsSort(const QMap<QString,QString>  &s1 , const QMap<QString,QString> &s2)
+{
+    return s1["ID"].toInt() < s2["ID"].toInt();
+}
+
+int Project::initLog()
 {
     // getting events <name, ID>
     QMap<QString, EventID> events;

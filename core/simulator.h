@@ -1,80 +1,55 @@
 /**
  *
  * File: simulator.h
- * Author: Yarygin Alexander <zpp0@mail.ru>
+ * Description: Simulator evaluator
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
-#include "ISimulator.h"
-
 #include "types.h"
 
+#include "modules.h"
 #include "node.h"
-#include "event.h"
 #include "eventQueue.h"
 
-#include "projectParams.h"
-
-class Simulator : public ISimulator
+class Simulator
 {
 public:
-    Simulator(QString projectFileName);
+    Simulator();
 
-    /* virtual */ ICore* getCoreInterface(IModule* receiver, QString name);
-    /* virtual */ IModule* getEnvInterface(IModule* receiver, QString interfaceName);
-    /* virtual */ IModule* getNodeInterface(IModule* receiver, INode* node, QString interfaceName);
+    // ICore* getCoreInterface(IModule* receiver, QString name);
+    Module* getEnvInterface(Module* receiver, QString interfaceName);
+    Module* getNodeInterface(Module* receiver, Node* node, QString interfaceName);
 
-    /* virtual */ QList<QString> getEvents();
-    /* virtual */ void registerEventHandler(IModule* handler, QString eventName);
+    void registerEventHandler(Module* handler, QString eventName);
 
     // --
-    static void postEvent(IModule* author, Event* event);
-    
+    static void postEvent(Module* author, Event* event);
+
     static void registerNode(Node* node);
     // --
-    
+
+    void init(QString projectFileName);
     void eval();
 
 private:
-    static ISimulator* m_this;
-    
-    ProjectParams loadProject(QString file);
-    
     // максимально-возможное время работы симулятора
     VirtualTime m_maxGlobalTime;
 
-    static QMap<QString, IModule*> m_envInterfaces;
-    static QMap<INode*, QMap<QString, IModule*> > m_nodeInterfaces;
-
-    // node modules
-    static QList<QString> m_nodesLoaders;
-    static QMap<IModule*, Node*> m_nodesModules;
-
     // nodes list
-    static QList<Node*> m_nodes;
-    
-    // Events names list
-    QList<QString> m_events;
 
-    static QMap<QString, QList<IModule*> > m_eventHandlers;
-    
-    // Priority events list
-    static QList<QString> m_priorityEvents;
-    
+    static QList<Node*> m_nodes;
+
+    static QMap<QString, QList<Module*> > m_eventHandlers;
+
     // Loggable events list
     // events are contained in this list can be written to log
     static QList<QString> m_loggableEvents;
 
-    // events counts
-    // <eventName, count>
-    static QMap<QString, quint64> m_eventCount;
-    
     static eventQueue m_queue;
-
-    static ProjectParams m_projectParams;
 };
 
 #endif // SIMULATOR_H

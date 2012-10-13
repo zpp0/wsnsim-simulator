@@ -8,7 +8,7 @@
 
 #include "luaHost.h"
 
-lua_State LuaHost::m_lua = 0;
+lua_State* LuaHost::m_lua = 0;
 QString LuaHost::m_errorString;
 
 void LuaHost::open()
@@ -16,7 +16,7 @@ void LuaHost::open()
     // getting new state
     m_lua = luaL_newstate();
 
-    luaL_openlibs(L);
+    luaL_openlibs(m_lua);
 
     // QString luaModules = "package.path = package.path .. \";"
     //     + currentProjectPath + "/?.lua\"";
@@ -25,7 +25,7 @@ void LuaHost::open()
 
     // luaL_dostring(L, "jit.opt.start(3)");
 
-    return L;
+    // return m_lua;
 
 }
 
@@ -40,4 +40,9 @@ int LuaHost::loadFile(QString path)
 void LuaHost::close()
 {
     lua_close(m_lua);
+}
+
+QString LuaHost::errorString()
+{
+    return m_errorString;
 }

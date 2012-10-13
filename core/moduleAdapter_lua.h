@@ -14,7 +14,7 @@
 class ModuleAdapterLua : public ModuleAdapter
 {
 public:
-    /* virtual */ void load(Qstring  fileName);
+    /* virtual */ int load(QString  fileName);
     /* virtual */ Module* create();
     /* virtual */ void init(Module* module, QMap<QString, QVariant> params, QList<Module*> dependencies);
     /* virtual */ QString errorString();
@@ -23,3 +23,5 @@ private:
 };
 
 #endif // MODULEADAPTERLUA_H
+
+

@@ -1,21 +1,22 @@
 /**
  *
  * File: node.h
- * Author: Yarygin Alexander <zpp0@mail.ru>
+ * Description: Simulator Node class
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 
 #ifndef NODE_H
 #define NODE_H
 
-#include "INode.h"
+#include "types.h"
 
-class Node : public INode
+class Node
 {
 public:
     Node(NodeID Id) : m_ID(Id) {}
 
-    /* virtual */ NodeID ID();
+    NodeID ID();
 
 private:
 
@@ -23,16 +24,11 @@ private:
     NodeID m_ID;
 };
 
-#include "INodesFactory.h"
-
-class NodesFactory : public INodesFactory
+class NodesFactory
 {
-    // ~NodeFactory();
-
-    /* virtual */ INode* create();
+    Node* create();
 private:
     static NodeID m_nextNodeID;
-    // static QList<Node*> m_nodes;
 };
 
 #endif // NODE_H

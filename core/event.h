@@ -1,7 +1,8 @@
 /**
  *
  * File: event.h
- * Author: Yarygin Alexander <zpp0@mail.ru>
+ * Description: Simulator Event class
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 
@@ -9,13 +10,12 @@
 #define EVENT_H
 
 #include "types.h"
-
-#include "IModule.h"
+#include "modules.h"
 
 struct Event
 {
     QString name;
-    IModule* author;
+    Module* author;
     // TODO: move to core
     // bool priority;
     // TODO: move to core
@@ -25,11 +25,9 @@ struct Event
     QVariantList params;
 };
 
-#include "IEvent.h"
-
-struct EventFactory : public IEvent
+struct EventFactory
 {
-    /* virtual */ void post(IModule* author, QString name, VirtualTime time, QVariantList params);
+    void post(Module* author, QString name, VirtualTime time, QVariantList params);
 };
 
 #endif // EVENT_H

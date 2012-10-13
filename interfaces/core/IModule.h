@@ -17,7 +17,7 @@ struct IModule : public Interface
 {
 	virtual ~IModule() {}
 
-    ModuleInfo moduleInfo;
+    SimulatorModule moduleInfo;
     
 	virtual bool moduleInit(ISimulator* isimulator,
                             QMap<QString, QString> params) = 0;

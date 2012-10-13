@@ -9,11 +9,11 @@
 #include "moduleAdapter_lua.h"
 #include "luaHost.h"
 
-int ModuleAdapterLua::load(Qstring fileName)
+int ModuleAdapterLua::load(QString fileName)
 {
-    int ret = luaHost::load(fileName);
+    int ret = LuaHost::loadFile(fileName);
     if (ret)
-        m_errorString = luaHost::errorString();
+        m_errorString = LuaHost::errorString();
     return ret;
 }
 
@@ -24,4 +24,9 @@ Module* ModuleAdapterLua::create()
 
 void ModuleAdapterLua::init(Module* module, QMap<QString, QVariant> params, QList<Module*> dependencies)
 {
+}
+
+QString ModuleAdapterLua::errorString()
+{
+    return m_errorString;
 }

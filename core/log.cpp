@@ -1,12 +1,12 @@
 /**
  *
  * File: log.cpp
- * Author: Yarygin Alexander <zpp0@mail.ru>
+ * Description: Simulator binary log class
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 
 #include <QDataStream>
-
 #include <iostream>
 
 #include "log.h"
@@ -22,8 +22,6 @@ void Log::init(QString logFilePath,
                QMap<QString, EventID> events,
                QMap<QString, QList<QString> > eventArgTypes)
 {
-    // qDebug() << "log path is" << currentProjectPath;
-    
     //для начала, удалим файл логов для того, чтобы создать новый
     // удаляем старый файл лога
     m_log = new QFile(logFilePath);
@@ -41,9 +39,8 @@ void Log::init(QString logFilePath,
 
     foreach (QString event, eventArgTypes.keys()) {
         qDebug() << event;
-        
-        foreach (QString argType, eventArgTypes[event]) {
 
+        foreach (QString argType, eventArgTypes[event]) {
 
             LogDataType type = UNKNOWN_TYPE;
             if (argType == "uint8")          type = UINT8_TYPE;
@@ -61,66 +58,55 @@ void Log::init(QString logFilePath,
             m_eventArgTypes[event] += type;
         }
     }
-
-    // QTextCodec::setCodecForTr(QTextCodec::codecForName("utf-8"));
-    // QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
 }
 
 void Log::uninit()
 {
     m_log->close();
-    
+
     // TODO: delete pointers
 }
 
 void Log::write(Event* event)
 {
     qDebug() << "write event in log" << m_events[event->name] << event->name;
-    // qDebug() << "write std data" << event;
+
     (*m_logStream) << event->time << m_events[event->name];
 
     qDebug() << event->params.size();
-    
+
     for (int i = 0; i < event->params.size(); i++) {
         switch(m_eventArgTypes[event->name][i]) {
         case UINT8_TYPE:
-            qDebug() << "u8";
             (*m_logStream) << (quint8)event->params[i].toUInt();
             break;
         case UINT16_TYPE:
-            qDebug() << "u16";
             (*m_logStream) << (quint16)event->params[i].toUInt();
             break;
         case UINT32_TYPE:
-            qDebug() << "u32";
             (*m_logStream) << (quint32)event->params[i].toUInt();
             break;
         case UINT64_TYPE:
-            qDebug() << "u64";
             (*m_logStream) << (quint64)event->params[i].toUInt();
             break;
         case INT32_TYPE:
-            qDebug() << "i32";
             (*m_logStream) << (qint32)event->params[i].toInt();
             break;
-            // case BOOL_TYPE:
-            // (*m_logStream) << event->params[i].toBool();
+        case BOOL_TYPE:
+            (*m_logStream) << event->params[i].toInt();
+            break;
         case DOUBLE_TYPE:
-            qDebug() << "d";
             (*m_logStream) << event->params[i].toDouble();
             break;
         case BYTE_ARRAY_TYPE:
         {
-            qDebug() << "b";
             QByteArray array = event->params[i].toByteArray();
-            qDebug() << "array" << array << array.size();
             (*m_logStream) << (quint8)array.size();
             (*m_logStream).writeRawData(array.constData(), array.size());
             break;
         }
         case STRING_TYPE:
         {
-            qDebug() << "s";
             QString string = event->params[i].toString();
             (*m_logStream) << (quint16)string.size();
             (*m_logStream).writeRawData(string.toUtf8().constData(), string.size());
@@ -128,6 +114,4 @@ void Log::write(Event* event)
         }
         }
     }
-
-    m_eventCount[event->name] += 1;
 }

@@ -1,7 +1,7 @@
 /**
  *
  * File: main.cpp
- * Author: Yarygin Alexander <zpp0@mail.ru>
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 
@@ -14,13 +14,14 @@ int main(int argc, char *argv[])
 {
     // qDebug() << "args" << argv[0] << argv[1] << argv[2];
     if (argc == 2) {
-        Simulator sim(argv[1]);
+        Simulator sim;
+        sim.init(argv[1]);
         sim.eval();
     }
     else {
         std::cerr << "ERROR: Project file argument is out. Exit." << std::endl;
         std::cerr << "Use 'simulator projectFile.xml'" << std::endl;
     }
-    
+
     return 0;
 }

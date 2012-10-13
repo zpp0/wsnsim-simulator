@@ -1,7 +1,8 @@
 /**
  *
  * File: eventQueue.cpp
- * Author: Yarygin Alexander <zpp0@mail.ru>
+ * Description: Simulator Event Queue class
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 
@@ -22,8 +23,6 @@ Event* eventQueue::pop()
         return NULL;
 
     Event* first = *(queue.lowerBound(0));
-    // processableEvent* first = *(queue.lowerBound(0));
-    // loggableEvent* f = (loggableEvent*) first;
     queue.remove(first->time, first);
 
     return first;

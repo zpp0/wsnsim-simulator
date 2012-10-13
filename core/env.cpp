@@ -1,7 +1,8 @@
 /**
  *
  * File: env.cpp
- * Author: Yarygin Alexander <zpp0@mail.ru>
+ * Description: Simulator Environment class
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 

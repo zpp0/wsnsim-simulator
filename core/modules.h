@@ -32,7 +32,7 @@ struct Module
 
 class ModuleAdapter {
 public:
-    virtual void load(QString fileName) = 0;
+    virtual int load(QString fileName) = 0;
     virtual Module* create() = 0;
     virtual void init(Module* module, QMap<QString, QVariant> params, QList<Module*> dependencies) = 0;
     virtual QString errorString() = 0;

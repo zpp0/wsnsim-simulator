@@ -1,7 +1,8 @@
 /**
  *
  * File: node.cpp
- * Author: Yarygin Alexander <zpp0@mail.ru>
+ * Description: Simulator Node class
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 
@@ -16,11 +17,11 @@ NodeID Node::ID()
 
 NodeID NodesFactory::m_nextNodeID = 0;
 
-INode* NodesFactory::create()
+Node* NodesFactory::create()
 {
     Node* node = new Node(m_nextNodeID);
     m_nextNodeID++;
     Simulator::registerNode(node);
     // TODO: is need to set up modules?
-    return (INode*) node;
+    return node;
 }

@@ -1,7 +1,8 @@
 /**
  *
  * File: eventQueue.h
- * Author: Yarygin Alexander <zpp0@mail.ru>
+ * Description: Simulator Event Queue class
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 
@@ -21,7 +22,7 @@ public:
 
     // извлечь из очереди очередное событие
     Event* pop();
-    
+
 private:
     // очередь событий
     QMultiMap<VirtualTime, Event*> queue;

@@ -1,7 +1,8 @@
 /**
  *
  * File: log.h
- * Author: Yarygin Alexander <zpp0@mail.ru>
+ * Description: Simulator binary log class
+ * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
  *
  **/
 
@@ -23,7 +24,7 @@ public:
     static void uninit();
 
     static void write(Event* event);
-    
+
 private:
     static QMap<QString, EventID> m_events;
     static QMap<QString, QList<LogDataType> > m_eventArgTypes;
