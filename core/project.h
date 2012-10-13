@@ -46,10 +46,10 @@ private:
     QString m_projectFileName;
     ProjectParams m_projectParams;
     QString m_errorString;
-    // QList<moduleLoader*> m_loaders;
-    QHash<ModuleData*, ModuleAdapter*> m_moduleAdapters;
-    QHash<Module*, ModuleData*> m_modulesData;
-    QHash<Module*, ModuleAdapter*> m_modules;
+    QList<ModuleAdapter*> m_adapters;
+    // QHash<ModuleData*, ModuleAdapter*> m_moduleAdapters;
+    // QHash<Module*, ModuleData*> m_modulesData;
+    // QHash<Module*, ModuleAdapter*> m_modules;
 };
 
 #endif // PROJECT_H

@@ -21,6 +21,11 @@ public:
     virtual void init(Module* module, QList<Module*> dependencies) = 0;
     virtual QString errorString() = 0;
 
+    quint16 ID() { return m_moduleInitData.ID; }
+    QString name() { return m_moduleInitData.name; }
+    ModuleType moduleType() { return m_moduleInitData.type; }
+    QList<quint16> dependencies() { return m_moduleInitData.dependencies; }
+
 protected:
     ModuleInitData m_moduleInitData;
 };

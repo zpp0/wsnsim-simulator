@@ -166,7 +166,7 @@ int Project::loadModules()
         }
 
         if (loader->load())
-            m_moduleAdapters.insert(&module, loader);
+            m_adapters += loader;
         else {
             m_errorString = loader->errorString();
             return 0;
@@ -178,27 +178,27 @@ int Project::loadModules()
 
 int Project::createModules()
 {
-    QList<ModuleData*> envModules;
-    foreach(ModuleData moduleData, m_projectParams.modules)
-        if (moduleData.moduleInfo["type"] == "environment")
-            envModules += &moduleData;
+    // QList<ModuleData*> envModules;
+    // foreach(ModuleData moduleData, m_projectParams.modules)
+    //     if (moduleData.moduleInfo["type"] == "environment")
+    //         envModules += &moduleData;
 
-    Module* scene;
-    foreach(ModuleData* envModule, envModules) {
-        ModuleAdapter* adapter = m_moduleAdapters[envModule];
-        Module* newModule = adapter->create();
-        if (newModule) {
-            // set module ID
-            // newModule->ID = envModule.moduleInfo["ID"].toInt();
-            // m_modules.insert(newModule, adapter);
-            // if (
-            // modules += newModule;
-        }
-        else {
-            m_errorString = adapter->errorString();
-            return 0;
-        }
-    }
+    // Module* scene;
+    // foreach(ModuleData* envModule, envModules) {
+    //     ModuleAdapter* adapter = m_moduleAdapters[envModule];
+    //     Module* newModule = adapter->create();
+    //     if (newModule) {
+    //         // set module ID
+    //         // newModule->ID = envModule.moduleInfo["ID"].toInt();
+    //         // m_modules.insert(newModule, adapter);
+    //         // if (
+    //         // modules += newModule;
+    //     }
+    //     else {
+    //         m_errorString = adapter->errorString();
+    //         return 0;
+    //     }
+    // }
 
     return 1;
 }
