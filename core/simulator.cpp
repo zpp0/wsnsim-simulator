@@ -17,6 +17,7 @@
 #include "event.h"
 #include "log.h"
 
+VirtualTime Simulator::m_maxGlobalTime;
 QList<Node*> Simulator::m_nodes;
 QMap<QString, QList<Module*> > Simulator::m_eventHandlers;
 
@@ -137,31 +138,6 @@ void Simulator::registerNode(Node* node)
 
 Simulator::Simulator()
 {
-    // m_this = this;
-
-    // m_maxGlobalTime = m_projectParams.simulatorParams.maxTime;
-
-    // switch (m_projectParams.simulatorParams.timeUnits) {
-    // case years:
-    //     m_maxGlobalTime *= 12;
-    // case months:
-    //     m_maxGlobalTime *= 30;
-    // case w:
-    //     m_maxGlobalTime *= 7;
-    // case d:
-    //     m_maxGlobalTime *= 24;
-    // case h:
-    //     m_maxGlobalTime *= 60;
-    // case m:
-    //     m_maxGlobalTime *= 60;
-    // case s:
-    //     m_maxGlobalTime *= 1000;
-    // case ms:
-    //     m_maxGlobalTime *= 1000;
-    // default:
-    //     break;
-    // }
-
     // QDir modulesDir(QDir::currentPath() + "/modules");
 
     // foreach(Module module, m_projectParams.modules) {
@@ -243,6 +219,11 @@ Simulator::Simulator()
     //     foreach(QString event, module->moduleInfo.handledEvents)
     //         m_eventHandlers[event] += module;
     // }
+}
+
+void Simulator::setMaxTime(VirtualTime maxTime)
+{
+    m_maxGlobalTime = maxTime;
 }
 
 void Simulator::init(QString projectFileName)

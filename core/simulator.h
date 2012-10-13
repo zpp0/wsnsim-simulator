@@ -32,12 +32,14 @@ public:
     static void registerNode(Node* node);
     // --
 
+    static void setMaxTime(VirtualTime maxTime);
+
     void init(QString projectFileName);
     void eval();
 
 private:
     // максимально-возможное время работы симулятора
-    VirtualTime m_maxGlobalTime;
+    static VirtualTime m_maxGlobalTime;
 
     // nodes list
 

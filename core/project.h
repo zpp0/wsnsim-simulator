@@ -20,6 +20,7 @@ public:
 
     int load();
 
+    int initSimulator();
     int initLog();
 
 #ifdef MODULES_ENABLED

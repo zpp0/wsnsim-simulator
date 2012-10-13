@@ -7,6 +7,7 @@
  **/
 
 #include "project.h"
+#include "simulator.h"
 #include "log.h"
 #include "luaHost.h"
 
@@ -42,6 +43,35 @@ int Project::load()
     return 1;
 
     // TODO: check errors
+}
+
+int Project::initSimulator()
+{
+    VirtualTime maxTime = m_projectParams.simulatorParams.maxTime;
+
+    switch (m_projectParams.simulatorParams.timeUnits) {
+    case years:
+        maxTime *= 12;
+    case months:
+        maxTime *= 30;
+    case w:
+        maxTime *= 7;
+    case d:
+        maxTime *= 24;
+    case h:
+        maxTime *= 60;
+    case m:
+        maxTime *= 60;
+    case s:
+        maxTime *= 1000;
+    case ms:
+        maxTime *= 1000;
+    default:
+        break;
+    }
+
+    Simulator::setMaxTime(maxTime);
+    return 1;
 }
 
 bool argsSort(const QMap<QString,QString>  &s1 , const QMap<QString,QString> &s2)
