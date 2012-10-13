@@ -78,7 +78,7 @@ int Project::initSimulator()
     return 1;
 }
 
-bool argsSort(const QMap<QString,QString>  &s1 , const QMap<QString,QString> &s2)
+bool argsSort(const QMap<QString,QString>  &s1, const QMap<QString,QString> &s2)
 {
     return s1["ID"].toInt() < s2["ID"].toInt();
 }
@@ -128,8 +128,10 @@ int Project::loadModules()
             // TODO: implement this
         }
 
+#ifdef LUA_ENABLED
         else if (module.moduleInfo["lang"] == "lua")
-            ModuleAdapterLua* loader = new ModuleAdapterLua();
+            loader = new ModuleAdapterLua();
+#endif
 
         if (loader == NULL) {
             m_errorString = "Can't load module" + module.moduleInfo["name"];
@@ -137,7 +139,7 @@ int Project::loadModules()
         }
 
         if (loader->load(module.fileName))
-            m_moduleAdapters.insert(module, loader);
+            m_moduleAdapters.insert(&module, loader);
         else {
             m_errorString = loader->errorString();
             return 0;

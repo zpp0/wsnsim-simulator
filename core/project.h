@@ -15,6 +15,9 @@
 #include "projectParams.h"
 #include "modules.h"
 
+#define MODULES_ENABLED
+#define LUA_ENABLED
+
 class Project {
 public:
     Project(QString projectFileName);
@@ -43,7 +46,7 @@ private:
     ProjectParams m_projectParams;
     QString m_errorString;
     // QList<moduleLoader*> m_loaders;
-    QMap<ModuleData, ModuleAdapter*> m_moduleAdapters;
+    QMap<ModuleData*, ModuleAdapter*> m_moduleAdapters;
 };
 
 #endif // PROJECT_H
