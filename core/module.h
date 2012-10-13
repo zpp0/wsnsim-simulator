@@ -11,6 +11,8 @@ b *
 
 #include <QtCore>
 
+typedef quint16 ModuleID;
+
 enum ModuleType {
     ModuleType_Undefined,
     ModuleType_Environment,
@@ -21,7 +23,7 @@ enum ModuleType {
 struct ModuleInitData
 {
     QString name;
-    quint16 ID;
+    ModuleID ID;
     ModuleType type;
     QString fileName;
     QVariantMap params;
@@ -31,7 +33,7 @@ struct ModuleInitData
 struct Module
 {
     QString name;
-    quint16 ID;
+    ModuleID ID;
     ModuleType type;
     QStringList paramsNames;
     QStringList interfaceFunctions;
