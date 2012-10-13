@@ -13,6 +13,7 @@
 
 #include "types.h"
 #include "projectParams.h"
+#include "modules.h"
 
 class Project {
 public:
@@ -29,7 +30,7 @@ public:
     int initLua();
 #endif
 
-    void loadModules();
+    int loadModules();
     void createModules();
     void initModules();
 
@@ -42,6 +43,7 @@ private:
     ProjectParams m_projectParams;
     QString m_errorString;
     // QList<moduleLoader*> m_loaders;
+    QMap<ModuleData, ModuleAdapter*> m_moduleAdapters;
 };
 
 #endif // PROJECT_H

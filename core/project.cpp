@@ -6,10 +6,14 @@
  *
  **/
 
+#include <QDir>
+#include <QFile>
+
 #include "project.h"
 #include "simulator.h"
 #include "log.h"
 #include "luaHost.h"
+#include "moduleAdapter_lua.h"
 
 Project::Project(QString projectFileName)
 {
@@ -101,10 +105,45 @@ int Project::initLog()
     return 1;
 }
 
+#ifdef MODULES_ENABLED
 #ifdef LUA_ENABLED
-int initLua()
+int Project::initLua()
 {
     LuaHost::open();
+    return 1;
+}
+#endif
+#endif
+
+#ifdef MODULES_ENABLED
+int Project::loadModules()
+{
+    QDir modulesDir(QDir::currentPath() + "/modules");
+
+    foreach(ModuleData module, m_projectParams.modules) {
+
+        ModuleAdapter* loader;
+
+        if (module.moduleInfo["lang"] == "cpp") {
+            // TODO: implement this
+        }
+
+        else if (module.moduleInfo["lang"] == "lua")
+            ModuleAdapterLua* loader = new ModuleAdapterLua();
+
+        if (loader == NULL) {
+            m_errorString = "Can't load module" + module.moduleInfo["name"];
+            return 0;
+        }
+
+        if (loader->load(module.fileName))
+            m_moduleAdapters.insert(module, loader);
+        else {
+            m_errorString = loader->errorString();
+            return 0;
+        }
+    }
+
     return 1;
 }
 #endif

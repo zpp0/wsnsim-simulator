@@ -7,8 +7,6 @@
  **/
 
 #include <QFileInfo>
-#include <QDir>
-#include <QFile>
 #include <iostream>
 #include <cassert>
 
