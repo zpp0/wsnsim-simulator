@@ -3,7 +3,7 @@
  * File: module.h
  * Description: modules functions
  * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
- *
+b *
  **/
 
 #ifndef MODULES_H
@@ -18,6 +18,16 @@ enum ModuleType {
     ModuleType_Software,
 };
 
+struct ModuleInitData
+{
+    QString name;
+    quint16 ID;
+    ModuleType type;
+    QString fileName;
+    QVariantMap params;
+    QList<quint16> dependencies;
+};
+
 struct Module
 {
     QString name;
@@ -26,16 +36,7 @@ struct Module
     QStringList paramsNames;
     QStringList interfaceFunctions;
     QStringList events;
-    QList<quint16> dependencies;
     QMap<QString, void*> eventHandlers;
-};
-
-class ModuleAdapter {
-public:
-    virtual int load(QString fileName) = 0;
-    virtual Module* create() = 0;
-    virtual void init(Module* module, QMap<QString, QVariant> params, QList<Module*> dependencies) = 0;
-    virtual QString errorString() = 0;
 };
 
 #endif // MODULES_H

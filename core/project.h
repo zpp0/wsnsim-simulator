@@ -13,7 +13,8 @@
 
 #include "types.h"
 #include "projectParams.h"
-#include "modules.h"
+#include "module.h"
+#include "moduleAdapter.h"
 
 #define MODULES_ENABLED
 #define LUA_ENABLED
@@ -34,7 +35,7 @@ public:
 #endif
 
     int loadModules();
-    void createModules();
+    int createModules();
     void initModules();
 
 #endif
@@ -46,7 +47,9 @@ private:
     ProjectParams m_projectParams;
     QString m_errorString;
     // QList<moduleLoader*> m_loaders;
-    QMap<ModuleData*, ModuleAdapter*> m_moduleAdapters;
+    QHash<ModuleData*, ModuleAdapter*> m_moduleAdapters;
+    QHash<Module*, ModuleData*> m_modulesData;
+    QHash<Module*, ModuleAdapter*> m_modules;
 };
 
 #endif // PROJECT_H

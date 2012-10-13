@@ -9,15 +9,18 @@
 #ifndef MODULEADAPTERLUA_H
 #define MODULEADAPTERLUA_H
 
-#include "modules.h"
+#include "moduleAdapter.h"
 
-class ModuleAdapterLua : public ModuleAdapter
+class ModuleAdapterLua : protected ModuleAdapter
 {
 public:
-    /* virtual */ int load(QString  fileName);
+    ModuleAdapterLua(ModuleInitData moduleInitData);
+
+    /* virtual */ int load();
     /* virtual */ Module* create();
-    /* virtual */ void init(Module* module, QMap<QString, QVariant> params, QList<Module*> dependencies);
+    /* virtual */ void init(Module* module, QList<Module*> dependencies);
     /* virtual */ QString errorString();
+
 private:
     QString m_errorString;
 };

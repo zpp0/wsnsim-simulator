@@ -11,7 +11,7 @@
 
 #include "types.h"
 
-#include "modules.h"
+#include "module.h"
 #include "node.h"
 #include "eventQueue.h"
 

@@ -124,13 +124,40 @@ int Project::loadModules()
 
         ModuleAdapter* loader;
 
+        // prepare module type
+        ModuleType type;
+        QString moduleType;
+        if (moduleType == "environment")
+            type = ModuleType_Environment;
+        else if (moduleType == "hardware")
+            type = ModuleType_Hardware;
+        else if (moduleType == "software")
+            type = ModuleType_Software;
+        else {
+            m_errorString = "Wrong type" + moduleType + "of module" + module.moduleInfo["name"];
+            return 0;
+        }
+
+        // prepare module params
+        QVariantMap params;
+        foreach(ModuleParam param, module.params)
+            params[param.name] = param.value;
+
+        ModuleInitData moduleInitData;
+        moduleInitData.name = module.moduleInfo["name"];
+        moduleInitData.ID = module.moduleInfo["ID"].toInt();
+        moduleInitData.type = type;
+        moduleInitData.fileName = module.fileName;
+        moduleInitData.params = params;
+        moduleInitData.dependencies = module.dependencies;
+
         if (module.moduleInfo["lang"] == "cpp") {
             // TODO: implement this
         }
 
 #ifdef LUA_ENABLED
         else if (module.moduleInfo["lang"] == "lua")
-            loader = new ModuleAdapterLua();
+            loader = (ModuleAdapter*) new ModuleAdapterLua(moduleInitData);
 #endif
 
         if (loader == NULL) {
@@ -138,7 +165,7 @@ int Project::loadModules()
             return 0;
         }
 
-        if (loader->load(module.fileName))
+        if (loader->load())
             m_moduleAdapters.insert(&module, loader);
         else {
             m_errorString = loader->errorString();
@@ -148,4 +175,32 @@ int Project::loadModules()
 
     return 1;
 }
+
+int Project::createModules()
+{
+    QList<ModuleData*> envModules;
+    foreach(ModuleData moduleData, m_projectParams.modules)
+        if (moduleData.moduleInfo["type"] == "environment")
+            envModules += &moduleData;
+
+    Module* scene;
+    foreach(ModuleData* envModule, envModules) {
+        ModuleAdapter* adapter = m_moduleAdapters[envModule];
+        Module* newModule = adapter->create();
+        if (newModule) {
+            // set module ID
+            // newModule->ID = envModule.moduleInfo["ID"].toInt();
+            // m_modules.insert(newModule, adapter);
+            // if (
+            // modules += newModule;
+        }
+        else {
+            m_errorString = adapter->errorString();
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
 #endif

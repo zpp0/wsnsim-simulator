@@ -10,7 +10,7 @@
 #define EVENT_H
 
 #include "types.h"
-#include "modules.h"
+#include "module.h"
 
 struct Event
 {
