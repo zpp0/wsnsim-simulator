@@ -8,18 +8,24 @@
 
 #include "project.h"
 #include "log.h"
+#include "luaHost.h"
 
 Project::Project(QString projectFileName)
 {
     m_projectFileName = projectFileName;
 }
 
-int Project::load(QString &errorString)
+QString Project::errorString()
+{
+    return m_errorString;
+}
+
+int Project::load()
 {
     QLibrary projectDataLibrary("./projectData");
 
     if (!projectDataLib.load()) {
-        errorString = projectDataLibrary.errorString();
+        m_errorString = projectDataLibrary.errorString();
         return 0;
     }
 
@@ -27,10 +33,10 @@ int Project::load(QString &errorString)
     typedef ProjectParams(*projectDataLoad) (QString& projectFileName, QString* errorMessage);
     projectDataLoad pd = (projectDataLoad) projectDataLib.resolve("load");
 
-    m_projectParams = pd(m_projectFileName, &errorString);
+    m_projectParams = pd(m_projectFileName, &m_errorString);
 
     // if error, than return
-    if (errorString != "")
+    if (m_errorString != "")
         return 0;
 
     return 1;
@@ -40,8 +46,6 @@ int Project::load(QString &errorString)
 
 int Project::initLog(QString &errorString)
 {
-    errorString = "";
-
     // getting events <name, ID>
     QMap<QString, EventID> events;
     QMap<QString, QList<QString > > eventArgTypes;
@@ -61,3 +65,11 @@ int Project::initLog(QString &errorString)
 
     return 1;
 }
+
+#ifdef LUA_ENABLED
+int initLua()
+{
+    LuaHost::open();
+    return 1;
+}
+#endif

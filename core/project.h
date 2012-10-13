@@ -6,6 +6,9 @@
  *
  **/
 
+#ifndef PROJECT_H
+#define PROJECT_H
+
 #include <QtCore>
 
 #include "types.h"
@@ -15,14 +18,14 @@ class Project {
 public:
     Project(QString projectFileName);
 
-    int load(QString &errorString);
+    int load();
 
-    int initLog(QString &errorString);
+    int initLog();
 
 #ifdef MODULES_ENABLED
 
 #ifdef LUA_ENABLED
-    void initLua();
+    int initLua();
 #endif
 
     void loadModules();
@@ -31,11 +34,13 @@ public:
 
 #endif
 
+    QString errorString();
+
 private:
     QString m_projectFileName;
     ProjectParams m_projectParams;
+    QString m_errorString;
     // QList<moduleLoader*> m_loaders;
-    // QList<SimulatorModule*> m_modules;
-
-    // QList<SimulatorModule*> m_uninitialisedModules;
 };
+
+#endif // PROJECT_H
