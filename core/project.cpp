@@ -143,9 +143,12 @@ int Project::loadModules()
         foreach(ModuleParam param, module.params)
             params[param.name] = param.value;
 
+        // prepare moduleID
+        ModuleID ID = module.moduleInfo["ID"].toInt();
+
         ModuleInitData moduleInitData;
         moduleInitData.name = module.moduleInfo["name"];
-        moduleInitData.ID = module.moduleInfo["ID"].toInt();
+        moduleInitData.ID = ID;
         moduleInitData.type = type;
         moduleInitData.fileName = module.fileName;
         moduleInitData.params = params;
@@ -165,8 +168,14 @@ int Project::loadModules()
             return 0;
         }
 
-        if (loader->load())
-            m_adapters += loader;
+        if (loader->load()) {
+            if (type == ModuleType_Environment)
+                m_envAdapters += loader;
+            else
+                m_nodeAdapters += loader;
+
+            m_moduleType[ID] = ModuleType_Environment;
+        }
         else {
             m_errorString = loader->errorString();
             return 0;
@@ -176,29 +185,108 @@ int Project::loadModules()
     return 1;
 }
 
-int Project::createModules()
+int Project::initModules()
 {
-    // QList<ModuleData*> envModules;
-    // foreach(ModuleData moduleData, m_projectParams.modules)
-    //     if (moduleData.moduleInfo["type"] == "environment")
-    //         envModules += &moduleData;
+    // creating env modules
+    foreach(ModuleAdapter* envModule, m_envAdapters) {
 
-    // Module* scene;
-    // foreach(ModuleData* envModule, envModules) {
-    //     ModuleAdapter* adapter = m_moduleAdapters[envModule];
-    //     Module* newModule = adapter->create();
-    //     if (newModule) {
-    //         // set module ID
-    //         // newModule->ID = envModule.moduleInfo["ID"].toInt();
-    //         // m_modules.insert(newModule, adapter);
-    //         // if (
-    //         // modules += newModule;
-    //     }
-    //     else {
-    //         m_errorString = adapter->errorString();
-    //         return 0;
-    //     }
-    // }
+        Module* newModule = envModule->create();
+        if (newModule)
+            m_envModules[envModule->ID()] = newModule;
+        else {
+            m_errorString = envModule->errorString();
+            return 0;
+        }
+    }
+
+    QList<ModuleAdapter*> uninitEnvModules;
+
+    // init env modules without depending on the nodes
+    foreach(ModuleAdapter* envModule, m_envAdapters) {
+
+        QList<ModuleID> dependencies = envModule->dependencies();
+        QList<Module*> depModules;
+
+        foreach(ModuleID moduleID, dependencies) {
+            if (m_moduleType[moduleID] != ModuleType_Environment) {
+                uninitEnvModules += envModule;
+                break;
+            }
+
+            depModules += m_envModules[moduleID];
+        }
+
+        envModule->init(m_envModules[envModule->ID()], depModules);
+    }
+
+    // now we must have more than 0 registered nodes
+    quint16 nodesNum = Simulator::nodesNumber();
+
+    if (nodesNum == 0) {
+        m_errorString = "There are no registered nodes in simulator. Can't continue.";
+        return 0;
+    }
+
+    // creating nodes modules
+    for (quint16 ID = 0; ID < nodesNum; ID++) {
+        foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
+
+            Module* newModule = nodeModule->create();
+            if (newModule) {
+                // set the nodeID of module
+                newModule->node = ID;
+                m_nodeModules[nodeModule->ID()][ID] = newModule;
+            }
+            else {
+                m_errorString = nodeModule->errorString();
+                return 0;
+            }
+        }
+    }
+
+    // init last env modules
+    foreach(ModuleAdapter* envModule, uninitEnvModules) {
+        Module* initModule = m_envModules[envModule->ID()];
+
+        QList<ModuleID> dependencies = envModule->dependencies();
+        QList<Module*> depModules;
+
+        foreach(ModuleID moduleID, dependencies) {
+            // depend by module of node, 1-to-many relationship
+            if (m_moduleType[moduleID] != ModuleType_Environment)
+                for (NodeID nodeID = 0; nodeID < nodesNum; nodeID++)
+                    depModules += m_nodeModules[moduleID][nodeID];
+            // depend by module of env 1-to-1 relationship
+            else
+                depModules += m_envModules[moduleID];
+        }
+
+        // init module
+        envModule->init(initModule, depModules);
+    }
+
+    // init modules of nodes
+    foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
+        // for all nodes
+        for (NodeID nodeID = 0; nodeID < nodesNum; nodeID++) {
+            Module* initModule = m_nodeModules[nodeModule->ID()][nodeID];
+
+            QList<ModuleID> dependencies = nodeModule->dependencies();
+            QList<Module*> depModules;
+
+            foreach(ModuleID moduleID, dependencies) {
+                // depend by module of env 1-to-1 relationship
+                if (m_moduleType[moduleID] == ModuleType_Environment)
+                    depModules += m_envModules[moduleID];
+                // depend by module of node 1-to-1 relationship, need the same nodeID
+                else
+                    depModules += m_nodeModules[moduleID][nodeID];
+            }
+
+            // init module
+            nodeModule->init(initModule, depModules);
+        }
+    }
 
     return 1;
 }

@@ -35,8 +35,7 @@ public:
 #endif
 
     int loadModules();
-    int createModules();
-    void initModules();
+    int initModules();
 
 #endif
 
@@ -46,10 +45,15 @@ private:
     QString m_projectFileName;
     ProjectParams m_projectParams;
     QString m_errorString;
-    QList<ModuleAdapter*> m_adapters;
-    // QHash<ModuleData*, ModuleAdapter*> m_moduleAdapters;
-    // QHash<Module*, ModuleData*> m_modulesData;
-    // QHash<Module*, ModuleAdapter*> m_modules;
+    QList<ModuleAdapter*> m_envAdapters;
+    QList<ModuleAdapter*> m_nodeAdapters;
+
+    QHash<ModuleID, ModuleType> m_moduleType;
+
+    QHash<ModuleID, Module*> m_envModules;
+    // TODO: on future
+    // QHash<ModuleID, QHash<SceneID, Module*> > m_envModules;
+    QHash<ModuleID, QHash<NodeID, Module*> > m_nodeModules;
 };
 
 #endif // PROJECT_H
