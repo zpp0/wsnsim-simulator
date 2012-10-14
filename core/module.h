@@ -11,6 +11,8 @@ b *
 
 #include <QtCore>
 
+#include "types.h"
+
 typedef quint16 ModuleID;
 
 enum ModuleType {
@@ -34,6 +36,7 @@ struct Module
 {
     QString name;
     ModuleID ID;
+    NodeID node;
     ModuleType type;
     QStringList paramsNames;
     QStringList interfaceFunctions;
