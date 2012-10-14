@@ -16,10 +16,11 @@
 #include "log.h"
 
 VirtualTime Simulator::m_maxGlobalTime;
-QList<Node*> Simulator::m_nodes;
 QMap<QString, QList<Module*> > Simulator::m_eventHandlers;
 
 QList<QString> Simulator::m_loggableEvents;
+
+NodeID Simulator::m_nodesNumber;
 
 eventQueue Simulator::m_queue;
 
@@ -47,6 +48,11 @@ eventQueue Simulator::m_queue;
 
 //     return interface;
 // }
+
+NodeID Simulator::nodesNumber()
+{
+    return m_nodesNumber;
+}
 
 void Simulator::registerEventHandler(Module* handler, QString eventName)
 {
@@ -95,7 +101,7 @@ Module* Simulator::getNodeInterface(Module* receiver, Node* node, QString interf
 
 void Simulator::registerNode(Node* node)
 {
-    m_nodes += node;
+    // m_nodes += node;
 
     qDebug() << "new node" << node;
 

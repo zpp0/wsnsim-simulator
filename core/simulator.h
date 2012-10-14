@@ -33,6 +33,7 @@ public:
     // --
 
     static void setMaxTime(VirtualTime maxTime);
+    static NodeID nodesNumber();
 
     void init(QString projectFileName);
     void eval();
@@ -41,9 +42,7 @@ private:
     // максимально-возможное время работы симулятора
     static VirtualTime m_maxGlobalTime;
 
-    // nodes list
-
-    static QList<Node*> m_nodes;
+    static NodeID m_nodesNumber;
 
     static QMap<QString, QList<Module*> > m_eventHandlers;
 
