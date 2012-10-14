@@ -6,14 +6,12 @@
 b *
  **/
 
-#ifndef MODULES_H
-#define MODULES_H
+#ifndef MODULE_H
+#define MODULE_H
 
 #include <QtCore>
 
 #include "types.h"
-
-typedef quint16 ModuleID;
 
 enum ModuleType {
     ModuleType_Undefined,
@@ -22,26 +20,18 @@ enum ModuleType {
     ModuleType_Software,
 };
 
-struct ModuleInitData
+typedef quint16 ModuleID;
+typedef int ModuleInstanceID;
+typedef QMap<QString, QPair<ModuleType, ModuleID> > ModuleDependencies;
+
+struct Module
 {
     QString name;
     ModuleID ID;
     ModuleType type;
     QString fileName;
     QVariantMap params;
-    QList<quint16> dependencies;
+    ModuleDependencies dependencies;
 };
 
-struct Module
-{
-    QString name;
-    ModuleID ID;
-    NodeID node;
-    ModuleType type;
-    QStringList paramsNames;
-    QStringList interfaceFunctions;
-    QStringList events;
-    QMap<QString, void*> eventHandlers;
-};
-
-#endif // MODULES_H
+#endif // MODULE_H

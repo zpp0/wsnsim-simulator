@@ -9,25 +9,31 @@
 #include "moduleAdapter_lua.h"
 #include "luaHost.h"
 
-ModuleAdapterLua::ModuleAdapterLua(ModuleInitData moduleInitData)
-    :ModuleAdapter(moduleInitData)
+ModuleAdapterLua::ModuleAdapterLua(Module module)
+    :ModuleAdapter(module)
 {
+    m_ID = 0;
 }
 
 int ModuleAdapterLua::load()
 {
-    int ret = LuaHost::loadFile(m_moduleInitData.fileName);
+    int ret = LuaHost::loadFile(m_module.fileName);
     if (ret)
         m_errorString = LuaHost::errorString();
     return ret;
 }
 
-Module* ModuleAdapterLua::create()
+ModuleInstanceID ModuleAdapterLua::create()
 {
-    return NULL;
+    // Module* module = new Module();
+    // m_ID++;
+
+    // std::cout << "after creation on stack " << lua_gettop(m_lua) << std::endl;
+
+    return m_ID++;
 }
 
-void ModuleAdapterLua::init(Module* module, QList<Module*> dependencies)
+void ModuleAdapterLua::init(ModuleInstanceID moduleInstance)
 {
 }
 

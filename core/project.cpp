@@ -115,56 +115,86 @@ int Project::initLua()
 #endif
 #endif
 
+ModuleType Project::getType(QString typeName)
+{
+    ModuleType type;
+    if (typeName == "environment")
+        type = ModuleType_Environment;
+    else if (typeName == "hardware")
+            type = ModuleType_Hardware;
+    else if (typeName == "software")
+        type = ModuleType_Software;
+    else
+        type = ModuleType_Undefined;
+
+    return type;
+}
+
 #ifdef MODULES_ENABLED
 int Project::loadModules()
 {
     QDir modulesDir(QDir::currentPath() + "/modules");
 
-    foreach(ModuleData module, m_projectParams.modules) {
+    foreach(ModuleData moduleData, m_projectParams.modules) {
 
-        ModuleAdapter* loader;
+        QString moduleName = moduleData.moduleInfo["name"];
+        QString fileName = moduleData.fileName;
+        QString typeName = moduleData.moduleInfo["type"];
 
         // prepare module type
-        ModuleType type;
-        QString moduleType;
-        if (moduleType == "environment")
-            type = ModuleType_Environment;
-        else if (moduleType == "hardware")
-            type = ModuleType_Hardware;
-        else if (moduleType == "software")
-            type = ModuleType_Software;
-        else {
-            m_errorString = "Wrong type" + moduleType + "of module" + module.moduleInfo["name"];
+        ModuleType type = getType(typeName);
+        if (type == ModuleType_Undefined) {
+            m_errorString = "Wrong type" + typeName + "of module" + moduleName;
             return 0;
         }
 
         // prepare module params
         QVariantMap params;
-        foreach(ModuleParam param, module.params)
+        foreach(ModuleParam param, moduleData.params)
             params[param.name] = param.value;
 
         // prepare moduleID
-        ModuleID ID = module.moduleInfo["ID"].toInt();
+        ModuleID ID = moduleData.moduleInfo["ID"].toInt();
 
-        ModuleInitData moduleInitData;
-        moduleInitData.name = module.moduleInfo["name"];
-        moduleInitData.ID = ID;
-        moduleInitData.type = type;
-        moduleInitData.fileName = module.fileName;
-        moduleInitData.params = params;
-        moduleInitData.dependencies = module.dependencies;
+        // prepare dependencies
+        ModuleDependencies dependencies;
 
-        if (module.moduleInfo["lang"] == "cpp") {
+        foreach(QString depName, moduleData.dependencies.keys()) {
+
+            QString typeName = moduleData.dependencies[depName].first;
+            ModuleID id = moduleData.dependencies[depName].second;
+
+            ModuleType type = getType(typeName);
+            if (type == ModuleType_Undefined) {
+                m_errorString = "Wrong type" + typeName + "of dependence" + depName;
+                return 0;
+            }
+
+            dependencies[depName] = qMakePair(type, id);
+        }
+        
+        Module module;
+        module.name = moduleName;
+        module.ID = ID;
+        module.type = type;
+        module.fileName = fileName;
+        module.params = params;
+        module.dependencies = dependencies;
+
+        // create new adapter
+        ModuleAdapter* loader;
+
+        if (moduleData.moduleInfo["lang"] == "cpp") {
             // TODO: implement this
         }
 
 #ifdef LUA_ENABLED
-        else if (module.moduleInfo["lang"] == "lua")
-            loader = (ModuleAdapter*) new ModuleAdapterLua(moduleInitData);
+        else if (moduleData.moduleInfo["lang"] == "lua")
+            loader = (ModuleAdapter*) new ModuleAdapterLua(module);
 #endif
 
         if (loader == NULL) {
-            m_errorString = "Can't load module" + module.moduleInfo["name"];
+            m_errorString = "Can't load module" + moduleData.moduleInfo["name"];
             return 0;
         }
 
@@ -190,9 +220,9 @@ int Project::initModules()
     // creating env modules
     foreach(ModuleAdapter* envModule, m_envAdapters) {
 
-        Module* newModule = envModule->create();
-        if (newModule)
-            m_envModules[envModule->ID()] = newModule;
+        ModuleInstanceID id = envModule->create();
+        if (id != -1)
+            m_envModules[envModule->ID()] = id;
         else {
             m_errorString = envModule->errorString();
             return 0;
@@ -204,19 +234,15 @@ int Project::initModules()
     // init env modules without depending on the nodes
     foreach(ModuleAdapter* envModule, m_envAdapters) {
 
-        QList<ModuleID> dependencies = envModule->dependencies();
-        QList<Module*> depModules;
-
-        foreach(ModuleID moduleID, dependencies) {
-            if (m_moduleType[moduleID] != ModuleType_Environment) {
+        QList<QPair<ModuleType, ModuleID> > dependencies = envModule->dependencies().values();
+        for (int i = 0; i < dependencies.size(); i++) {
+            if (m_moduleType[dependencies[i].second] != ModuleType_Environment) {
                 uninitEnvModules += envModule;
                 break;
             }
-
-            depModules += m_envModules[moduleID];
         }
 
-        envModule->init(m_envModules[envModule->ID()], depModules);
+        envModule->init(m_envModules[envModule->ID()]);
     }
 
     // now we must have more than 0 registered nodes
@@ -228,15 +254,12 @@ int Project::initModules()
     }
 
     // creating nodes modules
-    for (quint16 ID = 0; ID < nodesNum; ID++) {
+    for (quint16 nodeID = 0; nodeID < nodesNum; nodeID++) {
         foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
 
-            Module* newModule = nodeModule->create();
-            if (newModule) {
-                // set the nodeID of module
-                newModule->node = ID;
-                m_nodeModules[nodeModule->ID()][ID] = newModule;
-            }
+            ModuleInstanceID instanceID = nodeModule->create();
+            if (instanceID != -1)
+                m_nodeModules[nodeModule->ID()][nodeID] = instanceID;
             else {
                 m_errorString = nodeModule->errorString();
                 return 0;
@@ -245,48 +268,15 @@ int Project::initModules()
     }
 
     // init last env modules
-    foreach(ModuleAdapter* envModule, uninitEnvModules) {
-        Module* initModule = m_envModules[envModule->ID()];
-
-        QList<ModuleID> dependencies = envModule->dependencies();
-        QList<Module*> depModules;
-
-        foreach(ModuleID moduleID, dependencies) {
-            // depend by module of node, 1-to-many relationship
-            if (m_moduleType[moduleID] != ModuleType_Environment)
-                for (NodeID nodeID = 0; nodeID < nodesNum; nodeID++)
-                    depModules += m_nodeModules[moduleID][nodeID];
-            // depend by module of env 1-to-1 relationship
-            else
-                depModules += m_envModules[moduleID];
-        }
-
-        // init module
-        envModule->init(initModule, depModules);
-    }
+    foreach(ModuleAdapter* envModule, uninitEnvModules)
+        envModule->init(m_envModules[envModule->ID()]);
 
     // init modules of nodes
-    foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
+    foreach(ModuleAdapter* nodeModule, m_nodeAdapters)
         // for all nodes
-        for (NodeID nodeID = 0; nodeID < nodesNum; nodeID++) {
-            Module* initModule = m_nodeModules[nodeModule->ID()][nodeID];
-
-            QList<ModuleID> dependencies = nodeModule->dependencies();
-            QList<Module*> depModules;
-
-            foreach(ModuleID moduleID, dependencies) {
-                // depend by module of env 1-to-1 relationship
-                if (m_moduleType[moduleID] == ModuleType_Environment)
-                    depModules += m_envModules[moduleID];
-                // depend by module of node 1-to-1 relationship, need the same nodeID
-                else
-                    depModules += m_nodeModules[moduleID][nodeID];
-            }
-
+        for (NodeID nodeID = 0; nodeID < nodesNum; nodeID++)
             // init module
-            nodeModule->init(initModule, depModules);
-        }
-    }
+            nodeModule->init(m_nodeModules[nodeModule->ID()][nodeID]);
 
     return 1;
 }

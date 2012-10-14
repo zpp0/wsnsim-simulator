@@ -42,6 +42,8 @@ public:
     QString errorString();
 
 private:
+    ModuleType getType(QString type);
+
     QString m_projectFileName;
     ProjectParams m_projectParams;
     QString m_errorString;
@@ -50,10 +52,10 @@ private:
 
     QHash<ModuleID, ModuleType> m_moduleType;
 
-    QHash<ModuleID, Module*> m_envModules;
+    QHash<ModuleID, ModuleInstanceID> m_envModules;
     // TODO: on future
     // QHash<ModuleID, QHash<SceneID, Module*> > m_envModules;
-    QHash<ModuleID, QHash<NodeID, Module*> > m_nodeModules;
+    QHash<ModuleID, QHash<NodeID, ModuleInstanceID> > m_nodeModules;
 };
 
 #endif // PROJECT_H

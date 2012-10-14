@@ -14,15 +14,17 @@
 class ModuleAdapterLua : protected ModuleAdapter
 {
 public:
-    ModuleAdapterLua(ModuleInitData moduleInitData);
+    ModuleAdapterLua(Module module);
 
     /* virtual */ int load();
-    /* virtual */ Module* create();
-    /* virtual */ void init(Module* module, QList<Module*> dependencies);
+    /* virtual */ ModuleInstanceID create();
+    /* virtual */ void init(ModuleInstanceID moduleInstance);
     /* virtual */ QString errorString();
 
 private:
     QString m_errorString;
+    ModuleInstanceID m_ID;
+    QList<ModuleInstanceID> m_modules;
 };
 
 #endif // MODULEADAPTERLUA_H

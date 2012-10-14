@@ -13,21 +13,20 @@
 
 class ModuleAdapter {
 public:
-    ModuleAdapter(ModuleInitData moduleInitData);
+    ModuleAdapter(Module module);
 
     virtual ~ModuleAdapter(){}
     virtual int load() = 0;
-    virtual Module* create() = 0;
-    virtual void init(Module* module, QList<Module*> dependencies) = 0;
+    virtual ModuleInstanceID create() = 0;
+    virtual void init(ModuleInstanceID moduleInstance) = 0;
     virtual QString errorString() = 0;
 
-    ModuleID ID() { return m_moduleInitData.ID; }
-    QString name() { return m_moduleInitData.name; }
-    ModuleType moduleType() { return m_moduleInitData.type; }
-    QList<ModuleID> dependencies() { return m_moduleInitData.dependencies; }
+    ModuleID ID() { return m_module.ID; }
+    ModuleType moduleType() { return m_module.type; }
+    ModuleDependencies dependencies() { return m_module.dependencies; }
 
 protected:
-    ModuleInitData m_moduleInitData;
+    Module m_module;
 };
 
 #endif // MODULEADAPTER_H

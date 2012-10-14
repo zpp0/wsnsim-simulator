@@ -8,7 +8,7 @@
 
 #include "moduleAdapter.h"
 
-ModuleAdapter::ModuleAdapter(ModuleInitData moduleInitData)
+ModuleAdapter::ModuleAdapter(Module module)
 {
-    m_moduleInitData = moduleInitData;
+    m_module = module;
 }
