@@ -25,6 +25,8 @@ public:
     static int loadFile(QString path);
     static void close();
 
+    static int createModule(quint16 ID, QString name);
+
     static QString errorString();
 private:
     static lua_State *m_lua;
