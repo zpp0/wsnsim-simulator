@@ -46,9 +46,8 @@ int LuaHost::loadFile(QString path)
     return ret;
 }
 
-int LuaHost::createModule(quint16 ID, QString name)
+int LuaHost::createModule(quint16 ID, QString name, ModuleID moduleID)
 {
-    // FIXME: There can't be several modules with the same name
     const char* moduleName = name.toUtf8().constData();
 
     // -- put wsnsim.modules on top
@@ -59,16 +58,17 @@ int LuaHost::createModule(quint16 ID, QString name)
     assert(lua_istable(m_lua, -1));
 
     // --- getting table for module
-    lua_getfield(m_lua, -1, moduleName);
+    lua_rawgeti(m_lua, -1, moduleID);
     if (!lua_istable(m_lua, -1)) {
 
-        // Temperature is not a table, create one
+        // table not found, create a new one
 
-        lua_createtable(m_lua, 0, 0);
-        lua_setfield(m_lua, 2, moduleName);
+        lua_pushinteger(m_lua, moduleID);
+        lua_newtable(m_lua);
+        lua_settable(m_lua, 2);
 
         lua_pop(m_lua, 1);
-        lua_getfield(m_lua, -1, moduleName);
+        lua_rawgeti(m_lua, -1, moduleID);
     }
 
     // --- get new instance of module with ID

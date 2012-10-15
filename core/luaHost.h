@@ -18,6 +18,8 @@ extern "C"
 
 #include <QString>
 
+#include "module.h"
+
 class LuaHost
 {
 public:
@@ -25,7 +27,7 @@ public:
     static int loadFile(QString path);
     static void close();
 
-    static int createModule(quint16 ID, QString name);
+static int createModule(quint16 ID, QString name, ModuleID moduleID);
 
     static QString errorString();
 private:

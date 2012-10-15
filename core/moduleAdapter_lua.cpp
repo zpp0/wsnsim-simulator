@@ -25,10 +25,12 @@ int ModuleAdapterLua::load()
 
 ModuleInstanceID ModuleAdapterLua::create()
 {
-    // Module* module = new Module();
-    // m_ID++;
+    int ret = LuaHost::createModule(m_ID, m_module.name, m_module.ID);
 
-    // std::cout << "after creation on stack " << lua_gettop(m_lua) << std::endl;
+    if (ret) {
+        m_errorString = LuaHost::errorString();
+        return -1;
+    }
 
     return m_ID++;
 }
