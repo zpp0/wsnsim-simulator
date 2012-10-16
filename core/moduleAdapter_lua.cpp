@@ -35,8 +35,9 @@ ModuleInstanceID ModuleAdapterLua::create()
     return m_ID++;
 }
 
-void ModuleAdapterLua::init(ModuleInstanceID moduleInstance)
+int ModuleAdapterLua::init(ModuleInstanceID moduleInstance)
 {
+    return 1;
 }
 
 QString ModuleAdapterLua::errorString()

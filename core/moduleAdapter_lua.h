@@ -18,7 +18,7 @@ public:
 
     /* virtual */ int load();
     /* virtual */ ModuleInstanceID create();
-    /* virtual */ void init(ModuleInstanceID moduleInstance);
+    /* virtual */ int init(ModuleInstanceID moduleInstance);
     /* virtual */ QString errorString();
 
 private:

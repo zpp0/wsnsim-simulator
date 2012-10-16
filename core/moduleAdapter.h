@@ -18,7 +18,7 @@ public:
     virtual ~ModuleAdapter(){}
     virtual int load() = 0;
     virtual ModuleInstanceID create() = 0;
-    virtual void init(ModuleInstanceID moduleInstance) = 0;
+    virtual int init(ModuleInstanceID moduleInstance) = 0;
     virtual QString errorString() = 0;
 
     ModuleID ID() { return m_module.ID; }

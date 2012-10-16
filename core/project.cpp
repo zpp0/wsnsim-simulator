@@ -242,7 +242,11 @@ int Project::initModules()
             }
         }
 
-        envModule->init(m_envModules[envModule->ID()]);
+        int success = envModule->init(m_envModules[envModule->ID()]);
+        if (!success) {
+            m_errorString = envModule->errorString();
+            return 0;
+        }
     }
 
     // now we must have more than 0 registered nodes
@@ -268,15 +272,26 @@ int Project::initModules()
     }
 
     // init last env modules
-    foreach(ModuleAdapter* envModule, uninitEnvModules)
-        envModule->init(m_envModules[envModule->ID()]);
+    foreach(ModuleAdapter* envModule, uninitEnvModules) {
+        int success = envModule->init(m_envModules[envModule->ID()]);
+        if (!success) {
+            m_errorString = envModule->errorString();
+            return 0;
+        }
+    }
 
     // init modules of nodes
-    foreach(ModuleAdapter* nodeModule, m_nodeAdapters)
+    foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
         // for all nodes
-        for (NodeID nodeID = 0; nodeID < nodesNum; nodeID++)
+        for (NodeID nodeID = 0; nodeID < nodesNum; nodeID++) {
             // init module
-            nodeModule->init(m_nodeModules[nodeModule->ID()][nodeID]);
+            int success = nodeModule->init(m_nodeModules[nodeModule->ID()][nodeID]);
+            if (!success) {
+                m_errorString = nodeModule->errorString();
+                return 0;
+            }
+        }
+    }
 
     return 1;
 }
