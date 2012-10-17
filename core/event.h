@@ -15,7 +15,7 @@
 struct Event
 {
     QString name;
-    Module* author;
+    ModuleID author;
     // TODO: move to core
     // bool priority;
     // TODO: move to core
@@ -23,11 +23,6 @@ struct Event
     VirtualTime time;
     // WARNING: in params can be written anything
     QVariantList params;
-};
-
-struct EventFactory
-{
-    void post(Module* author, QString name, VirtualTime time, QVariantList params);
 };
 
 #endif // EVENT_H

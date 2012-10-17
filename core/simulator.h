@@ -12,29 +12,18 @@
 #include "types.h"
 
 #include "module.h"
-#include "node.h"
 #include "eventQueue.h"
 #include "project.h"
 
 class Simulator
 {
 public:
-    Simulator();
+    // void registerEventHandler(ModuleID handler, QString eventName);
 
-    // ICore* getCoreInterface(IModule* receiver, QString name);
-    Module* getEnvInterface(Module* receiver, QString interfaceName);
-    Module* getNodeInterface(Module* receiver, Node* node, QString interfaceName);
-
-    void registerEventHandler(Module* handler, QString eventName);
-
-    // --
-    static void postEvent(Module* author, Event* event);
-
-    static void registerNode(Node* node);
-    // --
+    static VirtualTime globalTime();
+    static void postEvent(ModuleID author, Event* event);
 
     static void setMaxTime(VirtualTime maxTime);
-    // static NodeID nodesNumber();
 
     void init(QString projectFileName);
     void eval();
@@ -42,6 +31,9 @@ public:
 private:
     // максимально-возможное время работы симулятора
     static VirtualTime m_maxGlobalTime;
+
+    // реальное время в системе
+    static VirtualTime m_globalTime;
 
     static Project* m_project;
 
