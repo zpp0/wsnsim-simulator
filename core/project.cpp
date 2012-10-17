@@ -76,6 +76,13 @@ int Project::initSimulator()
 
     Simulator::setMaxTime(maxTime);
 
+    foreach (EventParams params, m_projectParams.events.systemEvents) {
+        QString eventName = params.eventInfo["name"];
+        ModuleID moduleID = params.eventInfo["moduleID"].toUInt();
+        EventID eventID = params.eventInfo["ID"].toUInt();
+        Simulator::registerEvent(eventName, moduleID, eventID);
+    }
+
     return 1;
 }
 

@@ -28,6 +28,6 @@ void SimulatorAPI::postEvent(ModuleID author, QString name, VirtualTime time, QV
         event->recordable = true;
     event->params = params;
 
-    Simulator::postEvent(author, event);
+    Simulator::postEvent(event);
 };
 

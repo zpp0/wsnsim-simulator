@@ -17,28 +17,36 @@
 VirtualTime Simulator::m_globalTime;
 VirtualTime Simulator::m_maxGlobalTime;
 
-QMap<QString, QList<Module*> > Simulator::m_eventHandlers;
+QMap<EventID, QList<EventHandler> > Simulator::m_eventHandlers;
+QMap<QString, QMap<ModuleID, EventID> > Simulator::m_events;
 
-QList<QString> Simulator::m_loggableEvents;
+QList<EventID> Simulator::m_loggableEvents;
 
 Project* Simulator::m_project;
 
 eventQueue Simulator::m_queue;
 
-// void Simulator::registerEventHandler(Module* handler, QString eventName)
-// {
-//     m_eventHandlers[eventName] += handler;
-// }
+void Simulator::registerEvent(QString name, ModuleID author, EventID event)
+{
+    m_events[name][author] = event;
+}
+
+void Simulator::registerEventHandler(EventID event, EventHandler handler)
+{
+    m_eventHandlers[event] += handler;
+}
 
 VirtualTime Simulator::globalTime()
 {
     return m_globalTime;
 }
 
-void Simulator::postEvent(ModuleID author, Event* event)
+void Simulator::postEvent(Event* event)
 {
+    event->ID = m_events[event->name][event->author];
+
     if (event->recordable == false)
-        if (m_loggableEvents.contains(event->name))
+        if (m_loggableEvents.contains(event->ID))
             Log::write(event);
 
     // TODO: add author argument?
@@ -109,25 +117,11 @@ void Simulator::eval()
         }
 
         if (nextEvent->recordable == true)
-            if (m_loggableEvents.contains(nextEvent->name))
+            if (m_loggableEvents.contains(nextEvent->ID))
                 Log::write(nextEvent);
 
-        // foreach (Module* handler, m_eventHandlers[nextEvent->name]) {
-        //     if (!m_nodesModules.contains(handler))
-        //         handler->eventHandler(nextEvent->name, nextEvent->params);
-
-        //     else if (m_nodesModules.contains(handler)
-        //              && m_nodesModules[handler]->ID() == nextEvent->params[0].toInt()) {
-
-        //         // qDebug() << "module" << handler->moduleInfo.name
-        //         //          << "event nodeID" << nextEvent->params[0].toInt()
-        //         //          << "nodeID" << m_nodesModules[handler]->ID()
-        //         //          << "try to handle event" << nextEvent->name
-        //         //          << "time" << Env::time;
-
-        //         handler->eventHandler(nextEvent->name, nextEvent->params);
-        //     }
-        // }
+        foreach(EventHandler handler, m_eventHandlers[nextEvent->ID])
+            handler(nextEvent->ID, nextEvent->params);
 
         VirtualTime remainingTime = m_maxGlobalTime - nextEvent->time;
         int currentPercent = ((m_maxGlobalTime - remainingTime) * 100) / m_maxGlobalTime;

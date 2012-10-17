@@ -14,6 +14,7 @@
 
 struct Event
 {
+    EventID ID;
     QString name;
     ModuleID author;
     // TODO: move to core

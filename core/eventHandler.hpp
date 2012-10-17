@@ -42,7 +42,7 @@ private:
     template <class T, void (T::*TMethod)(int)>
     static void method_stub(void* object_ptr, EventID eventID, QVariantList params) {
         T* p = static_cast<T*>(object_ptr);
-        return (p->*TMethod)(event, params);
+        return (p->*TMethod)(eventID, params);
     }
 };
 

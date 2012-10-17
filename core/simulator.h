@@ -14,14 +14,16 @@
 #include "module.h"
 #include "eventQueue.h"
 #include "project.h"
+#include "eventHandler.hpp"
 
 class Simulator
 {
 public:
-    // void registerEventHandler(ModuleID handler, QString eventName);
+    static void registerEventHandler(EventID event, EventHandler handler);
+    static void registerEvent(QString name, ModuleID author, EventID event);
 
     static VirtualTime globalTime();
-    static void postEvent(ModuleID author, Event* event);
+    static void postEvent(Event* event);
 
     static void setMaxTime(VirtualTime maxTime);
 
@@ -37,11 +39,13 @@ private:
 
     static Project* m_project;
 
-    static QMap<QString, QList<Module*> > m_eventHandlers;
+    static QMap<EventID, QList<EventHandler> > m_eventHandlers;
+
+    static QMap<QString, QMap<ModuleID, EventID> > m_events;
 
     // Loggable events list
     // events are contained in this list can be written to log
-    static QList<QString> m_loggableEvents;
+    static QList<EventID> m_loggableEvents;
 
     static eventQueue m_queue;
 };
