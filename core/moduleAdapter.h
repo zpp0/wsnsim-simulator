@@ -22,8 +22,6 @@ public:
     virtual QString errorString() = 0;
 
     ModuleID ID() { return m_module.ID; }
-    ModuleType moduleType() { return m_module.type; }
-    ModuleDependencies dependencies() { return m_module.dependencies; }
 
 protected:
     Module m_module;
