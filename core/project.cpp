@@ -116,21 +116,6 @@ int Project::initLua()
 #endif
 #endif
 
-ModuleType Project::getType(QString typeName)
-{
-    ModuleType type;
-    if (typeName == "environment")
-        type = ModuleType_Environment;
-    else if (typeName == "hardware")
-            type = ModuleType_Hardware;
-    else if (typeName == "software")
-        type = ModuleType_Software;
-    else
-        type = ModuleType_Undefined;
-
-    return type;
-}
-
 #ifdef MODULES_ENABLED
 int Project::loadModules()
 {
@@ -143,29 +128,44 @@ int Project::loadModules()
         QString typeName = moduleData.moduleInfo["type"];
 
         // prepare module type
-        ModuleType type = getType(typeName);
+        ModuleType type = getModuleType(typeName);
         if (type == ModuleType_Undefined) {
             m_errorString = "Wrong type " + typeName + " of module " + moduleName;
             return 0;
         }
 
         // prepare module params
-        QVariantMap params;
-        foreach(ModuleParam param, moduleData.params)
-            params[param.name] = param.value;
+        QList<ModuleParameter> params;
+        foreach(ModuleParam param, moduleData.params) {
+            ModuleParameter parameter;
+
+            parameter.name = param.name;
+
+            ModuleParamType type = getModuleParamType(param.type);
+            if (type = ModuleParamType_Undefined) {
+                m_errorString = "Wrong type " + typeName + " of module param " + param.name;
+                return 0;
+            }
+
+            parameter.type = type;
+            parameter.value = param.value;
+
+            params += parameter;
+        }
 
         // prepare moduleID
         ModuleID ID = moduleData.moduleInfo["ID"].toInt();
 
-        QList<ModuleDependence> dependencies;
         // prepare dependencies
+        QList<ModuleDependence> dependencies;
+
         foreach(QString depName, moduleData.dependencies.keys()) {
             ModuleDependence dep;
             dep.name = depName;
             QString typeName = moduleData.dependencies[depName].first;
             dep.moduleID = moduleData.dependencies[depName].second;
 
-            ModuleType type = getType(typeName);
+            ModuleType type = getModuleType(typeName);
             if (type == ModuleType_Undefined) {
                 m_errorString = "Wrong type " + typeName + " of dependence " + depName;
                 return 0;
@@ -174,7 +174,7 @@ int Project::loadModules()
 
             dependencies += dep;
         }
-        
+
         Module module;
         module.name = moduleName;
         module.ID = ID;
@@ -294,3 +294,41 @@ int Project::initModules()
 }
 
 #endif
+
+ModuleType Project::getModuleType(QString typeName)
+{
+    ModuleType type;
+    if (typeName == "environment")
+        type = ModuleType_Environment;
+    else if (typeName == "hardware")
+            type = ModuleType_Hardware;
+    else if (typeName == "software")
+        type = ModuleType_Software;
+    else
+        type = ModuleType_Undefined;
+
+    return type;
+}
+
+ModuleParamType Project::getModuleParamType(QString typeName)
+{
+    ModuleParamType type;
+    if (typeName == "int")
+        type = ModuleParamType_INT;
+    else if (typeName == "uint8")
+        type = ModuleParamType_UINT8;
+    else if (typeName == "uint16")
+        type = ModuleParamType_UINT16;
+    else if (typeName == "uint32")
+        type = ModuleParamType_UINT32;
+    else if (typeName == "uint64")
+        type = ModuleParamType_UINT64;
+    else if (typeName == "double")
+        type = ModuleParamType_DOUBLE;
+    else if (typeName == "string")
+        type = ModuleParamType_STRING;
+    else
+        type = ModuleParamType_Undefined;
+
+    return type;
+}

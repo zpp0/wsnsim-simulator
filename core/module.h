@@ -23,6 +23,24 @@ enum ModuleType {
 typedef quint16 ModuleID;
 typedef int ModuleInstanceID;
 
+enum ModuleParamType {
+    ModuleParamType_Undefined,
+    ModuleParamType_INT,
+    ModuleParamType_UINT8,
+    ModuleParamType_UINT16,
+    ModuleParamType_UINT32,
+    ModuleParamType_UINT64,
+    ModuleParamType_DOUBLE,
+    ModuleParamType_STRING
+};
+
+struct ModuleParameter
+{
+    QString name;
+    ModuleParamType type;
+    QVariant value;
+};
+
 struct ModuleDependence
 {
     QString name;
@@ -36,7 +54,7 @@ struct Module
     ModuleID ID;
     ModuleType type;
     QString fileName;
-    QVariantMap params;
+    QList<ModuleParameter> params;
     QList<ModuleDependence> dependencies;
 };
 

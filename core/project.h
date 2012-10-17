@@ -43,7 +43,8 @@ public:
     QString errorString();
 
 private:
-    ModuleType getType(QString type);
+    ModuleType getModuleType(QString type);
+    ModuleParamType getModuleParamType(QString type);
 
     QString m_projectFileName;
     ProjectParams m_projectParams;
