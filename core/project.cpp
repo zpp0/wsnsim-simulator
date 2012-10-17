@@ -145,7 +145,7 @@ int Project::loadModules()
         // prepare module type
         ModuleType type = getType(typeName);
         if (type == ModuleType_Undefined) {
-            m_errorString = "Wrong type" + typeName + "of module" + moduleName;
+            m_errorString = "Wrong type " + typeName + " of module " + moduleName;
             return 0;
         }
 
@@ -167,7 +167,7 @@ int Project::loadModules()
 
             ModuleType type = getType(typeName);
             if (type == ModuleType_Undefined) {
-                m_errorString = "Wrong type" + typeName + "of dependence" + depName;
+                m_errorString = "Wrong type " + typeName + " of dependence " + depName;
                 return 0;
             }
 
@@ -195,7 +195,7 @@ int Project::loadModules()
 #endif
 
         if (loader == NULL) {
-            m_errorString = "Can't load module" + moduleData.moduleInfo["name"];
+            m_errorString = "Can't load module " + moduleData.moduleInfo["name"];
             return 0;
         }
 

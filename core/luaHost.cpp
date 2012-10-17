@@ -79,7 +79,7 @@ int LuaHost::createModule(quint16 ID, QString name, ModuleID moduleID)
 
     lua_getfield(m_lua, -1, "new");
     if (!lua_isfunction(m_lua, -1)) {
-        m_errorString = "module" + name + "has no new() method";
+        m_errorString = "module " + name + " has no new() method";
         return 0;
     }
 
