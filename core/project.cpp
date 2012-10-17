@@ -142,7 +142,7 @@ int Project::loadModules()
             parameter.name = param.name;
 
             ModuleParamType type = getModuleParamType(param.type);
-            if (type = ModuleParamType_Undefined) {
+            if (type == ModuleParamType_Undefined) {
                 m_errorString = "Wrong type " + typeName + " of module param " + param.name;
                 return 0;
             }

@@ -55,7 +55,7 @@ private:
     QHash<ModuleID, ModuleType> m_moduleType;
 
     QMap<ModuleID, NodeID> m_nodesNum;
-    
+
     QHash<ModuleID, ModuleInstanceID> m_envModules;
     QHash<ModuleID, QHash<NodeID, ModuleInstanceID> > m_nodeModules;
 };
