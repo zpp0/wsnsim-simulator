@@ -17,6 +17,7 @@ struct Event
     EventID ID;
     QString name;
     ModuleID author;
+    ModuleInstanceID authorID;
     // TODO: move to core
     // bool priority;
     // TODO: move to core

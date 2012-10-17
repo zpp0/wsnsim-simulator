@@ -16,7 +16,11 @@ class SimulatorAPI
 {
 public:
     VirtualTime globalTime();
-    void postEvent(ModuleID author, QString name, VirtualTime time, QVariantList params);
+    void postEvent(ModuleID author,
+                   ModuleInstanceID authorID,
+                   QString name,
+                   VirtualTime time,
+                   QVariantList params);
 };
 
 #endif // SIMULATORAPI_H

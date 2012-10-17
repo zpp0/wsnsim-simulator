@@ -31,8 +31,9 @@ void Simulator::registerEvent(QString name, ModuleID author, EventID event)
     m_events[name][author] = event;
 }
 
-void Simulator::registerEventHandler(EventID event, EventHandler handler)
+void Simulator::registerEventHandler(QString name, ModuleID module, EventHandler handler)
 {
+    EventID event = m_events[name][module];
     m_eventHandlers[event] += handler;
 }
 
@@ -121,7 +122,7 @@ void Simulator::eval()
                 Log::write(nextEvent);
 
         foreach(EventHandler handler, m_eventHandlers[nextEvent->ID])
-            handler(nextEvent->ID, nextEvent->params);
+            handler(nextEvent);
 
         VirtualTime remainingTime = m_maxGlobalTime - nextEvent->time;
         int currentPercent = ((m_maxGlobalTime - remainingTime) * 100) / m_maxGlobalTime;

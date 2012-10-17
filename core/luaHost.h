@@ -20,6 +20,7 @@ extern "C"
 
 #include "module.h"
 #include "types.h"
+#include "event.h"
 
 class LuaHost
 {
@@ -50,6 +51,8 @@ private:
     static void createDependencies(ModuleInstanceID ID,
                                    ModuleType type,
                                    QList<ModuleDependence> dependencies);
+
+    static void eventHandler(Event* event);
 
     static lua_State *m_lua;
     static QString m_errorString;

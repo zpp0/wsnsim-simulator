@@ -19,7 +19,7 @@
 class Simulator
 {
 public:
-    static void registerEventHandler(EventID event, EventHandler handler);
+    static void registerEventHandler(QString name, ModuleID module, EventHandler handler);
     static void registerEvent(QString name, ModuleID author, EventID event);
 
     static VirtualTime globalTime();

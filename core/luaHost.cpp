@@ -114,7 +114,7 @@ void LuaHost::getModulesTable()
 void LuaHost::getModule(ModuleID moduleID)
 {
     // --- getting table for module
-    lua_rawgeti(m_lua, -1, moduleID);
+    lua_rawgeti(m_lua, 2, moduleID);
     if (!lua_istable(m_lua, -1)) {
 
         // table not found, create a new one
@@ -131,7 +131,7 @@ void LuaHost::getModule(ModuleID moduleID)
 void LuaHost::getInstance(ModuleInstanceID ID)
 {
     // --- getting table for module
-    lua_rawgeti(m_lua, -1, ID);
+    lua_rawgeti(m_lua, 2, ID);
     assert(lua_istable(m_lua, -1));
 }
 
@@ -249,6 +249,31 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
 void LuaHost::close()
 {
     lua_close(m_lua);
+}
+
+void LuaHost::eventHandler(Event* event)
+{
+    getModulesTable();
+    getModule(event->author);
+    getInstance(event->authorID);
+
+    lua_getfield(m_lua, -1, event->name.toUtf8().constData());
+
+    // TODO: errors handling
+    // if (!lua_isfunction(m_lua, -1)) {
+    //     return 0;
+    // }
+
+    getInstance(event->authorID);
+
+    // FIXME: push the value with the true type
+    foreach(QVariant param, event->params)
+        lua_pushnumber(m_lua, param.toInt());
+
+    // TODO: errors handling
+    lua_pcall(m_lua, 1 + event->params.size(), 0, 0);
+
+    lua_settop(m_lua, 0);
 }
 
 QString LuaHost::errorString()
