@@ -240,10 +240,10 @@ int Project::createModules()
     // now we must have more than 0 registered nodes
     foreach(ModuleID moduleID, m_nodesNum.keys()) {
         quint16 nodesNum = m_nodesNum[moduleID];
+        quint16 nodeID = 0;
 
-        // FIXME: this can works with only one scene
         // creating nodes modules
-        for (quint16 nodeID = 0; nodeID < nodesNum; nodeID++) {
+        for (; nodeID < nodesNum; nodeID++) {
             foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
 
                 ModuleInstanceID instanceID = nodeModule->create();
@@ -273,12 +273,12 @@ int Project::initModules()
 
     foreach(ModuleID moduleID, m_nodesNum.keys()) {
         quint16 nodesNum = m_nodesNum[moduleID];
+        quint16 nodeID = 0;
 
         // init modules of nodes
         foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
             // for all nodes
-            // FIXME: this can works with only one scene
-            for (NodeID nodeID = 0; nodeID < nodesNum; nodeID++) {
+            for (; nodeID < nodesNum; nodeID++) {
                 // init module
                 int success = nodeModule->init(m_nodeModules[nodeModule->ID()][nodeID]);
                 if (!success) {
