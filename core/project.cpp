@@ -75,6 +75,7 @@ int Project::initSimulator()
     }
 
     Simulator::setMaxTime(maxTime);
+
     return 1;
 }
 
@@ -215,8 +216,10 @@ int Project::loadModules()
     return 1;
 }
 
-int Project::initModules()
+int Project::createModules()
 {
+    m_nodesNum = m_projectParams.simulatorParams.nodes;
+
     // creating env modules
     foreach(ModuleAdapter* envModule, m_envAdapters) {
 
@@ -229,50 +232,38 @@ int Project::initModules()
         }
     }
 
-    QList<ModuleAdapter*> uninitEnvModules;
-
-    // init env modules without depending on the nodes
-    foreach(ModuleAdapter* envModule, m_envAdapters) {
-
-        QList<QPair<ModuleType, ModuleID> > dependencies = envModule->dependencies().values();
-        for (int i = 0; i < dependencies.size(); i++) {
-            if (m_moduleType[dependencies[i].second] != ModuleType_Environment) {
-                uninitEnvModules += envModule;
-                break;
-            }
-        }
-
-        int success = envModule->init(m_envModules[envModule->ID()]);
-        if (!success) {
-            m_errorString = envModule->errorString();
-            return 0;
-        }
-    }
-
-    // now we must have more than 0 registered nodes
-    quint16 nodesNum = Simulator::nodesNumber();
-
-    if (nodesNum == 0) {
+    if (m_nodesNum.empty()) {
         m_errorString = "There are no registered nodes in simulator. Can't continue.";
         return 0;
     }
 
-    // creating nodes modules
-    for (quint16 nodeID = 0; nodeID < nodesNum; nodeID++) {
-        foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
+    // now we must have more than 0 registered nodes
+    foreach(ModuleID moduleID, m_nodesNum.keys()) {
+        quint16 nodesNum = m_nodesNum[moduleID];
 
-            ModuleInstanceID instanceID = nodeModule->create();
-            if (instanceID != -1)
-                m_nodeModules[nodeModule->ID()][nodeID] = instanceID;
-            else {
-                m_errorString = nodeModule->errorString();
-                return 0;
+        // FIXME: this can works with only one scene
+        // creating nodes modules
+        for (quint16 nodeID = 0; nodeID < nodesNum; nodeID++) {
+            foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
+
+                ModuleInstanceID instanceID = nodeModule->create();
+                if (instanceID != -1)
+                    m_nodeModules[nodeModule->ID()][nodeID] = instanceID;
+                else {
+                    m_errorString = nodeModule->errorString();
+                    return 0;
+                }
             }
         }
     }
 
+    return 1;
+}
+
+int Project::initModules()
+{
     // init last env modules
-    foreach(ModuleAdapter* envModule, uninitEnvModules) {
+    foreach(ModuleAdapter* envModule, m_envAdapters) {
         int success = envModule->init(m_envModules[envModule->ID()]);
         if (!success) {
             m_errorString = envModule->errorString();
@@ -280,15 +271,20 @@ int Project::initModules()
         }
     }
 
-    // init modules of nodes
-    foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
-        // for all nodes
-        for (NodeID nodeID = 0; nodeID < nodesNum; nodeID++) {
-            // init module
-            int success = nodeModule->init(m_nodeModules[nodeModule->ID()][nodeID]);
-            if (!success) {
-                m_errorString = nodeModule->errorString();
-                return 0;
+    foreach(ModuleID moduleID, m_nodesNum.keys()) {
+        quint16 nodesNum = m_nodesNum[moduleID];
+
+        // init modules of nodes
+        foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
+            // for all nodes
+            // FIXME: this can works with only one scene
+            for (NodeID nodeID = 0; nodeID < nodesNum; nodeID++) {
+                // init module
+                int success = nodeModule->init(m_nodeModules[nodeModule->ID()][nodeID]);
+                if (!success) {
+                    m_errorString = nodeModule->errorString();
+                    return 0;
+                }
             }
         }
     }
