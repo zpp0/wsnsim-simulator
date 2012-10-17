@@ -14,6 +14,7 @@
 #include "module.h"
 #include "node.h"
 #include "eventQueue.h"
+#include "project.h"
 
 class Simulator
 {
@@ -33,7 +34,7 @@ public:
     // --
 
     static void setMaxTime(VirtualTime maxTime);
-    static NodeID nodesNumber();
+    // static NodeID nodesNumber();
 
     void init(QString projectFileName);
     void eval();
@@ -42,7 +43,7 @@ private:
     // максимально-возможное время работы симулятора
     static VirtualTime m_maxGlobalTime;
 
-    static NodeID m_nodesNumber;
+    static Project* m_project;
 
     static QMap<QString, QList<Module*> > m_eventHandlers;
 

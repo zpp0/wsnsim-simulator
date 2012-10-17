@@ -20,7 +20,7 @@ QMap<QString, QList<Module*> > Simulator::m_eventHandlers;
 
 QList<QString> Simulator::m_loggableEvents;
 
-NodeID Simulator::m_nodesNumber;
+Project* Simulator::m_project;
 
 eventQueue Simulator::m_queue;
 
@@ -49,10 +49,10 @@ eventQueue Simulator::m_queue;
 //     return interface;
 // }
 
-NodeID Simulator::nodesNumber()
-{
-    return m_nodesNumber;
-}
+// NodeID Simulator::nodesNumber()
+// {
+//     return m_nodesNumber;
+// }
 
 void Simulator::registerEventHandler(Module* handler, QString eventName)
 {
@@ -232,6 +232,19 @@ void Simulator::setMaxTime(VirtualTime maxTime)
 
 void Simulator::init(QString projectFileName)
 {
+    m_project = new Project(projectFileName);
+    // FIXME: is it always works?
+    if (!m_project->load()
+        || !m_project->initSimulator()
+        || !m_project->initLog()
+        || !m_project->initLua()
+        || !m_project->loadModules()
+        || !m_project->createModules()
+        || !m_project->initModules())
+    {
+        std::cout << qPrintable(m_project->errorString());
+        exit(1);
+    }
 }
 
 void Simulator::eval()
