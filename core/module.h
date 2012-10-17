@@ -22,7 +22,13 @@ enum ModuleType {
 
 typedef quint16 ModuleID;
 typedef int ModuleInstanceID;
-typedef QMap<QString, QPair<ModuleType, ModuleID> > ModuleDependencies;
+
+struct ModuleDependence
+{
+    QString name;
+    ModuleType type;
+    ModuleID moduleID;
+};
 
 struct Module
 {
@@ -31,7 +37,7 @@ struct Module
     ModuleType type;
     QString fileName;
     QVariantMap params;
-    ModuleDependencies dependencies;
+    QList<ModuleDependence> dependencies;
 };
 
 #endif // MODULE_H

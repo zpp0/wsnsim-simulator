@@ -157,21 +157,22 @@ int Project::loadModules()
         // prepare moduleID
         ModuleID ID = moduleData.moduleInfo["ID"].toInt();
 
+        QList<ModuleDependence> dependencies;
         // prepare dependencies
-        ModuleDependencies dependencies;
-
         foreach(QString depName, moduleData.dependencies.keys()) {
-
+            ModuleDependence dep;
+            dep.name = depName;
             QString typeName = moduleData.dependencies[depName].first;
-            ModuleID id = moduleData.dependencies[depName].second;
+            dep.moduleID = moduleData.dependencies[depName].second;
 
             ModuleType type = getType(typeName);
             if (type == ModuleType_Undefined) {
                 m_errorString = "Wrong type " + typeName + " of dependence " + depName;
                 return 0;
             }
+            dep.type = type;
 
-            dependencies[depName] = qMakePair(type, id);
+            dependencies += dep;
         }
         
         Module module;
