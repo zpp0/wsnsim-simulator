@@ -18,16 +18,19 @@ ModuleAdapterLua::ModuleAdapterLua(Module module)
 int ModuleAdapterLua::load()
 {
     int ret = LuaHost::loadFile(m_module.fileName);
-    if (ret)
+    if (ret) {
         m_errorString = LuaHost::errorString();
-    return ret;
+        return 0;
+    }
+
+    return 1;
 }
 
 ModuleInstanceID ModuleAdapterLua::create()
 {
     int ret = LuaHost::createModule(m_ID, m_module.name, m_module.ID);
 
-    if (ret) {
+    if (ret == 0) {
         m_errorString = LuaHost::errorString();
         return -1;
     }
@@ -37,6 +40,17 @@ ModuleInstanceID ModuleAdapterLua::create()
 
 int ModuleAdapterLua::init(ModuleInstanceID moduleInstance)
 {
+
+    int ret = LuaHost::initModule(m_module.ID,
+                                  moduleInstance,
+                                  m_module.type,
+                                  m_module.params,
+                                  m_module.dependencies);
+    if (ret == 0) {
+        m_errorString = LuaHost::errorString();
+        return 0;
+    }
+
     return 1;
 }
 

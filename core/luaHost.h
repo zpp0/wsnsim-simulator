@@ -19,20 +19,42 @@ extern "C"
 #include <QString>
 
 #include "module.h"
+#include "types.h"
 
 class LuaHost
 {
 public:
     static void open();
+
     static int loadFile(QString path);
+
+    static int createModule(ModuleInstanceID ID, QString name, ModuleID moduleID);
+
+    static int initModule(ModuleID moduleID,
+                          ModuleInstanceID ID,
+                          ModuleType type,
+                          QList<ModuleParameter> params,
+                          QList<ModuleDependence> dependencies);
+
     static void close();
 
-static int createModule(quint16 ID, QString name, ModuleID moduleID);
-
     static QString errorString();
+
 private:
+    static void getModulesTable();
+    static void getModule(ModuleID moduleID);
+    static void getInstance(ModuleInstanceID ID);
+    static int createModule(const char* moduleName, ModuleInstanceID ID);
+
+    static void createParams(QList<ModuleParameter> params);
+    static void createDependencies(ModuleInstanceID ID,
+                                   ModuleType type,
+                                   QList<ModuleDependence> dependencies);
+
     static lua_State *m_lua;
     static QString m_errorString;
+
+    static QMap<ModuleID, ModuleInstanceID> m_modulesInstances;
 };
 
 #endif // LUAHOST_H
