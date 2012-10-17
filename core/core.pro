@@ -9,15 +9,13 @@ LIBS += -llua
 CONFIG += console
 
 # Input
-HEADERS += env.h event.h eventQueue.h log.h node.h simulator.h luaHost.h module.h types.h project.h moduleAdapter.h moduleAdapter_lua.h eventhandler.hpp
-SOURCES += env.cpp \
-           event.cpp \
-           eventQueue.cpp \
+HEADERS += event.h eventQueue.h log.h simulator.h luaHost.h module.h types.h project.h moduleAdapter.h moduleAdapter_lua.h eventhandler.hpp simulator_api.h
+SOURCES += eventQueue.cpp \
            log.cpp \
-           node.cpp \
            simulator.cpp \
            moduleAdapter.cpp \
            moduleAdapter_lua.cpp \
            luaHost.cpp \
            project.cpp \
+           simulator_api.cpp \
            main.cpp
