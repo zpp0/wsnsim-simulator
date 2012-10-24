@@ -312,3 +312,12 @@ QString LuaHost::errorString()
 {
     return m_errorString;
 }
+
+int LuaHost::handleEvent(lua_State* lua)
+{
+    LuaEventHandler* luaHandler = new LuaEventHandler();
+    EventHandler handler = EventHandler::from_method<LuaEventHandler,
+                                                     &LuaEventHandler::handle>(luaHandler);
+
+    return 1;
+}

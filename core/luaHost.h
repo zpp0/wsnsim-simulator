@@ -39,20 +39,22 @@ public:
 
     static void close();
 
+    static void eventHandler(Event* event);
+
     static QString errorString();
 
 private:
     static void getModulesTable();
     static void getModule(ModuleID moduleID);
     static void getInstance(ModuleInstanceID ID);
-    static int createModule(const char* moduleName, ModuleInstanceID ID);
+    static int createModule(QString moduleName, ModuleInstanceID ID);
 
     static void createParams(QList<ModuleParameter> params);
     static void createDependencies(ModuleInstanceID ID,
                                    ModuleType type,
                                    QList<ModuleDependence> dependencies);
 
-    static void eventHandler(Event* event);
+    static int handleEvent(lua_State* lua);
 
     static lua_State *m_lua;
     static QString m_errorString;
