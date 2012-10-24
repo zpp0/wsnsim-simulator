@@ -39,7 +39,7 @@ private:
     void* object_ptr;
     stub_type stub_ptr;
 
-    template <class T, void (T::*TMethod)(int)>
+    template <class T, void (T::*TMethod)(Event*)>
     static void method_stub(void* object_ptr, Event* event) {
         T* p = static_cast<T*>(object_ptr);
         return (p->*TMethod)(event);
