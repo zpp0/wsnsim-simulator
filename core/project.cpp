@@ -108,7 +108,7 @@ int Project::initLog()
             eventArgTypes[eventName] += arg["type"];
     }
 
-    Log::init(m_projectParams.simulatorParams.logFile, events, eventArgTypes);
+    Log::init(m_projectParams.simulatorParams.logFile);
 
     return 1;
 }
