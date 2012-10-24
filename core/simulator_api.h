@@ -11,6 +11,7 @@
 
 #include "types.h"
 #include "module.h"
+#include "event.h"
 
 class SimulatorAPI
 {
@@ -20,7 +21,7 @@ public:
                    ModuleInstanceID authorID,
                    QString name,
                    VirtualTime time,
-                   QVariantList params);
+                   QList<EventParam> params);
 };
 
 #endif // SIMULATORAPI_H

@@ -15,7 +15,7 @@ VirtualTime SimulatorAPI::globalTime()
     return Simulator::globalTime();
 }
 
-void SimulatorAPI::postEvent(ModuleID author, ModuleInstanceID authorID, QString name, VirtualTime time, QVariantList params)
+void SimulatorAPI::postEvent(ModuleID author, ModuleInstanceID authorID, QString name, VirtualTime time, QList<EventParam> params)
 {
     // TODO: bufferization
     Event* event = new Event();
