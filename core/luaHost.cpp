@@ -9,6 +9,8 @@
 #include <cassert>
 
 #include "luaHost.h"
+#include "luaEventHandler.h"
+#include "eventHandler.hpp"
 
 lua_State* LuaHost::m_lua = 0;
 QString LuaHost::m_errorString;
@@ -49,11 +51,10 @@ int LuaHost::loadFile(QString path)
 
 int LuaHost::createModule(ModuleInstanceID ID, QString name, ModuleID moduleID)
 {
-    const char* moduleName = name.toUtf8().constData();
-
     getModulesTable();
     getModule(moduleID);
-    int ret = createModule(moduleName, ID);
+
+    int ret = createModule(name, ID);
 
     lua_settop(m_lua, 0);
 
@@ -85,6 +86,13 @@ int LuaHost::initModule(ModuleID moduleID,
         return 0;
     }
 
+    getModulesTable();
+    getModule(moduleID);
+    getInstance(ID);
+    lua_remove(m_lua, -2);
+    lua_remove(m_lua, -2);
+    lua_remove(m_lua, -2);
+
     // put on top of the stack module params
     createParams(params);
 
@@ -92,7 +100,7 @@ int LuaHost::initModule(ModuleID moduleID,
     createDependencies(ID, type, dependencies);
 
     // call init function
-    if (lua_pcall(m_lua, 3, 1, 0)) {
+    if (lua_pcall(m_lua, 3, 0, 0)) {
         m_errorString = lua_tostring(m_lua, -1);
         return 0;
     }
@@ -107,14 +115,14 @@ void LuaHost::getModulesTable()
     lua_getglobal(m_lua, "wsnsim");
     assert(lua_istable(m_lua, -1));
 
-    lua_getfield(m_lua, -1, "modules");
+    lua_getfield(m_lua, 1, "modules");
     assert(lua_istable(m_lua, -1));
 }
 
 void LuaHost::getModule(ModuleID moduleID)
 {
     // --- getting table for module
-    lua_rawgeti(m_lua, 2, moduleID);
+    lua_rawgeti(m_lua, -1, moduleID);
     if (!lua_istable(m_lua, -1)) {
 
         // table not found, create a new one
@@ -131,25 +139,26 @@ void LuaHost::getModule(ModuleID moduleID)
 void LuaHost::getInstance(ModuleInstanceID ID)
 {
     // --- getting table for module
-    lua_rawgeti(m_lua, 2, ID);
+    lua_rawgeti(m_lua, -1, ID);
     assert(lua_istable(m_lua, -1));
+
 }
 
-int LuaHost::createModule(const char* moduleName, ModuleInstanceID ID)
+int LuaHost::createModule(QString moduleName, ModuleInstanceID ID)
 {
     // --- get new instance of module with ID
     lua_pushinteger(m_lua, ID);
 
-    lua_getglobal(m_lua, moduleName);
+    lua_getglobal(m_lua, moduleName.toUtf8().constData());
     assert(lua_istable(m_lua, -1));
 
     lua_getfield(m_lua, -1, "new");
     if (!lua_isfunction(m_lua, -1)) {
-        m_errorString = "module " + QString(moduleName) + " has no new() method";
+        m_errorString = "module " + moduleName + " has no new() method";
         return 0;
     }
 
-    lua_getglobal(m_lua, moduleName);
+    lua_getglobal(m_lua, moduleName.toUtf8().constData());
 
     if (lua_pcall(m_lua, 1, 1, 0)) {
         m_errorString = lua_tostring(m_lua, -1);
@@ -199,7 +208,6 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
     lua_newtable(m_lua);
 
     foreach(ModuleDependence dep, dependencies) {
-        lua_newtable(m_lua);
 
         switch(dep.type) {
 
@@ -209,6 +217,7 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
                 getModulesTable();
                 getModule(dep.moduleID);
                 getInstance(0);
+                lua_remove(m_lua, -2);
                 lua_remove(m_lua, -2);
                 lua_remove(m_lua, -2);
             }
@@ -238,6 +247,7 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
                 }
             }
 
+            break;
         case ModuleType_Undefined:
             break;
         }
