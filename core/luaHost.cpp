@@ -276,9 +276,31 @@ void LuaHost::eventHandler(Event* event)
 
     getInstance(event->authorID);
 
-    // FIXME: push the value with the true type
-    foreach(QVariant param, event->params)
-        lua_pushnumber(m_lua, param.toInt());
+    foreach(EventParam param, event->params) {
+        switch (param.type) {
+        case INT32_TYPE:
+            lua_pushnumber(m_lua, param.value.toInt());
+            break;
+        case BOOL_TYPE:
+        case UINT8_TYPE:
+        case UINT16_TYPE:
+        case UINT32_TYPE:
+        case UINT64_TYPE:
+            lua_pushnumber(m_lua, param.value.toUInt());
+            break;
+        case DOUBLE_TYPE:
+            lua_pushnumber(m_lua, param.value.toDouble());
+            break;
+        case STRING_TYPE:
+            lua_pushstring(m_lua, param.value.toString().toUtf8().constData());
+            break;
+        case BYTE_ARRAY_TYPE:
+            // TODO: implement this
+            break;
+        case UNKNOWN_TYPE:
+            break;
+        }
+    }
 
     // TODO: errors handling
     lua_pcall(m_lua, 1 + event->params.size(), 0, 0);
