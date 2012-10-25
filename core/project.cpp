@@ -101,7 +101,11 @@ int Project::initSimulator()
 
 int Project::initLog()
 {
-    Log::init(m_projectParams.simulatorParams.logFile);
+    int ret = Log::init(m_projectParams.simulatorParams.logFile);
+    if (ret == 0) {
+        m_errorString = Log::errorString();
+        return 0;
+    }
 
     return 1;
 }

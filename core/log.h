@@ -17,13 +17,16 @@
 class Log
 {
 public:
-    static void init(QString logFilePath);
+    static int init(QString logFilePath);
     static void uninit();
 
     static void write(Event* event);
 
+    static QString errorString();
+
 private:
     static QDataStream m_logStream;
+    static QString m_errorString;
 };
 
 #endif // LOG_H
