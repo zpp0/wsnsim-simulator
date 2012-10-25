@@ -1,4 +1,4 @@
 TEMPLATE = subdirs
 
-SUBDIRS = core \
-          modules
+SUBDIRS = core
+#          modules
