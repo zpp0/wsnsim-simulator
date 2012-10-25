@@ -19,6 +19,7 @@ VirtualTime Simulator::m_maxGlobalTime;
 
 QMap<EventID, QList<EventHandler> > Simulator::m_eventHandlers;
 QMap<QString, QMap<ModuleID, EventID> > Simulator::m_events;
+QMap<QString, QMap<ModuleID, QVector<EventParam> > > Simulator::m_eventsArgs;
 
 QList<EventID> Simulator::m_loggableEvents;
 
@@ -36,15 +37,54 @@ void Simulator::registerEventHandler(EventID eventID, EventHandler handler)
     m_eventHandlers[eventID] += handler;
 }
 
+void Simulator::registerEventParam(QString eventName,
+                                   ModuleID author,
+                                   QString argName,
+                                   quint16 paramID,
+                                   EventParamType type)
+{
+    QVector<EventParam> params = m_eventsArgs[eventName][author];
+    if (params.size() < paramID)
+        params.reserve(paramID);
+
+    EventParam param;
+    param.ID = paramID;
+    param.name = argName;
+    param.type = type;
+
+    m_eventsArgs[eventName][author].insert(paramID, param);
+}
+
 QMap<ModuleID, EventID> Simulator::getEventID(QString name)
 {
     return m_events[name];
+}
+
+QVector<EventParam> Simulator::getEventParams(QString name, ModuleID author)
+{
+    return m_eventsArgs[name][author];
 }
 
 VirtualTime Simulator::globalTime()
 {
     return m_globalTime;
 }
+
+void Simulator::postEvent(ModuleID author, QString name, VirtualTime delay, QVector<EventParam> params)
+{
+    // TODO: bufferization
+    Event* event = new Event();
+    event->name = name;
+    event->author = author;
+    event->time = m_globalTime + delay;
+    if (delay == 0)
+        event->recordable = false;
+    else
+        event->recordable = true;
+    event->params = params;
+
+    postEvent(event);
+};
 
 void Simulator::postEvent(Event* event)
 {
@@ -98,8 +138,9 @@ void Simulator::eval()
 
         // qDebug() << "time" << Env::time;
         qDebug() << "pop new event" << nextEvent->name
-                 // << "number" << event::count
-                 << "time" << nextEvent->time;
+                 << "id" << nextEvent->ID
+                 << "time" << nextEvent->time
+                 << "params" << nextEvent->params.size();
 
         // если текущее время равно или превышает максимальное
         if (nextEvent->time >= m_maxGlobalTime) {
@@ -122,7 +163,7 @@ void Simulator::eval()
         }
 
         if (nextEvent->recordable == true)
-            if (m_loggableEvents.contains(nextEvent->ID))
+            // if (m_loggableEvents.contains(nextEvent->ID))
                 Log::write(nextEvent);
 
         foreach(EventHandler handler, m_eventHandlers[nextEvent->ID])

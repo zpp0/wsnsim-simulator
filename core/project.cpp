@@ -81,33 +81,26 @@ int Project::initSimulator()
         ModuleID moduleID = params.eventInfo["moduleID"].toUInt();
         EventID eventID = params.eventInfo["ID"].toUInt();
         Simulator::registerEvent(eventName, moduleID, eventID);
+
+        foreach (EventArgument arg, params.arguments) {
+            QString name = arg["name"];
+            quint16 ID = arg["ID"].toUInt();
+            QString typeName = arg["type"];
+            EventParamType type = getEventParamType(typeName);
+            if (type == UNKNOWN_TYPE) {
+                m_errorString = "Wrong type " + typeName + " of event argument " + name;
+                return 0;
+            }
+            Simulator::registerEventParam(eventName, moduleID, name, ID, type);
+        }
+
     }
 
     return 1;
 }
 
-bool argsSort(const QMap<QString,QString>  &s1, const QMap<QString,QString> &s2)
-{
-    return s1["ID"].toInt() < s2["ID"].toInt();
-}
-
 int Project::initLog()
 {
-    // getting events <name, ID>
-    QMap<QString, EventID> events;
-    QMap<QString, QList<QString > > eventArgTypes;
-
-    // FIXME: wtf is this?
-    foreach (EventParams params, m_projectParams.events.systemEvents) {
-        QString eventName = params.eventInfo["name"];
-        EventID eventID = params.eventInfo["ID"].toUInt();
-        events[eventName] = eventID;
-        QList<EventArgument> arguments = params.arguments;
-        qSort(arguments.begin(), arguments.end(), argsSort);
-        foreach (EventArgument arg, arguments)
-            eventArgTypes[eventName] += arg["type"];
-    }
-
     Log::init(m_projectParams.simulatorParams.logFile);
 
     return 1;
@@ -338,4 +331,32 @@ ModuleParamType Project::getModuleParamType(QString typeName)
         type = ModuleParamType_Undefined;
 
     return type;
+}
+
+EventParamType Project::getEventParamType(QString typeName)
+{
+    EventParamType type;
+    if (typeName == "int32")
+        type = INT32_TYPE;
+    else if (typeName == "uint8")
+        type = UINT8_TYPE;
+    else if (typeName == "uint16")
+        type = UINT16_TYPE;
+    else if (typeName == "uint32")
+        type = UINT32_TYPE;
+    else if (typeName == "uint64")
+        type = UINT64_TYPE;
+    else if (typeName == "double")
+        type = DOUBLE_TYPE;
+    else if (typeName == "string")
+        type = STRING_TYPE;
+    else if (typeName == "byteArray")
+        type = BYTE_ARRAY_TYPE;
+    else if (typeName == "bool")
+        type = BOOL_TYPE;
+
+    else
+        type = UNKNOWN_TYPE;
+
+    return type;    
 }

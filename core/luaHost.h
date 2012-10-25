@@ -58,6 +58,7 @@ private:
                                    QList<ModuleDependence> dependencies);
 
     static int handleEvent(lua_State* lua);
+    static int postEvent(lua_State* lua);
 
     static void setCurrentModule(ModuleID moduleID, ModuleInstanceID ID);
 

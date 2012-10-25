@@ -21,10 +21,17 @@ class Simulator
 public:
     static void registerEventHandler(EventID eventID, EventHandler handler);
     static void registerEvent(QString name, ModuleID author, EventID event);
+    static void registerEventParam(QString eventName,
+                                   ModuleID author,
+                                   QString argName,
+                                   quint16 paramID,
+                                   EventParamType type);
 
     static QMap<ModuleID, EventID> getEventID(QString name);
+    static QVector<EventParam> getEventParams(QString name, ModuleID author);
 
     static VirtualTime globalTime();
+    static void postEvent(ModuleID author, QString name, VirtualTime delay, QVector<EventParam> params);
     static void postEvent(Event* event);
 
     static void setMaxTime(VirtualTime maxTime);
@@ -44,6 +51,7 @@ private:
     static QMap<EventID, QList<EventHandler> > m_eventHandlers;
 
     static QMap<QString, QMap<ModuleID, EventID> > m_events;
+    static QMap<QString, QMap<ModuleID, QVector<EventParam> > > m_eventsArgs;
 
     // Loggable events list
     // events are contained in this list can be written to log

@@ -30,6 +30,7 @@ void LuaHost::open()
     luaL_openlibs(m_lua);
 
     lua_register(m_lua, "handleEvent", LuaHost::handleEvent);
+    lua_register(m_lua, "postEvent", LuaHost::postEvent);
 
     // creation wsnsim
     lua_newtable(m_lua);
@@ -326,6 +327,7 @@ void LuaHost::eventHandler(Event* event,
 
     // TODO: errors handling
     lua_pcall(m_lua, 1 + event->params.size(), 0, 0);
+    qDebug() << lua_tostring(m_lua, -1);
 
     lua_settop(m_lua, 0);
 }
@@ -356,6 +358,69 @@ int LuaHost::handleEvent(lua_State* lua)
     foreach(ModuleID dep, events.keys())
         if (m_moduleDeps[m_currentModule].contains(dep))
             Simulator::registerEventHandler(events[dep], handler);
+
+    return 1;
+}
+
+int LuaHost::postEvent(lua_State* lua)
+{
+    QString name;
+    VirtualTime delay = 0;
+    QVector<EventParam> params;
+
+    // get args from table
+    if (lua_istable(lua, -1)) {
+        lua_getfield(lua, -1, "event");
+        if (!lua_isnil(lua, -1))
+            name = lua_tostring(lua, -1);
+        lua_pop(lua, 1);
+
+        lua_getfield(lua, -1, "delay");
+        if (!lua_isnil(lua, -1))
+            delay = lua_tonumber(lua, -1);
+        lua_pop(lua, 1);
+
+        lua_getfield(lua, -1, "args");
+        if (lua_istable(lua, -1)) {
+
+            lua_pushnil(lua);
+
+            params = Simulator::getEventParams(name, m_currentModule);
+
+            for (int i = 0; i < params.size(); i++) {
+                lua_next(lua, -2);
+
+                if (lua_isnil(lua, -1))
+                    // TODO: error handling
+                    break;
+
+                switch (params[i].type) {
+                case INT32_TYPE:
+                case BOOL_TYPE:
+                case UINT8_TYPE:
+                case UINT16_TYPE:
+                case UINT32_TYPE:
+                case UINT64_TYPE:
+                case DOUBLE_TYPE:
+                    params[i].value = lua_tonumber(lua, -1);
+                    break;
+                case STRING_TYPE:
+                    params[i].value = lua_tostring(lua, -1);
+                    break;
+                case BYTE_ARRAY_TYPE:
+                    // TODO: implement this
+                    break;
+                case UNKNOWN_TYPE:
+                    break;
+                }
+
+                lua_pop(lua, 1);
+            }
+        }
+        lua_pop(lua, 1);
+
+        Simulator::postEvent(m_currentModule, name, delay, params);
+    }
 
     return 1;
 }

@@ -42,7 +42,7 @@ struct Event
     ModuleInstanceID authorID;
     bool recordable;
     VirtualTime time;
-    QList<EventParam> params;
+    QVector<EventParam> params;
 };
 
 #endif // EVENT_H

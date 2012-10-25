@@ -15,6 +15,7 @@
 #include "projectParams.h"
 #include "module.h"
 #include "moduleAdapter.h"
+#include "event.h"
 
 #define MODULES_ENABLED
 #define LUA_ENABLED
@@ -45,6 +46,7 @@ public:
 private:
     ModuleType getModuleType(QString type);
     ModuleParamType getModuleParamType(QString type);
+    EventParamType getEventParamType(QString type);
 
     QString m_projectFileName;
     ProjectParams m_projectParams;
