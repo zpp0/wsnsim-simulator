@@ -337,8 +337,8 @@ QString LuaHost::errorString()
 
 int LuaHost::handleEvent(lua_State* lua)
 {
-    QString eventName = lua_tostring(lua, -1);
-    QString eventHandlerName = lua_tostring(lua, -2);
+    QString eventName = lua_tostring(lua, -2);
+    QString eventHandlerName = lua_tostring(lua, -1);
 
     // FIXME: memory leak
     LuaEventHandler* luaHandler = new LuaEventHandler(m_currentModule,
