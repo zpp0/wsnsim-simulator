@@ -39,7 +39,10 @@ public:
 
     static void close();
 
-    static void eventHandler(Event* event);
+    static void eventHandler(Event* event,
+                             ModuleID moduleID,
+                             ModuleInstanceID ID,
+                             QString handlerName);
 
     static QString errorString();
 
@@ -56,14 +59,16 @@ private:
 
     static int handleEvent(lua_State* lua);
 
+    static void setCurrentModule(ModuleID moduleID, ModuleInstanceID ID);
+
     static lua_State *m_lua;
     static QString m_errorString;
 
     static ModuleID m_currentModule;
+    static ModuleInstanceID m_currentModuleInstance;
 
     static QMap<ModuleID, ModuleInstanceID> m_modulesInstances;
-
-    static QMap<EventID, QString> m_eventHandlersNames;
+    static QMap<ModuleID, QList<ModuleID> > m_moduleDeps;
 };
 
 #endif // LUAHOST_H
