@@ -15,20 +15,14 @@ VirtualTime SimulatorAPI::globalTime()
     return Simulator::globalTime();
 }
 
-void SimulatorAPI::postEvent(ModuleID author, ModuleInstanceID authorID, QString name, VirtualTime time, QList<EventParam> params)
+void SimulatorAPI::postEvent(ModuleID author, QString name, VirtualTime delay, QVector<EventParam> params)
 {
-    // TODO: bufferization
-    Event* event = new Event();
-    event->name = name;
-    event->author = author;
-    event->authorID = authorID;
-    event->time = Simulator::globalTime() + time;
-    if (time == 0)
-        event->recordable = false;
-    else
-        event->recordable = true;
-    event->params = params;
-
-    Simulator::postEvent(event);
+    Simulator::postEvent(author, name, delay, params);
 };
+
+
+
+
+
+
 
