@@ -39,7 +39,6 @@ struct Event
     EventID ID;
     QString name;
     ModuleID author;
-    ModuleInstanceID authorID;
     bool recordable;
     VirtualTime time;
     QVector<EventParam> params;
