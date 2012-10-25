@@ -31,10 +31,14 @@ void Simulator::registerEvent(QString name, ModuleID author, EventID event)
     m_events[name][author] = event;
 }
 
-void Simulator::registerEventHandler(QString name, ModuleID module, EventHandler handler)
+void Simulator::registerEventHandler(EventID eventID, EventHandler handler)
 {
-    EventID event = m_events[name][module];
-    m_eventHandlers[event] += handler;
+    m_eventHandlers[eventID] += handler;
+}
+
+QMap<ModuleID, EventID> Simulator::getEventID(QString name)
+{
+    return m_events[name];
 }
 
 VirtualTime Simulator::globalTime()

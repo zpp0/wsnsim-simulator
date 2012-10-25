@@ -63,7 +63,7 @@ private:
 
     static QMap<ModuleID, ModuleInstanceID> m_modulesInstances;
 
-    static QMap<QString, QString> m_eventHandlersNames;
+    static QMap<EventID, QString> m_eventHandlersNames;
 };
 
 #endif // LUAHOST_H

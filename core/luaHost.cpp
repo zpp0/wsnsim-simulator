@@ -18,7 +18,7 @@ QString LuaHost::m_errorString;
 ModuleID LuaHost::m_currentModule;
 
 QMap<ModuleID, ModuleInstanceID> LuaHost::m_modulesInstances;
-QMap<QString, QString> LuaHost::m_eventHandlersNames;
+QMap<EventID, QString> LuaHost::m_eventHandlersNames;
 
 void LuaHost::open()
 {
@@ -276,7 +276,7 @@ void LuaHost::eventHandler(Event* event)
     getModule(event->author);
     getInstance(event->authorID);
 
-    lua_getfield(m_lua, -1, m_eventHandlersNames[event->name].toUtf8().constData());
+    lua_getfield(m_lua, -1, m_eventHandlersNames[event->ID].toUtf8().constData());
 
     // TODO: errors handling
     // if (!lua_isfunction(m_lua, -1)) {
@@ -332,16 +332,30 @@ int LuaHost::handleEvent(lua_State* lua)
     QString eventName = lua_tostring(lua, -1);
     QString eventHandlerName = lua_tostring(lua, -2);
 
+    QMap<ModuleID, EventID> events = Simulator::getEventID(eventName);
+    EventID eventID;
+
+    // if it is event of a node's module
+    if (events.contains(m_currentModule)) {
+        eventID = events[m_currentModule];
+    }
+    // if it is event of an environment's module
+    else if (events.values().size() == 1) {
+        eventID = events.values()[0];
+    }
+    // if it is wrong event name
+    else {
+        // TODO: handle error
+    }
+
     // FIXME: memory leak
     LuaEventHandler* luaHandler = new LuaEventHandler();
     EventHandler handler = EventHandler::from_method<LuaEventHandler,
                                                      &LuaEventHandler::handle>(luaHandler);
 
-    // FIXME: it will not work with the events of the other modules
-    Simulator::registerEventHandler(eventName, m_currentModule, handler);
+    Simulator::registerEventHandler(eventID, handler);
 
-    // TODO: get eventID from simulator
-    m_eventHandlersNames[eventName] = eventHandlerName;
+    m_eventHandlersNames[eventID] = eventHandlerName;
 
     return 1;
 }

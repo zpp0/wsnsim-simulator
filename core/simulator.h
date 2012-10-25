@@ -19,8 +19,10 @@
 class Simulator
 {
 public:
-    static void registerEventHandler(QString name, ModuleID module, EventHandler handler);
+    static void registerEventHandler(EventID eventID, EventHandler handler);
     static void registerEvent(QString name, ModuleID author, EventID event);
+
+    static QMap<ModuleID, EventID> getEventID(QString name);
 
     static VirtualTime globalTime();
     static void postEvent(Event* event);
