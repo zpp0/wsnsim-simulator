@@ -354,7 +354,7 @@ EventParamType Project::getEventParamType(QString typeName)
         type = DOUBLE_TYPE;
     else if (typeName == "string")
         type = STRING_TYPE;
-    else if (typeName == "byteArray")
+    else if (typeName == "ByteArray")
         type = BYTE_ARRAY_TYPE;
     else if (typeName == "bool")
         type = BOOL_TYPE;
