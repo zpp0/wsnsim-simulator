@@ -23,8 +23,7 @@ public:
     static void write(Event* event);
 
 private:
-    static QFile* m_log;
-    static QDataStream* m_logStream;
+    static QDataStream m_logStream;
 };
 
 #endif // LOG_H
