@@ -11,11 +11,14 @@
 #include "luaHost.h"
 #include "luaEventHandler.h"
 #include "eventHandler.hpp"
+#include "simulator.h"
 
 lua_State* LuaHost::m_lua = 0;
 QString LuaHost::m_errorString;
+ModuleID LuaHost::m_currentModule;
 
 QMap<ModuleID, ModuleInstanceID> LuaHost::m_modulesInstances;
+QMap<QString, QString> LuaHost::m_eventHandlersNames;
 
 void LuaHost::open()
 {
@@ -23,6 +26,8 @@ void LuaHost::open()
     m_lua = luaL_newstate();
 
     luaL_openlibs(m_lua);
+
+    lua_register(m_lua, "handleEvent", LuaHost::handleEvent);
 
     // creation wsnsim
     lua_newtable(m_lua);
@@ -75,6 +80,8 @@ int LuaHost::initModule(ModuleID moduleID,
                         QList<ModuleParameter> params,
                         QList<ModuleDependence> dependencies)
 {
+    m_currentModule = moduleID;
+
     // put on of the stack top module instance
     getModulesTable();
     getModule(moduleID);
@@ -263,6 +270,8 @@ void LuaHost::close()
 
 void LuaHost::eventHandler(Event* event)
 {
+    m_currentModule = event->author;
+
     getModulesTable();
     getModule(event->author);
     getInstance(event->authorID);
@@ -274,7 +283,12 @@ void LuaHost::eventHandler(Event* event)
     //     return 0;
     // }
 
+    getModulesTable();
+    getModule(event->author);
     getInstance(event->authorID);
+    lua_remove(m_lua, -2);
+    lua_remove(m_lua, -2);
+    lua_remove(m_lua, -2);
 
     foreach(EventParam param, event->params) {
         switch (param.type) {
@@ -315,9 +329,19 @@ QString LuaHost::errorString()
 
 int LuaHost::handleEvent(lua_State* lua)
 {
+    QString eventName = lua_tostring(lua, -1);
+    QString eventHandlerName = lua_tostring(lua, -2);
+
+    // FIXME: memory leak
     LuaEventHandler* luaHandler = new LuaEventHandler();
     EventHandler handler = EventHandler::from_method<LuaEventHandler,
                                                      &LuaEventHandler::handle>(luaHandler);
+
+    // FIXME: it will not work with the events of the other modules
+    Simulator::registerEventHandler(eventName, m_currentModule, handler);
+
+    // TODO: get eventID from simulator
+    m_eventHandlersNames[eventName] = eventHandlerName;
 
     return 1;
 }

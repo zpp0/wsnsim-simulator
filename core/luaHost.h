@@ -59,7 +59,11 @@ private:
     static lua_State *m_lua;
     static QString m_errorString;
 
+    static ModuleID m_currentModule;
+
     static QMap<ModuleID, ModuleInstanceID> m_modulesInstances;
+
+    static QMap<QString, QString> m_eventHandlersNames;
 };
 
 #endif // LUAHOST_H
