@@ -276,7 +276,7 @@ void LuaHost::eventHandler(Event* event)
     getModule(event->author);
     getInstance(event->authorID);
 
-    lua_getfield(m_lua, -1, event->name.toUtf8().constData());
+    lua_getfield(m_lua, -1, m_eventHandlersNames[event->name].toUtf8().constData());
 
     // TODO: errors handling
     // if (!lua_isfunction(m_lua, -1)) {
