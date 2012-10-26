@@ -48,8 +48,8 @@ public:
 
 private:
     static void getModulesTable();
-    static void getModule(ModuleID moduleID);
-    static void getInstance(ModuleInstanceID ID);
+    inline static void getModule(ModuleID moduleID);
+    inline static void getInstance(ModuleInstanceID ID);
     static int createModule(QString moduleName, ModuleInstanceID ID);
 
     static void createParams(QList<ModuleParameter> params);
