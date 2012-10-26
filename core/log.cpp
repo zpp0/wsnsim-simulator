@@ -63,41 +63,38 @@ void Log::write(Event* event)
     str << event->time << event->ID;
 
     foreach(EventParam param, event->params) {
-        QVariant value = param.value;
         switch(param.type) {
         case UINT8_TYPE:
-            str << (quint8)value.toUInt();
+            str << param.value.u8;
             break;
         case UINT16_TYPE:
-            str << (quint16)value.toUInt();
+            str << param.value.u16;
             break;
         case UINT32_TYPE:
-            str << (quint32)value.toUInt();
+            str << param.value.u32;
             break;
         case UINT64_TYPE:
-            str << (quint64)value.toUInt();
+            str << param.value.u64;
             break;
         case INT32_TYPE:
-            str << (qint32)value.toInt();
+            str << param.value.i32;
             break;
         case BOOL_TYPE:
-            str << (quint8)value.toInt();
+            str << param.value.b;
             break;
         case DOUBLE_TYPE:
-            str << value.toDouble();
+            str << param.value.d;
             break;
         case BYTE_ARRAY_TYPE:
         {
-            QByteArray array = value.toByteArray();
-            str << (quint8)array.size();
-            str.writeRawData(array.constData(), array.size());
+            str << param.value.byteArray.size;
+            str.writeRawData(param.value.byteArray.data, param.value.byteArray.size);
             break;
         }
         case STRING_TYPE:
         {
-            QString string = value.toString();
-            str << (quint16)string.size();
-            str.writeRawData(string.toUtf8().constData(), string.size());
+            str << param.value.string.length;
+            str.writeRawData(param.value.string.data, param.value.string.length);
             break;
         }
     case UNKNOWN_TYPE:

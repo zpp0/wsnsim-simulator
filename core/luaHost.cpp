@@ -298,20 +298,28 @@ void LuaHost::eventHandler(Event* event,
     foreach(EventParam param, event->params) {
         switch (param.type) {
         case INT32_TYPE:
-            lua_pushnumber(m_lua, param.value.toInt());
+            lua_pushnumber(m_lua, param.value.i32);
             break;
         case BOOL_TYPE:
+            lua_pushnumber(m_lua, param.value.b);
+            break;
         case UINT8_TYPE:
+            lua_pushnumber(m_lua, param.value.u8);
+            break;
         case UINT16_TYPE:
+            lua_pushnumber(m_lua, param.value.u16);
+            break;
         case UINT32_TYPE:
+            lua_pushnumber(m_lua, param.value.u32);
+            break;
         case UINT64_TYPE:
-            lua_pushnumber(m_lua, param.value.toUInt());
+            lua_pushnumber(m_lua, param.value.u64);
             break;
         case DOUBLE_TYPE:
-            lua_pushnumber(m_lua, param.value.toDouble());
+            lua_pushnumber(m_lua, param.value.d);
             break;
         case STRING_TYPE:
-            lua_pushstring(m_lua, param.value.toString().toUtf8().constData());
+            lua_pushstring(m_lua, param.value.string.data);
             break;
         case BYTE_ARRAY_TYPE:
             // TODO: implement this
@@ -392,16 +400,29 @@ int LuaHost::postEvent(lua_State* lua)
 
                 switch (params[i].type) {
                 case INT32_TYPE:
+                    params[i].value.i32 = lua_tonumber(lua, -1);
+                    break;
                 case BOOL_TYPE:
+                    params[i].value.b = lua_tonumber(lua, -1);
+                    break;
                 case UINT8_TYPE:
+                    params[i].value.u8 = lua_tonumber(lua, -1);
+                    break;
                 case UINT16_TYPE:
+                    params[i].value.u16 = lua_tonumber(lua, -1);
+                    break;
                 case UINT32_TYPE:
+                    params[i].value.u32 = lua_tonumber(lua, -1);
+                    break;
                 case UINT64_TYPE:
+                    params[i].value.u64 = lua_tonumber(lua, -1);
+                    break;
                 case DOUBLE_TYPE:
-                    params[i].value = lua_tonumber(lua, -1);
+                    params[i].value.d = lua_tonumber(lua, -1);
                     break;
                 case STRING_TYPE:
-                    params[i].value = lua_tostring(lua, -1);
+                    strcpy(params[i].value.string.data, lua_tostring(lua, -1));
+                    params[i].value.string.length = strlen(params[i].value.string.data);
                     break;
                 case BYTE_ARRAY_TYPE:
                     // TODO: implement this
