@@ -39,6 +39,8 @@ void LuaHost::open()
     lua_settable(m_lua, 1);
     lua_setglobal(m_lua, "wsnsim");
 
+    getModulesTable();
+
     // QString luaModules = "package.path = package.path .. \";"
     //     + currentProjectPath + "/?.lua\"";
 
@@ -59,12 +61,22 @@ int LuaHost::loadFile(QString path)
 
 int LuaHost::createModule(ModuleInstanceID ID, QString name, ModuleID moduleID)
 {
-    getModulesTable();
-    getModule(moduleID);
+    lua_rawgeti(m_lua, -1, moduleID);
+    if (!lua_istable(m_lua, -1)) {
+
+        // table not found, create a new one
+
+        lua_pushinteger(m_lua, moduleID);
+        lua_newtable(m_lua);
+        lua_settable(m_lua, 2);
+
+        lua_pop(m_lua, 1);
+        lua_rawgeti(m_lua, -1, moduleID);
+    }
 
     int ret = createModule(name, ID);
 
-    lua_settop(m_lua, 0);
+    lua_settop(m_lua, 2);
 
     if (ret == 0)
         return 0;
@@ -86,7 +98,6 @@ int LuaHost::initModule(ModuleID moduleID,
     setCurrentModule(moduleID, ID);
 
     // put on of the stack top module instance
-    getModulesTable();
     getModule(moduleID);
     getInstance(ID);
 
@@ -96,12 +107,7 @@ int LuaHost::initModule(ModuleID moduleID,
         return 0;
     }
 
-    getModulesTable();
-    getModule(moduleID);
-    getInstance(ID);
-    lua_remove(m_lua, -2);
-    lua_remove(m_lua, -2);
-    lua_remove(m_lua, -2);
+    lua_rawgeti(m_lua, -3, ID);
 
     // put on top of the stack module params
     createParams(params);
@@ -115,7 +121,7 @@ int LuaHost::initModule(ModuleID moduleID,
         return 0;
     }
 
-    lua_settop(m_lua, 0);
+    lua_settop(m_lua, 2);
     return 1;
 }
 
@@ -133,17 +139,7 @@ void LuaHost::getModule(ModuleID moduleID)
 {
     // --- getting table for module
     lua_rawgeti(m_lua, -1, moduleID);
-    if (!lua_istable(m_lua, -1)) {
-
-        // table not found, create a new one
-
-        lua_pushinteger(m_lua, moduleID);
-        lua_newtable(m_lua);
-        lua_settable(m_lua, 2);
-
-        lua_pop(m_lua, 1);
-        lua_rawgeti(m_lua, -1, moduleID);
-    }
+    assert(lua_istable(m_lua, -1));
 }
 
 void LuaHost::getInstance(ModuleInstanceID ID)
@@ -151,7 +147,6 @@ void LuaHost::getInstance(ModuleInstanceID ID)
     // --- getting table for module
     lua_rawgeti(m_lua, -1, ID);
     assert(lua_istable(m_lua, -1));
-
 }
 
 int LuaHost::createModule(QString moduleName, ModuleInstanceID ID)
@@ -282,7 +277,6 @@ void LuaHost::eventHandler(Event* event,
 {
     setCurrentModule(moduleID, ID);
 
-    getModulesTable();
     getModule(moduleID);
     getInstance(ID);
 
@@ -331,9 +325,8 @@ void LuaHost::eventHandler(Event* event,
 
     // TODO: errors handling
     lua_pcall(m_lua, 1 + event->params.size(), 0, 0);
-    qDebug() << lua_tostring(m_lua, -1);
 
-    lua_settop(m_lua, 0);
+    lua_settop(m_lua, 2);
 }
 
 QString LuaHost::errorString()
