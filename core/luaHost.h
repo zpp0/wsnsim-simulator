@@ -42,7 +42,7 @@ public:
     static void eventHandler(Event* event,
                              ModuleID moduleID,
                              ModuleInstanceID ID,
-                             QString handlerName);
+                             const char* handlerName);
 
     static QString errorString();
 

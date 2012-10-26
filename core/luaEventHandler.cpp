@@ -9,7 +9,7 @@
 #include "luaEventHandler.h"
 #include "luaHost.h"
 
-LuaEventHandler::LuaEventHandler(ModuleID moduleID, ModuleInstanceID ID, QString handlerName)
+LuaEventHandler::LuaEventHandler(ModuleID moduleID, ModuleInstanceID ID, const char* handlerName)
 {
     m_moduleID = moduleID;
     m_ID = ID;

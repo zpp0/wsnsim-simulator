@@ -278,7 +278,7 @@ void LuaHost::close()
 void LuaHost::eventHandler(Event* event,
                            ModuleID moduleID,
                            ModuleInstanceID ID,
-                           QString handlerName)
+                           const char* handlerName)
 {
     setCurrentModule(moduleID, ID);
 
@@ -286,7 +286,7 @@ void LuaHost::eventHandler(Event* event,
     getModule(moduleID);
     getInstance(ID);
 
-    lua_getfield(m_lua, -1, handlerName.toUtf8().constData());
+    lua_getfield(m_lua, -1, handlerName);
 
     // TODO: errors handling
     // if (!lua_isfunction(m_lua, -1)) {
@@ -336,7 +336,7 @@ QString LuaHost::errorString()
 int LuaHost::handleEvent(lua_State* lua)
 {
     QString eventName = lua_tostring(lua, -2);
-    QString eventHandlerName = lua_tostring(lua, -1);
+    const char* eventHandlerName = lua_tostring(lua, -1);
 
     // FIXME: memory leak
     LuaEventHandler* luaHandler = new LuaEventHandler(m_currentModule,
