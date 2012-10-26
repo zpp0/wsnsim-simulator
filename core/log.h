@@ -11,7 +11,6 @@
 
 #include <QString>
 #include <QFile>
-#include <QUdpSocket>
 
 #include "event.h"
 
@@ -27,9 +26,6 @@ public:
 
 private:
     static QDataStream m_logStream;
-    static QUdpSocket m_socket;
-    static QHostAddress m_addr;
-    static quint16 m_port;
     static QString m_errorString;
 };
 

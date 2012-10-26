@@ -1,11 +1,11 @@
 include(../simulator.pri)
 
-QT  += core network
+QT  += core
 
 TEMPLATE = app
 TARGET = simulator
 INCLUDEPATH += . ../../libs/projectData
-INCLUDEPATH += . /usr/include/luajit ../../libs/globalSettings/realtime/interfaces/
+INCLUDEPATH += . /usr/include/luajit-2.0
 LIBS += -lluajit-5.1
 
 CONFIG += console
