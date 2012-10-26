@@ -5,8 +5,8 @@ QT  += core network
 TEMPLATE = app
 TARGET = simulator
 INCLUDEPATH += . ../../libs/projectData
-INCLUDEPATH += . /usr/include/lua5.1 ../../libs/globalSettings/realtime/interfaces/
-LIBS += -llua
+INCLUDEPATH += . /usr/include/luajit ../../libs/globalSettings/realtime/interfaces/
+LIBS += -lluajit-5.1
 
 CONFIG += console
 
