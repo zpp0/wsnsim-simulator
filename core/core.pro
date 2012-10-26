@@ -1,9 +1,11 @@
 include(../simulator.pri)
 
+QT  += core network
+
 TEMPLATE = app
 TARGET = simulator
 INCLUDEPATH += . ../../libs/projectData
-INCLUDEPATH += . /usr/include/lua5.1
+INCLUDEPATH += . /usr/include/lua5.1 ../../libs/globalSettings/realtime/interfaces/
 LIBS += -llua
 
 CONFIG += console

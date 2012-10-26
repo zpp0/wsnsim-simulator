@@ -7,11 +7,17 @@
  **/
 
 #include <QDataStream>
+#include <QApplication>
 
 #include "log.h"
+#include "iclientrealtimesettings.h"
 
 QDataStream Log::m_logStream;
 QString Log::m_errorString;
+
+QUdpSocket Log::m_socket;
+QHostAddress Log::m_addr;
+quint16 Log::m_port;
 
 int Log::init(QString logFilePath)
 {
@@ -31,6 +37,15 @@ int Log::init(QString logFilePath)
 
     m_logStream.setDevice(m_log);
 
+    QLibrary globalSettings("./globalSettings");
+    typedef IClientRealTimeSettings*(*getClientRealTimeSettings) ();
+    getClientRealTimeSettings func = (getClientRealTimeSettings) globalSettings.resolve("getClientRealTimeSettings");
+
+    IClientRealTimeSettings* rtSettings = func();
+    m_addr = QHostAddress(rtSettings->ip("simulator"));
+    m_port = rtSettings->port("simulator");
+    rtSettings->setProjectPath("simulator", QApplication::applicationDirPath() + "project.xml");
+
     return 1;
 }
 
@@ -43,50 +58,55 @@ void Log::uninit()
 
 void Log::write(Event* event)
 {
-    m_logStream << event->time << event->ID;
+    QByteArray eventArr;
+    QDataStream str(&eventArr, QIODevice::WriteOnly);
+    str << event->time << event->ID;
 
     foreach(EventParam param, event->params) {
         QVariant value = param.value;
         switch(param.type) {
         case UINT8_TYPE:
-            m_logStream << (quint8)value.toUInt();
+            str << (quint8)value.toUInt();
             break;
         case UINT16_TYPE:
-            m_logStream << (quint16)value.toUInt();
+            str << (quint16)value.toUInt();
             break;
         case UINT32_TYPE:
-            m_logStream << (quint32)value.toUInt();
+            str << (quint32)value.toUInt();
             break;
         case UINT64_TYPE:
-            m_logStream << (quint64)value.toUInt();
+            str << (quint64)value.toUInt();
             break;
         case INT32_TYPE:
-            m_logStream << (qint32)value.toInt();
+            str << (qint32)value.toInt();
             break;
         case BOOL_TYPE:
-            m_logStream << (quint8)value.toInt();
+            str << (quint8)value.toInt();
             break;
         case DOUBLE_TYPE:
-            m_logStream << value.toDouble();
+            str << value.toDouble();
             break;
         case BYTE_ARRAY_TYPE:
         {
             QByteArray array = value.toByteArray();
-            m_logStream << (quint8)array.size();
-            m_logStream.writeRawData(array.constData(), array.size());
+            str << (quint8)array.size();
+            str.writeRawData(array.constData(), array.size());
             break;
         }
         case STRING_TYPE:
         {
             QString string = value.toString();
-            m_logStream << (quint16)string.size();
-            m_logStream.writeRawData(string.toUtf8().constData(), string.size());
+            str << (quint16)string.size();
+            str.writeRawData(string.toUtf8().constData(), string.size());
             break;
         }
     case UNKNOWN_TYPE:
         break;
         }
     }
+
+    m_logStream.writeRawData(eventArr.constData(), eventArr.size());
+    m_socket.writeDatagram(eventArr, m_addr, m_port);
 }
 
 QString Log::errorString()
