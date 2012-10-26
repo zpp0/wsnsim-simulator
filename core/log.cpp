@@ -59,6 +59,7 @@ void Log::uninit()
 void Log::write(Event* event)
 {
     QByteArray eventArr;
+    eventArr.reserve(30);
     QDataStream str(&eventArr, QIODevice::WriteOnly);
     str << event->time << event->ID;
 
@@ -102,7 +103,7 @@ void Log::write(Event* event)
         }
     }
 
-    m_logStream.writeRawData(eventArr.constData(), eventArr.size());
+    m_logStream.writeRawData(eventArr, eventArr.size());
     m_socket.writeDatagram(eventArr, m_addr, m_port);
 }
 
