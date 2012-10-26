@@ -242,6 +242,7 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
                 getInstance(ID);
                 lua_remove(m_lua, -2);
                 lua_remove(m_lua, -2);
+                lua_remove(m_lua, -2);
             }
 
             else if(type == ModuleType_Environment) {
@@ -292,12 +293,7 @@ void LuaHost::eventHandler(Event* event,
     //     return 0;
     // }
 
-    getModulesTable();
-    getModule(moduleID);
-    getInstance(ID);
-    lua_remove(m_lua, -2);
-    lua_remove(m_lua, -2);
-    lua_remove(m_lua, -2);
+    lua_rawgeti(m_lua, -3, ID);
 
     foreach(EventParam param, event->params) {
         switch (param.type) {
