@@ -229,21 +229,19 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
         switch(dep.type) {
 
         case ModuleType_Environment:
-            if (type == ModuleType_Environment
-                || type == ModuleType_Hardware) {
-                getModulesTable();
-                getModule(dep.moduleID);
-                getInstance(0);
-                lua_remove(m_lua, -2);
-                lua_remove(m_lua, -2);
-                lua_remove(m_lua, -2);
-            }
+            getModulesTable();
+            getModule(dep.moduleID);
+            getInstance(0);
+            lua_remove(m_lua, -2);
+            lua_remove(m_lua, -2);
+            lua_remove(m_lua, -2);
+
             break;
 
         case ModuleType_Hardware:
         case ModuleType_Software:
             if (type == ModuleType_Hardware
-                || ModuleType_Software) {
+                || type == ModuleType_Software) {
                 getModulesTable();
                 getModule(dep.moduleID);
                 getInstance(ID);
@@ -253,15 +251,17 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
             }
 
             else if(type == ModuleType_Environment) {
-                for (ModuleInstanceID i = 0; i < m_modulesInstances[dep.moduleID]; i++) {
-                    lua_newtable(m_lua);
-                    lua_pushinteger(m_lua, i);
+                lua_newtable(m_lua);
 
+                for (ModuleInstanceID i = 0; i <= m_modulesInstances[dep.moduleID]; i++) {
                     getModulesTable();
-                    getModule(i);
+                    getModule(dep.moduleID);
+                    getInstance(i);
+                    lua_remove(m_lua, -2);
+                    lua_remove(m_lua, -2);
                     lua_remove(m_lua, -2);
 
-                    lua_settable(m_lua, -3);
+                    lua_rawseti(m_lua, -2, i);
                 }
             }
 
