@@ -360,10 +360,12 @@ int LuaHost::handleEvent(lua_State* lua)
 
     QMap<ModuleID, EventID> events = Simulator::getEventID(eventName);
 
-    int maybeEvent = events.value(m_currentModule, -1);
-    if (maybeEvent != -1)
+    // FIXME: wrong!
+    ModuleID maybeEvent = events.value(m_currentModule, 255);
+    if (maybeEvent != 255)
         Simulator::registerEventHandler(maybeEvent, handler);
 
+    // handle events from depends modules
     foreach(ModuleID dep, events.keys())
         if (m_moduleDeps[m_currentModule].contains(dep))
             Simulator::registerEventHandler(events[dep], handler);
