@@ -278,10 +278,11 @@ int Project::initModules()
 
     foreach(ModuleID moduleID, m_nodesNum.keys()) {
         quint16 nodesNum = m_nodesNum[moduleID];
-        quint16 nodeID = 0;
 
         // init modules of nodes
         foreach(ModuleAdapter* nodeModule, m_nodeAdapters) {
+            quint16 nodeID = 0;
+
             // for all nodes
             for (; nodeID < nodesNum; nodeID++) {
                 // init module
@@ -331,6 +332,8 @@ ModuleParamType Project::getModuleParamType(QString typeName)
         type = ModuleParamType_DOUBLE;
     else if (typeName == "string")
         type = ModuleParamType_STRING;
+    else if (typeName == "nodes")
+        type = ModuleParamType_NODES;
     else
         type = ModuleParamType_Undefined;
 

@@ -198,6 +198,18 @@ void LuaHost::createParams(QList<ModuleParameter> params)
         case ModuleParamType_STRING:
             lua_pushstring(m_lua, param.value.toString().toUtf8().constData());
             break;
+        case ModuleParamType_NODES:
+            lua_newtable(m_lua);
+            lua_pushnumber(m_lua, param.value.toUInt());
+            lua_setfield(m_lua, -2, "number");
+            lua_newtable(m_lua);
+            // FIXME: work for only one nodes generator
+            for (int i = 0; i < param.value.toUInt(); i++) {
+                lua_pushnumber(m_lua, i);
+                lua_rawseti(m_lua, -2, i);
+            }
+            lua_setfield(m_lua, -2, "nodes");
+            break;
         case ModuleParamType_Undefined:
             break;
         }
