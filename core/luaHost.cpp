@@ -170,7 +170,7 @@ void LuaHost::createParams(QList<ModuleParameter> params)
             lua_setfield(m_lua, -2, "number");
             lua_newtable(m_lua);
             // FIXME: work for only one nodes generator
-            for (int i = 0; i < param.value.toUInt(); i++) {
+            for (quint16 i = 0; i < param.value.toUInt(); i++) {
                 lua_pushnumber(m_lua, i);
                 lua_rawseti(m_lua, -2, i);
             }
@@ -277,7 +277,7 @@ void LuaHost::eventHandler(Event* event,
             break;
         case BYTE_ARRAY_TYPE:
             lua_createtable(m_lua, param.value.byteArray.size, 0);
-            for (int i = 0; i < param.value.byteArray.size;  i++) {
+            for (quint8 i = 0; i < param.value.byteArray.size;  i++) {
                 lua_pushnumber(m_lua, param.value.byteArray.data[i]);
                 lua_rawseti(m_lua, -2, i);
             }
