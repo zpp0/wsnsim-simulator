@@ -16,12 +16,12 @@
 class LuaEventHandler
 {
 public:
-    LuaEventHandler(ModuleID moduleID, ModuleInstanceID ID, const char* handlerName);
+    LuaEventHandler(ModuleID moduleID, ModuleInstanceID ID);
     void handle(Event* event);
+
 private:
     ModuleID m_moduleID;
     ModuleInstanceID m_ID;
-    const char* m_handlerName;
 };
 
 #endif // LUAEVENTHANDLER_H

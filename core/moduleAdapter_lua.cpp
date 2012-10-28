@@ -17,8 +17,8 @@ ModuleAdapterLua::ModuleAdapterLua(Module module)
 
 int ModuleAdapterLua::load()
 {
-    int ret = LuaHost::loadFile(m_module.fileName);
-    if (ret) {
+    int ret = LuaHost::loadFile(m_module.fileName, m_module.name);
+    if (ret == 0) {
         m_errorString = LuaHost::errorString();
         return 0;
     }
