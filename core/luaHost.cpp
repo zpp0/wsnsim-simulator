@@ -160,16 +160,9 @@ int LuaHost::createModule(QString moduleName, ModuleInstanceID ID)
     lua_getglobal(m_lua, moduleName.toUtf8().constData());
     lua_settable(m_lua, -3);
 
-    lua_getfield(m_lua, -1, "new");
-    if (!lua_isfunction(m_lua, -1)) {
-        m_errorString = "module " + moduleName + " has no new() method";
-        return 0;
-    }
-
-    if (lua_pcall(m_lua, 0, 1, 0)) {
-        m_errorString = lua_tostring(m_lua, -1);
-        return 0;
-    }
+    lua_newtable(m_lua);
+    lua_getglobal(m_lua, moduleName.toUtf8().constData());
+    lua_setmetatable(m_lua, -2);
 
     lua_remove(m_lua, -2);
     lua_settable(m_lua, -3);
