@@ -422,9 +422,16 @@ int LuaHost::postEvent(lua_State* lua)
                     params[i].value.d = lua_tonumber(lua, -1);
                     break;
                 case STRING_TYPE:
-                    strcpy(params[i].value.string.data, lua_tostring(lua, -1));
-                    params[i].value.string.length = strlen(params[i].value.string.data);
+                {
+                    const char* string = lua_tostring(lua, -1);
+                    int length = strlen(string);
+                    char* strparam = new char(length);
+                    strcpy(strparam, string);
+                    params[i].value.string.data = strparam;
+                    params[i].value.string.length = length;
+                    lua_pop(lua, 1);
                     break;
+                }
                 case BYTE_ARRAY_TYPE:
                     // TODO: implement this
                     break;
