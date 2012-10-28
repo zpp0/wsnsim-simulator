@@ -163,9 +163,7 @@ int LuaHost::createModule(QString moduleName, ModuleInstanceID ID)
         return 0;
     }
 
-    lua_getglobal(m_lua, moduleName.toUtf8().constData());
-
-    if (lua_pcall(m_lua, 1, 1, 0)) {
+    if (lua_pcall(m_lua, 0, 1, 0)) {
         m_errorString = lua_tostring(m_lua, -1);
         return 0;
     }
