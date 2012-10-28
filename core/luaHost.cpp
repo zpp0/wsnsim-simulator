@@ -156,6 +156,9 @@ int LuaHost::createModule(QString moduleName, ModuleInstanceID ID)
 
     lua_getglobal(m_lua, moduleName.toUtf8().constData());
     assert(lua_istable(m_lua, -1));
+    lua_pushstring(m_lua, "__index");
+    lua_getglobal(m_lua, moduleName.toUtf8().constData());
+    lua_settable(m_lua, -3);
 
     lua_getfield(m_lua, -1, "new");
     if (!lua_isfunction(m_lua, -1)) {
