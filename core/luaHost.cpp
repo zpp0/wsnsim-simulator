@@ -276,7 +276,11 @@ void LuaHost::eventHandler(Event* event,
             lua_pushstring(m_lua, param.value.string.data);
             break;
         case BYTE_ARRAY_TYPE:
-            // TODO: implement this
+            lua_createtable(m_lua, param.value.byteArray.size, 0);
+            for (int i = 0; i < param.value.byteArray.size;  i++) {
+                lua_pushnumber(m_lua, param.value.byteArray.data[i]);
+                lua_rawseti(m_lua, -2, i);
+            }
             break;
         case UNKNOWN_TYPE:
             break;
@@ -414,10 +418,21 @@ int LuaHost::postEvent(lua_State* lua)
                         params[i].value.string.data = strparam;
                         params[i].value.string.length = length;
                         lua_pop(lua, 1);
-                        break;
                     }
+                    break;
                 case BYTE_ARRAY_TYPE:
-                    // TODO: implement this
+                    if (lua_isstring(lua, -1)) {
+                        quint8 size = luaL_getn(lua, -1);
+                        char* data = new char(size);
+                        for (quint8 idx = 0; idx < size; i++) {
+                            lua_rawgeti(lua, -1, idx);
+                            data[idx] = lua_tonumber(lua, -1);
+                            lua_pop(lua, 1);
+                        }
+                        params[i].value.byteArray.data = data;
+                        params[i].value.byteArray.size = size;
+                        lua_pop(lua, 1);
+                    }
                     break;
                 case UNKNOWN_TYPE:
                     break;
