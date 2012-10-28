@@ -335,9 +335,16 @@ int LuaHost::postEvent(lua_State* lua)
     QString name;
     VirtualTime delay = 0;
     QVector<EventParam> params;
+    const void* table_p = NULL;
+    ModuleID module;
 
     // get args from table
     if (lua_istable(lua, -1)) {
+        lua_getfield(lua, -1, "author");
+        if (!lua_isnil(lua, -1))
+            table_p = lua_topointer(lua, -1);
+        lua_pop(lua, 1);
+
         lua_getfield(lua, -1, "event");
         if (!lua_isnil(lua, -1))
             name = lua_tostring(lua, -1);
@@ -353,7 +360,14 @@ int LuaHost::postEvent(lua_State* lua)
 
             lua_pushnil(lua);
 
-            params = Simulator::getEventParams(name, m_currentModule);
+            if (table_p != NULL)
+                module = m_modulesPtrs[table_p];
+            else {
+                qDebug() << "no author of event";
+                return 1;
+            }
+
+            params = Simulator::getEventParams(name, module);
 
             for (int i = 0; i < params.size(); i++) {
                 lua_next(lua, -2);
@@ -407,7 +421,8 @@ int LuaHost::postEvent(lua_State* lua)
         }
         lua_pop(lua, 1);
 
-        Simulator::postEvent(m_currentModule, name, delay, params);
+        Simulator::postEvent(module, name, delay, params);
+
     }
 
     return 1;
