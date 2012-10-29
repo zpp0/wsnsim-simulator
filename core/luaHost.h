@@ -67,9 +67,12 @@ private:
     static QMap<ModuleID, ModuleInstanceID> m_modulesInstances;
     static QMap<ModuleID, QList<ModuleID> > m_moduleDeps;
 
+    static QList<ModuleID> m_nodesModules;
+
     static QMap<ModuleID, QMap<ModuleInstanceID, int> > m_modulesRefs;
     static QMap<ModuleID, QMap<ModuleInstanceID, QMap<EventID, int> > > m_handlersRefs;
     static QMap<const void*, ModuleID> m_modulesPtrs;
+    static QMap<const void*, ModuleInstanceID> m_modulesInstancesPtrs;
 };
 
 #endif // LUAHOST_H

@@ -22,9 +22,12 @@ ModuleInstanceID LuaHost::m_currentModuleInstance;
 QMap<ModuleID, ModuleInstanceID> LuaHost::m_modulesInstances;
 QMap<ModuleID, QList<ModuleID> > LuaHost::m_moduleDeps;
 
+QList<ModuleID> LuaHost::m_nodesModules;
+
 QMap<ModuleID, QMap<ModuleInstanceID, int> > LuaHost::m_modulesRefs;
 QMap<ModuleID, QMap<ModuleInstanceID, QMap<EventID, int> > > LuaHost::m_handlersRefs;
 QMap<const void*, ModuleID> LuaHost::m_modulesPtrs;
+QMap<const void*, ModuleInstanceID> LuaHost::m_modulesInstancesPtrs;
 
 void LuaHost::open()
 {
@@ -82,6 +85,7 @@ int LuaHost::createModule(ModuleInstanceID ID, QString name, ModuleID moduleID)
 
     m_modulesRefs[moduleID][ID] = ref;
     m_modulesPtrs[p] = moduleID;
+    m_modulesInstancesPtrs[p] = ID;
 
     if (ID == 0)
         m_modulesInstances[moduleID] = 0;
@@ -115,8 +119,12 @@ int LuaHost::initModule(ModuleID moduleID,
 
     if (type == ModuleType_Software
         || type == ModuleType_Hardware) {
+        // FIXME: is ID always equals nodeID?
         lua_pushnumber(m_lua, ID);
         lua_setfield(m_lua, -2, "parentNode");
+
+        // remember nodes modules for dispatch event params
+        m_nodesModules += moduleID;
     }
 
     // put on top of the stack module interfaces
@@ -249,13 +257,25 @@ void LuaHost::eventHandler(Event* event,
 
     getInstance(moduleID, ID);
 
-    foreach(EventParam param, event->params) {
+    QVector<EventParam> params = event->params;
+
+    // remove nodeID param for nodes modules
+    if (m_nodesModules.contains(moduleID)) {
+
+        // filter wrong nodes modules
+        if (params[0].value.u16 == ID)
+            params.pop_front();
+        else
+            return;
+    }
+
+    foreach(EventParam param, params) {
         switch (param.type) {
         case INT32_TYPE:
             lua_pushnumber(m_lua, param.value.i32);
             break;
         case BOOL_TYPE:
-            lua_pushnumber(m_lua, param.value.b);
+            lua_pushboolean(m_lua, param.value.b);
             break;
         case UINT8_TYPE:
             lua_pushnumber(m_lua, param.value.u8);
@@ -288,9 +308,12 @@ void LuaHost::eventHandler(Event* event,
     }
 
     // TODO: errors handling
-    lua_pcall(m_lua, 1 + event->params.size(), 0, 0);
+    int ret = lua_pcall(m_lua, 1 + params.size(), 0, 0);
+    if (ret) {
+        qDebug() << lua_tostring(m_lua, -1);
+        lua_pop(m_lua, 1);
+    }
 
-    lua_settop(m_lua, 2);
 }
 
 QString LuaHost::errorString()
@@ -341,6 +364,7 @@ int LuaHost::postEvent(lua_State* lua)
     QVector<EventParam> params;
     const void* table_p = NULL;
     ModuleID module;
+    ModuleInstanceID id;
 
     // get args from table
     if (lua_istable(lua, -1)) {
@@ -362,10 +386,10 @@ int LuaHost::postEvent(lua_State* lua)
         lua_getfield(lua, -1, "args");
         if (lua_istable(lua, -1)) {
 
-            lua_pushnil(lua);
-
-            if (table_p != NULL)
+            if (table_p != NULL) {
                 module = m_modulesPtrs[table_p];
+                id = m_modulesInstancesPtrs[table_p];
+            }
             else {
                 qDebug() << "no author of event";
                 return 1;
@@ -373,7 +397,19 @@ int LuaHost::postEvent(lua_State* lua)
 
             params = Simulator::getEventParams(name, module);
 
-            for (int i = 0; i < params.size(); i++) {
+            // params counter
+            // begins from 0 for env modules
+            // and from 1 for nodes modules
+            int i = 0;
+
+            if (m_nodesModules.contains(module)) {
+                params[0].value.u16 = id;
+                i = 1;
+            }
+
+            lua_pushnil(lua);
+
+            for (; i < params.size(); i++) {
                 lua_next(lua, -2);
 
                 if (lua_isnil(lua, -1))
