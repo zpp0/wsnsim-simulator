@@ -420,55 +420,71 @@ int LuaHost::postEvent(lua_State* lua)
                 case INT32_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.i32 = lua_tonumber(lua, -1);
+                    else
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
                     break;
                 case BOOL_TYPE:
                     if (lua_isboolean(lua, -1))
                         params[i].value.b = lua_toboolean(lua, -1);
+                    else
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting bool";
                     break;
                 case UINT8_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.u8 = lua_tonumber(lua, -1);
+                    else
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
                     break;
                 case UINT16_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.u16 = lua_tonumber(lua, -1);
+                    else
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
                     break;
                 case UINT32_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.u32 = lua_tonumber(lua, -1);
+                    else
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
                     break;
                 case UINT64_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.u64 = lua_tonumber(lua, -1);
+                    else
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
                     break;
                 case DOUBLE_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.d = lua_tonumber(lua, -1);
+                    else
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
                     break;
                 case STRING_TYPE:
                     if (lua_isstring(lua, -1)) {
                         const char* string = lua_tostring(lua, -1);
                         int length = strlen(string);
-                        char* strparam = new char(length);
+                        char* strparam = new char[length];
                         strcpy(strparam, string);
                         params[i].value.string.data = strparam;
                         params[i].value.string.length = length;
-                        lua_pop(lua, 1);
                     }
+                    else
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting string";
                     break;
                 case BYTE_ARRAY_TYPE:
                     if (lua_istable(lua, -1)) {
                         quint8 size = luaL_getn(lua, -1);
-                        char* data = new char(size);
-                        for (quint8 idx = 0; idx < size; i++) {
+                        char* data = new char[size];
+                        for (quint8 idx = 1; idx <= size; idx++) {
                             lua_rawgeti(lua, -1, idx);
-                            data[idx] = lua_tonumber(lua, -1);
+                            data[idx-1] = lua_tonumber(lua, -1);
                             lua_pop(lua, 1);
                         }
                         params[i].value.byteArray.data = data;
                         params[i].value.byteArray.size = size;
-                        lua_pop(lua, 1);
                     }
+                    else
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting table";
                     break;
                 case UNKNOWN_TYPE:
                     break;
