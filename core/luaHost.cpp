@@ -422,8 +422,8 @@ int LuaHost::postEvent(lua_State* lua)
                         params[i].value.i32 = lua_tonumber(lua, -1);
                     break;
                 case BOOL_TYPE:
-                    if (lua_isnumber(lua, -1))
-                        params[i].value.b = lua_tonumber(lua, -1);
+                    if (lua_isboolean(lua, -1))
+                        params[i].value.b = lua_toboolean(lua, -1);
                     break;
                 case UINT8_TYPE:
                     if (lua_isnumber(lua, -1))
