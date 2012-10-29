@@ -265,8 +265,10 @@ void LuaHost::eventHandler(Event* event,
         // filter wrong nodes modules
         if (params[0].value.u16 == ID)
             params.pop_front();
-        else
+        else {
+            lua_pop(m_lua, 2);
             return;
+        }
     }
 
     foreach(EventParam param, params) {
@@ -328,7 +330,14 @@ int LuaHost::handleEvent(lua_State* lua)
 
     getInstance(m_currentModule, m_currentModuleInstance);
     lua_getfield(m_lua, -1, eventHandlerName);
-    int ref = luaL_ref(m_lua, LUA_REGISTRYINDEX);
+    int ref;
+    if (lua_isfunction(m_lua, -1)) {
+        ref = luaL_ref(m_lua, LUA_REGISTRYINDEX);
+    }
+    else {
+        lua_pop(lua, 1);
+    }
+
     lua_pop(lua, 1);
 
     // FIXME: memory leak
@@ -493,7 +502,7 @@ int LuaHost::postEvent(lua_State* lua)
                 lua_pop(lua, 1);
             }
         }
-        lua_pop(lua, 1);
+        lua_pop(lua, 2);
 
         Simulator::postEvent(module, name, delay, params);
 
