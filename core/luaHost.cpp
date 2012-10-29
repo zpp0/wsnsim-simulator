@@ -457,7 +457,7 @@ int LuaHost::postEvent(lua_State* lua)
                     }
                     break;
                 case BYTE_ARRAY_TYPE:
-                    if (lua_isstring(lua, -1)) {
+                    if (lua_istable(lua, -1)) {
                         quint8 size = luaL_getn(lua, -1);
                         char* data = new char(size);
                         for (quint8 idx = 0; idx < size; i++) {
