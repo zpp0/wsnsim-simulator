@@ -91,7 +91,7 @@ void Simulator::postEvent(Event* event)
     event->ID = m_events[event->name][event->author];
 
     if (event->recordable == false)
-        if (m_loggableEvents.contains(event->ID))
+        // if (m_loggableEvents.contains(event->ID))
             Log::write(event);
 
     // TODO: add author argument?
