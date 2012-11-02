@@ -14,12 +14,12 @@
 #include "module.h"
 #include "eventQueue.h"
 #include "project.h"
-#include "eventHandler.hpp"
+#include "eventHandler.h"
 
 class Simulator
 {
 public:
-    static void registerEventHandler(EventID eventID, EventHandler handler);
+    static void registerEventHandler(EventID eventID, EventHandler* handler);
     static void registerEvent(QString name, ModuleID author, EventID event);
     static void registerEventParam(QString eventName,
                                    ModuleID author,
@@ -46,9 +46,7 @@ private:
     // реальное время в системе
     static VirtualTime m_globalTime;
 
-    static Project* m_project;
-
-    static QMap<EventID, QList<EventHandler> > m_eventHandlers;
+    static QMap<EventID, QList<EventHandler*> > m_eventHandlers;
 
     static QMap<QString, QMap<ModuleID, EventID> > m_events;
     static QMap<QString, QMap<ModuleID, QVector<EventParam> > > m_eventsArgs;

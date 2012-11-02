@@ -29,7 +29,7 @@ public:
 
     static int loadFile(QString path, QString name);
 
-    static int createModule(ModuleInstanceID ID, QString name, ModuleID moduleID);
+    static int createModule(ModuleID moduleID, ModuleInstanceID ID, QString name);
 
     static int initModule(ModuleID moduleID,
                           ModuleInstanceID ID,

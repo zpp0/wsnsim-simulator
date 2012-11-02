@@ -9,8 +9,7 @@
 #include <cassert>
 
 #include "luaHost.h"
-#include "luaEventHandler.h"
-#include "eventHandler.hpp"
+#include "eventHandler.h"
 #include "simulator.h"
 
 lua_State* LuaHost::m_lua = 0;
@@ -74,7 +73,7 @@ int LuaHost::loadFile(QString path, QString name)
     return 1;
 }
 
-int LuaHost::createModule(ModuleInstanceID ID, QString name, ModuleID moduleID)
+int LuaHost::createModule(ModuleID moduleID, ModuleInstanceID ID, QString name)
 {
     lua_newtable(m_lua);
     lua_getglobal(m_lua, name.toUtf8().constData());
@@ -341,10 +340,8 @@ int LuaHost::handleEvent(lua_State* lua)
     lua_pop(lua, 1);
 
     // FIXME: memory leak
-    LuaEventHandler* luaHandler = new LuaEventHandler(m_currentModule,
-                                                      m_currentModuleInstance);
-    EventHandler handler = EventHandler::from_method<LuaEventHandler,
-                                                     &LuaEventHandler::handle>(luaHandler);
+    EventHandler* handler = new EventHandler(m_currentModule,
+                                             m_currentModuleInstance);
 
     QMap<ModuleID, EventID> events = Simulator::getEventID(eventName);
 

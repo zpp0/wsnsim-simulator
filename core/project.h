@@ -14,11 +14,7 @@
 #include "types.h"
 #include "projectParams.h"
 #include "module.h"
-#include "moduleAdapter.h"
 #include "event.h"
-
-#define MODULES_ENABLED
-#define LUA_ENABLED
 
 class Project {
 public:
@@ -28,38 +24,30 @@ public:
 
     int initSimulator();
     int initLog();
-
-#ifdef MODULES_ENABLED
-
-#ifdef LUA_ENABLED
     int initLua();
-#endif
 
     int loadModules();
     int createModules();
     int initModules();
 
-#endif
-
     QString errorString();
 
 private:
-    ModuleType getModuleType(QString type);
-    ModuleParamType getModuleParamType(QString type);
-    EventParamType getEventParamType(QString type);
+    int isValidModule(Module& module);
 
     QString m_projectFileName;
     ProjectParams m_projectParams;
     QString m_errorString;
-    QList<ModuleAdapter*> m_envAdapters;
-    QList<ModuleAdapter*> m_nodeAdapters;
+    QMap<QString, EventParamType> m_eventsParamsNames;
+
+    QList<Module> m_envModules;
+    QList<Module> m_nodeModules;
 
     QHash<ModuleID, ModuleType> m_moduleType;
 
     QMap<ModuleID, NodeID> m_nodesNum;
 
-    QHash<ModuleID, ModuleInstanceID> m_envModules;
-    QHash<ModuleID, QHash<NodeID, ModuleInstanceID> > m_nodeModules;
+    QHash<ModuleID, QHash<NodeID, ModuleInstanceID> > m_nodeModulesNum;
 };
 
 #endif // PROJECT_H

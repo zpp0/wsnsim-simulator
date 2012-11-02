@@ -17,13 +17,11 @@
 VirtualTime Simulator::m_globalTime;
 VirtualTime Simulator::m_maxGlobalTime;
 
-QMap<EventID, QList<EventHandler> > Simulator::m_eventHandlers;
+QMap<EventID, QList<EventHandler*> > Simulator::m_eventHandlers;
 QMap<QString, QMap<ModuleID, EventID> > Simulator::m_events;
 QMap<QString, QMap<ModuleID, QVector<EventParam> > > Simulator::m_eventsArgs;
 
 QList<EventID> Simulator::m_loggableEvents;
-
-Project* Simulator::m_project;
 
 eventQueue Simulator::m_queue;
 
@@ -32,7 +30,7 @@ void Simulator::registerEvent(QString name, ModuleID author, EventID event)
     m_events[name][author] = event;
 }
 
-void Simulator::registerEventHandler(EventID eventID, EventHandler handler)
+void Simulator::registerEventHandler(EventID eventID, EventHandler* handler)
 {
     m_eventHandlers[eventID] += handler;
 }
@@ -106,17 +104,17 @@ void Simulator::setMaxTime(VirtualTime maxTime)
 
 void Simulator::init(QString projectFileName)
 {
-    m_project = new Project(projectFileName);
+    Project project(projectFileName);
     // FIXME: is it always works?
-    if (!m_project->load()
-        || !m_project->initSimulator()
-        || !m_project->initLog()
-        || !m_project->initLua()
-        || !m_project->loadModules()
-        || !m_project->createModules()
-        || !m_project->initModules())
+    if (!project.load()
+        || !project.initSimulator()
+        || !project.initLog()
+        || !project.initLua()
+        || !project.loadModules()
+        || !project.createModules()
+        || !project.initModules())
     {
-        std::cout << qPrintable(m_project->errorString());
+        std::cout << qPrintable(project.errorString());
         exit(1);
     }
 }
@@ -166,8 +164,8 @@ void Simulator::eval()
             // if (m_loggableEvents.contains(nextEvent->ID))
                 Log::write(nextEvent);
 
-        foreach(EventHandler handler, m_eventHandlers[nextEvent->ID])
-            handler(nextEvent);
+        foreach(EventHandler* handler, m_eventHandlers[nextEvent->ID])
+            handler->handle(nextEvent);
 
         VirtualTime remainingTime = m_maxGlobalTime - nextEvent->time;
         int currentPercent = ((m_maxGlobalTime - remainingTime) * 100) / m_maxGlobalTime;

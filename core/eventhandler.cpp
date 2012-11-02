@@ -6,16 +6,16 @@
  *
  **/
 
-#include "luaEventHandler.h"
+#include "eventHandler.h"
 #include "luaHost.h"
 
-LuaEventHandler::LuaEventHandler(ModuleID moduleID, ModuleInstanceID ID)
+EventHandler::EventHandler(ModuleID moduleID, ModuleInstanceID ID)
 {
     m_moduleID = moduleID;
     m_ID = ID;
 }
 
-void LuaEventHandler::handle(Event* event)
+void EventHandler::handle(Event* event)
 {
     LuaHost::eventHandler(event, m_moduleID, m_ID);
 }

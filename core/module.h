@@ -11,6 +11,7 @@ b *
 
 #include <QtCore>
 
+#include "projectParams.h"
 #include "types.h"
 
 enum ModuleType {
@@ -51,6 +52,8 @@ struct ModuleDependence
 
 struct Module
 {
+    Module(ModuleData& moduleData);
+
     QString name;
     ModuleID ID;
     ModuleType type;

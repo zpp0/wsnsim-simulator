@@ -6,17 +6,17 @@
  *
  **/
 
-#ifndef LUAEVENTHANDLER_H
-#define LUAEVENTHANDLER_H
+#ifndef EVENTHANDLER_H
+#define EVENTHANDLER_H
 
 #include <QtCore>
 
 #include "event.h"
 
-class LuaEventHandler
+class EventHandler
 {
 public:
-    LuaEventHandler(ModuleID moduleID, ModuleInstanceID ID);
+    EventHandler(ModuleID moduleID, ModuleInstanceID ID);
     void handle(Event* event);
 
 private:
@@ -24,4 +24,4 @@ private:
     ModuleInstanceID m_ID;
 };
 
-#endif // LUAEVENTHANDLER_H
+#endif // EVENTHANDLER_H
