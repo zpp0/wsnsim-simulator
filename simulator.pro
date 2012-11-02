@@ -4,7 +4,7 @@ QT  += core
 
 TEMPLATE = app
 TARGET = simulator
-INCLUDEPATH += . ../../libs/projectData
+INCLUDEPATH += . ../libs/projectData
 INCLUDEPATH += . /usr/include/luajit-2.0
 LIBS += -lluajit-5.1
 
