@@ -12,6 +12,8 @@
 #include "types.h"
 #include "module.h"
 
+typedef quint8 EventID;
+
 enum EventParamType
 {
     UNKNOWN_TYPE,

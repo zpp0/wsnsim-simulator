@@ -12,7 +12,5 @@
 #include <QtCore>
 
 typedef quint64 VirtualTime;
-typedef quint16 NodeID;
-typedef quint8 EventID;
 
 #endif // TYPES_H
