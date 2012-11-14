@@ -3,16 +3,17 @@
  * File: module.h
  * Description: modules functions
  * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
-b *
+ *
  **/
 
 #ifndef MODULE_H
 #define MODULE_H
 
-#include <QtCore>
+#include <QString>
+#include <QList>
+#include <QVariant>
 
 #include "projectParams.h"
-#include "types.h"
 
 enum ModuleType {
     ModuleType_Undefined,
