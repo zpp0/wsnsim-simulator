@@ -142,19 +142,10 @@ int Project::loadModules()
         if (!isValidModule(module))
             return 0;
 
-        int ret = LuaHost::loadFile(module.fileName, module.name);
-        if (ret) {
-            if (module.type == ModuleType_Environment)
-                m_envModules += module;
-            else
-                m_nodeModules += module;
-
-            m_moduleType[module.ID] = ModuleType_Environment;
-        }
-        else {
-            m_errorString = LuaHost::errorString();
-            return 0;
-        }
+        if (module.type == ModuleType_Environment)
+            m_envModules += module;
+        else
+            m_nodeModules += module;
     }
 
     return 1;
@@ -164,10 +155,18 @@ int Project::createModules()
 {
     // creating env modules
     foreach(Module envModule, m_envModules) {
-        int ret = LuaHost::createModule(envModule.ID, 0, envModule.name);
+        int ret = LuaHost::loadFile(envModule.fileName, envModule.name);
+        if (!ret) {
+            m_errorString = LuaHost::errorString();
+            return 0;
+        }
+
+        ret = LuaHost::createModule(envModule.ID, 0, envModule.name);
 
         if (!ret)
             return 0;
+
+        LuaHost::removeGlobalName(envModule.name);
     }
 
     // now we must have more than 0 registered nodes
@@ -185,8 +184,6 @@ int Project::createModules()
                 
                 if (!ret)
                     return 0;
-                
-                m_nodeModulesNum[nodeModule.ID][nodeID] = nodeID;
             }
         }
     }

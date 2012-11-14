@@ -28,6 +28,7 @@ public:
     static void open();
 
     static int loadFile(QString path, QString name);
+    static void removeGlobalName(QString name);
 
     static int createModule(ModuleID moduleID, ModuleInstanceID ID, QString name);
 

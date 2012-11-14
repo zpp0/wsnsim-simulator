@@ -15,6 +15,7 @@
 #include "projectParams.h"
 #include "module.h"
 #include "event.h"
+#include "nodes.h"
 
 class Project {
 public:
@@ -43,9 +44,9 @@ private:
     QList<Module> m_envModules;
     QList<Module> m_nodeModules;
 
-    QHash<ModuleID, ModuleType> m_moduleType;
-
-    QMap<ModuleID, NodeID> m_nodesNum;
+    QMap<ModuleID, QMap<NodeType, NodeID> >m_nodesNum;
+    // TODO: implement nodePlatform
+    QMap<NodeID, NodeType> m_nodeTypes;
 
     QHash<ModuleID, QHash<NodeID, ModuleInstanceID> > m_nodeModulesNum;
 };

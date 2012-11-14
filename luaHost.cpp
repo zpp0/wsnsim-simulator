@@ -73,6 +73,12 @@ int LuaHost::loadFile(QString path, QString name)
     return 1;
 }
 
+void LuaHost::removeGlobalName(QString name)
+{
+    lua_pushnil(m_lua);
+    lua_setglobal(m_lua, name.toUtf8().constData());
+}
+
 int LuaHost::createModule(ModuleID moduleID, ModuleInstanceID ID, QString name)
 {
     lua_newtable(m_lua);
