@@ -105,7 +105,6 @@ void Simulator::setMaxTime(VirtualTime maxTime)
 void Simulator::init(QString projectFileName)
 {
     Project project(projectFileName);
-    // FIXME: is it always works?
     if (!project.load()
         || !project.initSimulator()
         || !project.initLog()
@@ -114,7 +113,7 @@ void Simulator::init(QString projectFileName)
         || !project.createModules()
         || !project.initModules())
     {
-        std::cout << qPrintable(project.errorString());
+        std::cout << qPrintable(project.errorString()) << std::endl;
         exit(1);
     }
 }
