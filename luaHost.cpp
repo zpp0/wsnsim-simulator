@@ -37,6 +37,8 @@ void LuaHost::open()
 
     lua_register(m_lua, "handleEvent", LuaHost::handleEvent);
     lua_register(m_lua, "postEvent", LuaHost::postEvent);
+    lua_register(m_lua, "getTime", LuaHost::getTime);
+    lua_register(m_lua, "declare_module", LuaHost::dummyDeclareModule);
 
     // QString luaModules = "package.path = package.path .. \";"
     //     + currentProjectPath + "/?.lua\"";
@@ -511,6 +513,17 @@ int LuaHost::postEvent(lua_State* lua)
 
     }
 
+    return 1;
+}
+
+int LuaHost::dummyDeclareModule(lua_State* lua)
+{
+    return 1;
+}
+
+int LuaHost::getTime(lua_State* lua)
+{
+    lua_pushnumber(lua, Simulator::globalTime());
     return 1;
 }
 
