@@ -34,7 +34,8 @@ enum ModuleParamType {
     ModuleParamType_UINT64,
     ModuleParamType_DOUBLE,
     ModuleParamType_STRING,
-    ModuleParamType_NODES
+    ModuleParamType_NODES,
+    ModuleParamType_TABLE
 };
 
 struct ModuleParameter

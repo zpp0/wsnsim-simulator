@@ -42,6 +42,8 @@ ModuleParamType getModuleParamType(QString typeName)
         type = ModuleParamType_STRING;
     else if (typeName == "nodes")
         type = ModuleParamType_NODES;
+    else if (typeName == "table")
+        type = ModuleParamType_TABLE;
     else
         type = ModuleParamType_Undefined;
 

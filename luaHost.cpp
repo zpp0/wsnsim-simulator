@@ -180,19 +180,36 @@ void LuaHost::createParams(QList<ModuleParameter> params)
             lua_pushstring(m_lua, param.value.toString().toUtf8().constData());
             break;
         case ModuleParamType_NODES:
+        {
             lua_newtable(m_lua);
-            lua_pushnumber(m_lua, param.value.toUInt());
-            lua_setfield(m_lua, -2, "number");
+            QMap<QString, QVariant> nodes = param.value.toMap();
+            foreach(QString name, nodes.keys()) {
+                lua_pushnumber(m_lua, nodes[name].toUInt());
+                lua_setfield(m_lua, -2, name.toUtf8().constData());
+            }
+            break;
+        }
+        case ModuleParamType_TABLE:
+        {
             lua_newtable(m_lua);
-            // FIXME: work for only one nodes generator
-            for (quint16 i = 0; i < param.value.toUInt(); i++) {
-                lua_pushnumber(m_lua, i);
+            QMap<QString, QVariant> table = param.value.toMap();
+            QList<QString> rows = table.keys();
+            for (int i = 0; i < rows.size(); i++) {
+                QList<QString> columns = table[rows[i]].toMap().keys();
+
+                lua_newtable(m_lua);
+                for (int j = 0; j < columns.size(); j++) {
+                    double value = table[rows[i]].toMap()[columns[j]].toDouble();
+                    lua_pushnumber(m_lua, value);
+                    lua_rawseti(m_lua, -2, j + 1);
+                }
                 lua_rawseti(m_lua, -2, i);
             }
-            lua_setfield(m_lua, -2, "nodes");
+
             break;
+        }
         case ModuleParamType_Undefined:
-            break;
+            return;
         }
 
         lua_setfield(m_lua, -2, param.name.toUtf8().constData());
