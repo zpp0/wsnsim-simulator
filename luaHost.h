@@ -35,7 +35,7 @@ public:
                           ModuleInstanceID ID,
                           ModuleType type,
                           QList<ModuleParameter> params,
-                          QList<ModuleDependence> dependencies);
+                          QList<ModuleDepend> dependencies);
 
     static void close();
 
@@ -51,7 +51,7 @@ private:
     static void createParams(QList<ModuleParameter> params);
     static void createDependencies(ModuleInstanceID ID,
                                    ModuleType type,
-                                   QList<ModuleDependence> dependencies);
+                                   QList<ModuleDepend> dependencies);
 
     static int handleEvent(lua_State* lua);
     static int postEvent(lua_State* lua);

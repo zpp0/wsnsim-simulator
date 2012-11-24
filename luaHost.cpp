@@ -106,7 +106,7 @@ int LuaHost::initModule(ModuleID moduleID,
                         ModuleInstanceID ID,
                         ModuleType type,
                         QList<ModuleParameter> params,
-                        QList<ModuleDependence> dependencies)
+                        QList<ModuleDepend> dependencies)
 {
     setCurrentModule(moduleID, ID);
 
@@ -218,11 +218,11 @@ void LuaHost::createParams(QList<ModuleParameter> params)
 
 void LuaHost::createDependencies(ModuleInstanceID ID,
                                  ModuleType type,
-                                 QList<ModuleDependence> dependencies)
+                                 QList<ModuleDepend> dependencies)
 {
     lua_newtable(m_lua);
 
-    foreach(ModuleDependence dep, dependencies) {
+    foreach(ModuleDepend dep, dependencies) {
 
         switch(dep.type) {
 

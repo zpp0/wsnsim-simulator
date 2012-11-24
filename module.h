@@ -45,7 +45,7 @@ struct ModuleParameter
     QVariant value;
 };
 
-struct ModuleDependence
+struct ModuleDepend
 {
     QString name;
     ModuleType type;
@@ -61,7 +61,7 @@ struct Module
     ModuleType type;
     QString fileName;
     QList<ModuleParameter> params;
-    QList<ModuleDependence> dependencies;
+    QList<ModuleDepend> dependencies;
 };
 
 #endif // MODULE_H

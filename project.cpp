@@ -315,15 +315,15 @@ int Project::isValidModule(Module& module)
             return 0;
         }
     }
-    foreach (ModuleDependence dep, module.dependencies) {
+    foreach (ModuleDepend dep, module.dependencies) {
         if (dep.type == ModuleType_Undefined) {
             m_errorString = "Wrong type of dependence " + dep.name;
             return 0;
         }
     }
-    
+
     // TODO: check modules ID for equality
     // TODO: check for existing of dependencies IDs
-    
+
     return 1;
 }

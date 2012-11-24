@@ -3,7 +3,7 @@
  * File: module.cpp
  * Description: modules functions
  * Author: Yarygin Alexander <yarygin.alexander@gmail.com>
-b *
+ *
  **/
 
 #include "module.h"
@@ -73,14 +73,12 @@ Module::Module(ModuleData& moduleData)
     ID = moduleData.moduleInfo["ID"].toInt();
 
     // prepare dependencies
-    foreach(QString depName, moduleData.dependencies.keys()) {
-        ModuleDependence dep;
-        dep.name = depName;
-        QString typeName = moduleData.dependencies[depName].first;
-        dep.moduleID = moduleData.dependencies[depName].second;
+    foreach(ModuleDependence dep, moduleData.dependencies) {
+        ModuleDepend dependence;
+        dependence.name = dep.name;
+        dependence.type = getModuleType(dep.type);
+        dependence.moduleID = dep.moduleID;
 
-        dep.type = getModuleType(typeName);
-
-        dependencies += dep;
+        dependencies += dependence;
     }
 }
