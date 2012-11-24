@@ -36,6 +36,17 @@ public:
 private:
     int isValidModule(Module& module);
 
+    Module* findNodeModule(ModuleID moduleID);
+
+    struct Nodes {
+        ModuleID moduleID;
+        NodeType nodeType;
+        quint16 number;
+    };
+
+    int createNodes(Nodes nodes, int nodesTotal);
+    int initNodes(Nodes nodes, int nodesTotal);
+
     QString m_projectFileName;
     ProjectParams m_projectParams;
     QString m_errorString;
@@ -44,11 +55,7 @@ private:
     QList<Module> m_envModules;
     QList<Module> m_nodeModules;
 
-    QMap<ModuleID, QMap<NodeType, NodeID> >m_nodesNum;
-    // TODO: implement nodePlatform
-    QMap<NodeID, NodeType> m_nodeTypes;
-
-    QHash<ModuleID, QHash<NodeID, ModuleInstanceID> > m_nodeModulesNum;
+    QList<Nodes> m_nodesNum;
 };
 
 #endif // PROJECT_H

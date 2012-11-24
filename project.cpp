@@ -85,7 +85,24 @@ int Project::initSimulator()
 
     Simulator::setMaxTime(maxTime);
 
-    m_nodesNum = m_projectParams.simulatorParams.nodes;
+    foreach(NodesData nodeData, m_projectParams.simulatorParams.nodes) {
+        NodeType type;
+        QString name = nodeData.nodeType;
+        foreach(NodeTypeData nodeType, m_projectParams.nodeTypes) {
+            if (nodeType.name == name) {
+                type.platform = nodeType.hardwareModules;
+                type.application = nodeType.softwareModules;
+                break;
+            }
+        }
+
+        Nodes nodes;
+        nodes.moduleID = nodeData.moduleID;
+        nodes.nodeType = type;
+        nodes.number = nodeData.nodesNumber;
+
+        m_nodesNum += nodes;
+    }
 
     if (m_nodesNum.empty()) {
         m_errorString = "There are no registered nodes in simulator. Can't continue.";
@@ -151,6 +168,84 @@ int Project::loadModules()
     return 1;
 }
 
+Module* Project::findNodeModule(ModuleID moduleID)
+{
+    foreach(const Module& module, m_nodeModules)
+        if (module.ID == moduleID)
+            return (Module*)&module;
+    return NULL;
+}
+
+int Project::createNodes(Nodes nodes, int nodesTotal)
+{
+    NodeType nodeType = nodes.nodeType;
+
+    QList<QList<ModuleID> > modulesList;
+    modulesList += nodeType.platform;
+    modulesList += nodeType.application;
+
+    foreach(QList<ModuleID> modules, modulesList) {
+        foreach(ModuleID moduleID, modules) {
+            Module* nodeModule = findNodeModule(moduleID);
+
+            if (!nodeModule)
+                return 0;
+
+            int ret = LuaHost::loadFile(nodeModule->fileName, nodeModule->name);
+            if (!ret) {
+                m_errorString = LuaHost::errorString();
+                return 0;
+            }
+
+            // creating nodes modules
+            for (int i = 0; i < nodes.number; i++) {
+
+                int ret = LuaHost::createModule(nodeModule->ID, i + nodesTotal, nodeModule->name);
+
+                if (!ret)
+                    return 0;
+            }
+
+            LuaHost::removeGlobalName(nodeModule->name);
+        }
+    }
+
+    return 1;
+}
+
+int Project::initNodes(Nodes nodes, int nodesTotal)
+{
+        // creating nodes modules
+    for (int i = 0; i < nodes.number; i++) {
+        NodeType nodeType = nodes.nodeType;
+
+        QList<QList<ModuleID> > modulesList;
+        modulesList += nodeType.platform;
+        modulesList += nodeType.application;
+
+        foreach(QList<ModuleID> modules, modulesList) {
+            foreach(ModuleID moduleID, modules) {
+                Module* nodeModule = findNodeModule(moduleID);
+                if (!nodeModule)
+                    return 0;
+
+                // init module
+                int success = LuaHost::initModule(nodeModule->ID,
+                                                  i + nodesTotal,
+                                                  nodeModule->type,
+                                                  nodeModule->params,
+                                                  nodeModule->dependencies);
+                if (!success) {
+                    m_errorString = LuaHost::errorString();
+                    return 0;
+                }
+            }
+        }
+    }
+
+    return 1;
+}
+
 int Project::createModules()
 {
     // creating env modules
@@ -169,23 +264,12 @@ int Project::createModules()
         LuaHost::removeGlobalName(envModule.name);
     }
 
-    // now we must have more than 0 registered nodes
-    foreach(ModuleID moduleID, m_nodesNum.keys()) {
-        quint16 nodesNum = m_nodesNum[moduleID];
-        quint16 nodeID = 0;
+    quint16 nodesTotal = 0;
 
-        // creating nodes modules
-        for (; nodeID < nodesNum; nodeID++) {
-
-            // TODO: support fot heterogeneous nodes
-            foreach(Module nodeModule, m_nodeModules) {
-
-                int ret = LuaHost::createModule(nodeModule.ID, nodeID, nodeModule.name);
-                
-                if (!ret)
-                    return 0;
-            }
-        }
+    foreach(Nodes nodes, m_nodesNum) {
+        if (!createNodes(nodes, nodesTotal))
+            return 0;
+        nodesTotal += nodes.number;
     }
 
     return 1;
@@ -207,28 +291,12 @@ int Project::initModules()
         }
     }
 
-    foreach(ModuleID moduleID, m_nodesNum.keys()) {
-        quint16 nodesNum = m_nodesNum[moduleID];
+    quint16 nodesTotal = 0;
 
-        // init modules of nodes
-        foreach(Module nodeModule, m_nodeModules) {
-            quint16 nodeID = 0;
-
-            // for all nodes
-            for (; nodeID < nodesNum; nodeID++) {
-                // init module
-                int success = LuaHost::initModule(nodeModule.ID,
-                                                  nodeID,
-                                                  nodeModule.type,
-                                                  nodeModule.params,
-                                                  nodeModule.dependencies);
-                if (!success) {
-                    m_errorString = LuaHost::errorString();
-                    return 0;
-                }
-            }
-        }
-        
+    foreach(Nodes nodes, m_nodesNum) {
+        if (!initNodes(nodes, nodesTotal))
+            return 0;
+        nodesTotal += nodes.number;
     }
 
     return 1;
