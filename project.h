@@ -11,7 +11,7 @@
 
 #include <QtCore>
 
-#include "types.h"
+#include "virtualTime.h"
 #include "projectParams.h"
 #include "module.h"
 #include "event.h"

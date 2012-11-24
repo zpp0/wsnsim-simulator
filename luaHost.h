@@ -19,7 +19,6 @@ extern "C"
 #include <QString>
 
 #include "module.h"
-#include "types.h"
 #include "event.h"
 
 class LuaHost

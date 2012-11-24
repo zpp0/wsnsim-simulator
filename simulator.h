@@ -9,7 +9,7 @@
 #ifndef SIMULATOR_H
 #define SIMULATOR_H
 
-#include "types.h"
+#include "virtualTime.h"
 
 #include "module.h"
 #include "eventQueue.h"

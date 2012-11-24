@@ -12,7 +12,7 @@
 #include <QMultiMap>
 
 #include "event.h"
-#include "types.h"
+#include "virtualTime.h"
 
 class eventQueue
 {

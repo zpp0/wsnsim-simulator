@@ -11,7 +11,7 @@ LIBS += -lluajit-5.1
 CONFIG += console
 
 # Input
-HEADERS += event.h eventQueue.h log.h simulator.h luaHost.h module.h types.h project.h eventhandler.h
+HEADERS += event.h eventQueue.h log.h simulator.h luaHost.h module.h virtualTime.h project.h eventhandler.h
 SOURCES += eventQueue.cpp \
            log.cpp \
            simulator.cpp \

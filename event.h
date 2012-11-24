@@ -9,7 +9,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include "types.h"
+#include "virtualTime.h"
 #include "module.h"
 
 typedef quint8 EventID;
