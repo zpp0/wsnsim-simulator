@@ -8,6 +8,7 @@
 
 #include <QDir>
 #include <QFile>
+#include <QSettings>
 
 #include "project.h"
 #include "simulator.h"
@@ -151,8 +152,6 @@ int Project::initLua()
 
 int Project::loadModules()
 {
-    QDir modulesDir(QDir::currentPath() + "/modules");
-
     foreach(ModuleData moduleData, m_projectParams.modules) {
         Module module(moduleData);
 
@@ -176,6 +175,14 @@ Module* Project::findNodeModule(ModuleID moduleID)
     return NULL;
 }
 
+QString Project::getModulePath(QString fileName)
+{
+    QSettings settings("wsnsim", "simulator");
+    QString modulesDirectory = settings.value("Modules/Directory").toString();
+    QString file = QDir::currentPath() + modulesDirectory + fileName;
+    return file;
+}
+
 int Project::createNodes(Nodes nodes, int nodesTotal)
 {
     NodeType nodeType = nodes.nodeType;
@@ -191,7 +198,7 @@ int Project::createNodes(Nodes nodes, int nodesTotal)
             if (!nodeModule)
                 return 0;
 
-            int ret = LuaHost::loadFile(nodeModule->fileName, nodeModule->name);
+            int ret = LuaHost::loadFile(getModulePath(nodeModule->fileName), nodeModule->name);
             if (!ret) {
                 m_errorString = LuaHost::errorString();
                 return 0;
@@ -250,7 +257,7 @@ int Project::createModules()
 {
     // creating env modules
     foreach(Module envModule, m_envModules) {
-        int ret = LuaHost::loadFile(envModule.fileName, envModule.name);
+        int ret = LuaHost::loadFile(getModulePath(envModule.fileName), envModule.name);
         if (!ret) {
             m_errorString = LuaHost::errorString();
             return 0;

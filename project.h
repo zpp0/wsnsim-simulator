@@ -47,6 +47,8 @@ private:
     int createNodes(Nodes nodes, int nodesTotal);
     int initNodes(Nodes nodes, int nodesTotal);
 
+    QString getModulePath(QString fileName);
+
     QString m_projectFileName;
     ProjectParams m_projectParams;
     QString m_errorString;
