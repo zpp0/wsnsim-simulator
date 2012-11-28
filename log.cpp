@@ -63,7 +63,7 @@ void Log::write(Event* event)
             m_logStream << param.value.i32;
             break;
         case BOOL_TYPE:
-            m_logStream << param.value.b;
+            m_logStream << (quint8)param.value.b;
             break;
         case DOUBLE_TYPE:
             m_logStream << param.value.d;
