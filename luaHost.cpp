@@ -29,16 +29,24 @@ QMap<ModuleID, QMap<ModuleInstanceID, QMap<EventID, int> > > LuaHost::m_handlers
 QMap<const void*, ModuleID> LuaHost::m_modulesPtrs;
 QMap<const void*, ModuleInstanceID> LuaHost::m_modulesInstancesPtrs;
 
+static const luaL_Reg simulatorAPI[] = {
+
+    {"handleEvent", LuaHost::handleEvent},
+    {"postEvent", LuaHost::postEvent},
+    {"getTime", LuaHost::getTime},
+    {NULL, NULL}
+};
+
 void LuaHost::open()
 {
     // getting new state
     m_lua = luaL_newstate();
 
     luaL_openlibs(m_lua);
+    luaL_register(m_lua, "Simulator", simulatorAPI);
+    lua_pushvalue(m_lua, -1);
+    lua_setfield(m_lua, -2, "__index");
 
-    lua_register(m_lua, "handleEvent", LuaHost::handleEvent);
-    lua_register(m_lua, "postEvent", LuaHost::postEvent);
-    lua_register(m_lua, "getTime", LuaHost::getTime);
     lua_register(m_lua, "declare_module", LuaHost::dummyDeclareModule);
 
     // QString luaModules = "package.path = package.path .. \";"

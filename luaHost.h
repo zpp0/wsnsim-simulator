@@ -45,6 +45,11 @@ public:
 
     static QString errorString();
 
+    // Simulator API
+    static int handleEvent(lua_State* lua);
+    static int postEvent(lua_State* lua);
+    static int getTime(lua_State* lua);
+
 private:
     inline static void getInstance(ModuleID moduleID, ModuleInstanceID ID);
     inline static void getInterface(ModuleID moduleID, ModuleInstanceID ID);
@@ -53,10 +58,6 @@ private:
     static void createDependencies(ModuleInstanceID ID,
                                    ModuleType type,
                                    QList<ModuleDepend> dependencies);
-
-    static int handleEvent(lua_State* lua);
-    static int postEvent(lua_State* lua);
-    static int getTime(lua_State* lua);
     static int dummyDeclareModule(lua_State* lua);
 
     static void setCurrentModule(ModuleID moduleID, ModuleInstanceID ID);
