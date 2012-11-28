@@ -209,8 +209,10 @@ int Project::createNodes(Nodes nodes, int nodesTotal)
 
                 int ret = LuaHost::createModule(nodeModule->ID, i + nodesTotal, nodeModule->name);
 
-                if (!ret)
+                if (!ret) {
+                    m_errorString = LuaHost::errorString();
                     return 0;
+                }
             }
 
             LuaHost::removeGlobalName(nodeModule->name);
@@ -265,8 +267,10 @@ int Project::createModules()
 
         ret = LuaHost::createModule(envModule.ID, 0, envModule.name);
 
-        if (!ret)
+        if (!ret) {
+            m_errorString = LuaHost::errorString();
             return 0;
+        }
 
         LuaHost::removeGlobalName(envModule.name);
     }

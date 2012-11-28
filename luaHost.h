@@ -47,6 +47,7 @@ public:
 
 private:
     inline static void getInstance(ModuleID moduleID, ModuleInstanceID ID);
+    inline static void getInterface(ModuleID moduleID, ModuleInstanceID ID);
 
     static void createParams(QList<ModuleParameter> params);
     static void createDependencies(ModuleInstanceID ID,
@@ -72,6 +73,7 @@ private:
     static QList<ModuleID> m_nodesModules;
 
     static QMap<ModuleID, QMap<ModuleInstanceID, int> > m_modulesRefs;
+    static QMap<ModuleID, QMap<ModuleInstanceID, int> > m_interfacesRefs;
     static QMap<ModuleID, QMap<ModuleInstanceID, QMap<EventID, int> > > m_handlersRefs;
     static QMap<const void*, ModuleID> m_modulesPtrs;
     static QMap<const void*, ModuleInstanceID> m_modulesInstancesPtrs;

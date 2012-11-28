@@ -24,6 +24,7 @@ QMap<ModuleID, QList<ModuleID> > LuaHost::m_moduleDeps;
 QList<ModuleID> LuaHost::m_nodesModules;
 
 QMap<ModuleID, QMap<ModuleInstanceID, int> > LuaHost::m_modulesRefs;
+QMap<ModuleID, QMap<ModuleInstanceID, int> > LuaHost::m_interfacesRefs;
 QMap<ModuleID, QMap<ModuleInstanceID, QMap<EventID, int> > > LuaHost::m_handlersRefs;
 QMap<const void*, ModuleID> LuaHost::m_modulesPtrs;
 QMap<const void*, ModuleInstanceID> LuaHost::m_modulesInstancesPtrs;
@@ -94,6 +95,29 @@ int LuaHost::createModule(ModuleID moduleID, ModuleInstanceID ID, QString name)
     m_modulesPtrs[p] = moduleID;
     m_modulesInstancesPtrs[p] = ID;
 
+    getInstance(moduleID, ID);
+
+    // get interface
+    lua_getfield(m_lua, -1, "interface");
+    if (!lua_isfunction(m_lua, -1)) {
+        qDebug() << "error";
+        m_errorString = "module " + name + " has no interface() method";
+        lua_pop(m_lua, 1);
+        return 0;
+    }
+
+    getInstance(moduleID, ID);
+    if (lua_pcall(m_lua, 1, 1, 0)) {
+        m_errorString = lua_tostring(m_lua, -1);
+        lua_pop(m_lua, 1);
+        return 0;
+    }
+
+    int interfaceRef = luaL_ref(m_lua, LUA_REGISTRYINDEX);
+    m_interfacesRefs[moduleID][ID] = interfaceRef;
+
+    lua_pop(m_lua, 1);
+
     if (ID == 0)
         m_modulesInstances[moduleID] = 0;
     else
@@ -153,6 +177,14 @@ void LuaHost::getInstance(ModuleID moduleID, ModuleInstanceID ID)
 {
     // --- getting table for module
     int ref = m_modulesRefs[moduleID][ID];
+    lua_rawgeti(m_lua, LUA_REGISTRYINDEX, ref);
+    assert(lua_istable(m_lua, -1));
+}
+
+void LuaHost::getInterface(ModuleID moduleID, ModuleInstanceID ID)
+{
+    // --- getting table for module
+    int ref = m_interfacesRefs[moduleID][ID];
     lua_rawgeti(m_lua, LUA_REGISTRYINDEX, ref);
     assert(lua_istable(m_lua, -1));
 }
@@ -227,7 +259,7 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
         switch(dep.type) {
 
         case ModuleType_Environment:
-            getInstance(dep.moduleID, 0);
+            getInterface(dep.moduleID, 0);
 
             break;
 
@@ -236,7 +268,7 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
             if (type == ModuleType_Hardware
                 || type == ModuleType_Software) {
 
-                getInstance(dep.moduleID, ID);
+                getInterface(dep.moduleID, ID);
 
             }
 
@@ -244,7 +276,7 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
                 lua_newtable(m_lua);
 
                 for (ModuleInstanceID i = 0; i <= m_modulesInstances[dep.moduleID]; i++) {
-                    getInstance(dep.moduleID, i);
+                    getInterface(dep.moduleID, i);
 
                     lua_rawseti(m_lua, -2, i);
                 }
