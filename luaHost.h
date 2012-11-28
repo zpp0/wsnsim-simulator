@@ -70,6 +70,7 @@ private:
 
     static QMap<ModuleID, ModuleInstanceID> m_modulesInstances;
     static QMap<ModuleID, QList<ModuleID> > m_moduleDeps;
+    static QMap<QString, ModuleID> m_depNames;
 
     static QList<ModuleID> m_nodesModules;
 

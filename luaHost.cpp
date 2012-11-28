@@ -20,6 +20,7 @@ ModuleInstanceID LuaHost::m_currentModuleInstance;
 
 QMap<ModuleID, ModuleInstanceID> LuaHost::m_modulesInstances;
 QMap<ModuleID, QList<ModuleID> > LuaHost::m_moduleDeps;
+QMap<QString, ModuleID> LuaHost::m_depNames;
 
 QList<ModuleID> LuaHost::m_nodesModules;
 
@@ -299,6 +300,7 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
 
         // remember module depends for event handling
         m_moduleDeps[m_currentModule] += dep.moduleID;
+        m_depNames[dep.name] = dep.moduleID;
     }
 }
 
@@ -389,8 +391,32 @@ QString LuaHost::errorString()
 
 int LuaHost::handleEvent(lua_State* lua)
 {
-    QString eventName = lua_tostring(lua, -2);
-    const char* eventHandlerName = lua_tostring(lua, -1);
+    // TODO: errors handling
+    if (!lua_istable(lua, -1))
+        return 1;
+
+    QString authorName = "";
+    QString eventName = "";
+    const char* eventHandlerName = NULL;
+
+    lua_getfield(lua, -1, "author");
+    if (lua_isstring(lua, -1))
+        authorName = lua_tostring(lua, -1);
+    lua_pop(lua, 1);
+
+    lua_getfield(lua, -1, "event");
+    if (lua_isstring(lua, -1))
+        eventName = lua_tostring(lua, -1);
+    lua_pop(lua, 1);
+
+    lua_getfield(lua, -1, "handler");
+    if (lua_isstring(lua, -1))
+        eventHandlerName = lua_tostring(lua, -1);
+    lua_pop(lua, 1);
+
+    // TODO: errors handling
+    if (!eventHandlerName)
+        return 1;
 
     getInstance(m_currentModule, m_currentModuleInstance);
     lua_getfield(m_lua, -1, eventHandlerName);
@@ -398,30 +424,39 @@ int LuaHost::handleEvent(lua_State* lua)
     if (lua_isfunction(m_lua, -1)) {
         ref = luaL_ref(m_lua, LUA_REGISTRYINDEX);
     }
-    else {
+    else
         lua_pop(lua, 1);
-    }
 
     lua_pop(lua, 1);
 
-    // FIXME: memory leak
     EventHandler* handler = new EventHandler(m_currentModule,
                                              m_currentModuleInstance);
 
+    if (eventName == "")
+        // TODO: errors handling
+        return 1;
+
     QMap<ModuleID, EventID> events = Simulator::getEventID(eventName);
 
-    // FIXME: wrong!
-    ModuleID maybeEvent = events.value(m_currentModule, 255);
-    if (maybeEvent != 255) {
-        Simulator::registerEventHandler(maybeEvent, handler);
-        m_handlersRefs[m_currentModule][m_currentModuleInstance][maybeEvent] = ref;
+    if (authorName == "") {
+        if (events.contains(m_currentModule)) {
+            ModuleID maybeEvent = events.value(m_currentModule);
+            Simulator::registerEventHandler(maybeEvent, handler);
+            m_handlersRefs[m_currentModule][m_currentModuleInstance][maybeEvent] = ref;
+        }
+        else {
+            // TODO: errors handling
+        }
     }
 
-    // handle events from depends modules
-    foreach(ModuleID dep, events.keys()) {
-        if (m_moduleDeps[m_currentModule].contains(dep)) {
+    else {
+        ModuleID dep = m_depNames[authorName];
+        if (events.contains(dep)) {
             Simulator::registerEventHandler(events[dep], handler);
             m_handlersRefs[m_currentModule][m_currentModuleInstance][events[dep]] = ref;
+        }
+        else {
+            // TODO: errors handling
         }
     }
 
