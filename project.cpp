@@ -86,7 +86,7 @@ int Project::initSimulator()
 
     Simulator::setMaxTime(maxTime);
 
-    foreach(NodesData nodeData, m_projectParams.simulatorParams.nodes) {
+    foreach(NodesData nodeData, m_projectParams.nodes) {
         NodeType type;
         QString name = nodeData.nodeType;
         foreach(NodeTypeData nodeType, m_projectParams.nodeTypes) {
