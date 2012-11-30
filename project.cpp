@@ -179,7 +179,7 @@ QString Project::getModulePath(QString fileName)
 {
     QSettings settings("wsnsim", "simulator");
     QString modulesDirectory = settings.value("Modules/Directory").toString();
-    QString file = QDir::currentPath() + modulesDirectory + fileName;
+    QString file = modulesDirectory + "/" + fileName;
     return file;
 }
 
