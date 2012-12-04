@@ -174,6 +174,17 @@ void Simulator::eval()
             std::cout << "\r" << completionPersent << "%" << std::unitbuf;
         }
 
+        foreach(EventParam param, nextEvent->params)
+            switch (param.type) {
+            case BYTE_ARRAY_TYPE:
+                delete param.value.byteArray.data;
+                break;
+            case STRING_TYPE:
+                delete param.value.string.data;
+                break;
+            default:
+                break;
+            }
         delete nextEvent;
     }
 
