@@ -13,6 +13,7 @@
 
 #include "virtualTime.h"
 #include "projectParams.h"
+#include "projectData.h"
 #include "module.h"
 #include "event.h"
 #include "nodes.h"
