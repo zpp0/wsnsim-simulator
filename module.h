@@ -14,6 +14,7 @@
 #include <QVariant>
 
 #include "projectParams.h"
+#include "event.h"
 
 enum ModuleType {
     ModuleType_Undefined,
@@ -27,6 +28,7 @@ typedef int ModuleInstanceID;
 
 enum ModuleParamType {
     ModuleParamType_Undefined,
+    ModuleParamType_BOOL,
     ModuleParamType_INT,
     ModuleParamType_UINT8,
     ModuleParamType_UINT16,
@@ -50,6 +52,8 @@ struct ModuleDepend
     QString name;
     ModuleType type;
     ModuleID moduleID;
+    bool hasFunctions;
+    QMap<QString, QVector<EventParam> > eventParams;
 };
 
 struct Module

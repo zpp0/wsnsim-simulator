@@ -80,6 +80,12 @@ Module::Module(ModuleData& moduleData)
         dependence.name = dep.name;
         dependence.type = getModuleType(dep.type);
         dependence.moduleID = dep.moduleID;
+        dependence.hasFunctions = dep.hasFunctions != "false" ? true : false;
+
+        foreach(QString event, dep.events.keys())
+
+            foreach(EventArgument param, dep.events[event])
+                dependence.eventParams[event] += EventParam(param);
 
         dependencies += dependence;
     }
