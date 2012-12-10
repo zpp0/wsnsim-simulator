@@ -1,12 +1,22 @@
 include(../wsnsim.pri)
 
-QT  += core
+QT  += core xml
 
 TEMPLATE = app
 TARGET = simulator
 INCLUDEPATH += . ../libs/projectData
-INCLUDEPATH += . /usr/include/luajit-2.0
-LIBS += -lluajit-5.1
+
+win32 {
+    INCLUDEPATH += ../libs/luajit/src
+    LIBS += ../../bin/libluajit.a
+    LIBS += ../../bin/libprojectData.a
+}
+
+unix {
+    INCLUDEPATH += . /usr/include/luajit-2.0
+    LIBS += -lluajit-5.1
+    LIBS += -L../../bin -lprojectData
+}
 
 CONFIG += console
 

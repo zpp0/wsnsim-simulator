@@ -37,18 +37,8 @@ QString Project::errorString()
 
 int Project::load()
 {
-    QLibrary projectDataLibrary("./projectData");
-
-    if (!projectDataLibrary.load()) {
-        m_errorString = projectDataLibrary.errorString();
-        return 0;
-    }
-
-    // FIXME: make it easy
-    typedef ProjectParams(*projectDataLoad) (QString& projectFileName, QString* errorMessage);
-    projectDataLoad pd = (projectDataLoad) projectDataLibrary.resolve("load");
-
-    m_projectParams = pd(m_projectFileName, &m_errorString);
+    ProjectData data;
+    m_projectParams = data.load(m_projectFileName, &m_errorString);
 
     // if error, than return
     if (m_errorString != "")
