@@ -10,7 +10,7 @@
 #define EVENT_H
 
 #include "virtualTime.h"
-#include "module.h"
+#include "projectParams.h"
 
 typedef quint8 EventID;
 
@@ -48,6 +48,9 @@ union ParamValue {
 
 struct EventParam
 {
+    EventParam(){}
+    EventParam(EventArgument param);
+
     quint8 ID;
     QString name;
     EventParamType type;
@@ -56,9 +59,13 @@ struct EventParam
 
 struct Event
 {
+    Event() {}
+    Event(EventParams event);
+
     EventID ID;
     QString name;
-    ModuleID author;
+    // this is the ModuleID Type
+    quint16 author;
     bool recordable;
     VirtualTime time;
     QVector<EventParam> params;
