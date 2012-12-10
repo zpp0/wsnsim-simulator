@@ -135,7 +135,9 @@ int Project::initSimulator()
 
 int Project::initLog()
 {
-    int ret = Log::init(m_projectParams.simulatorParams.logFile);
+    QFileInfo projectFile(m_projectFileName);
+
+    int ret = Log::init(projectFile.dir().path() + "/" + m_projectParams.simulatorParams.logFile);
     if (ret == 0) {
         m_errorString = Log::errorString();
         return 0;
