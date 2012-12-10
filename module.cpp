@@ -28,6 +28,8 @@ ModuleParamType getModuleParamType(QString typeName)
     ModuleParamType type;
     if (typeName == "int")
         type = ModuleParamType_INT;
+    else if (typeName == "bool")
+        type = ModuleParamType_BOOL;
     else if (typeName == "uint8")
         type = ModuleParamType_UINT8;
     else if (typeName == "uint16")
