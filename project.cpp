@@ -148,6 +148,7 @@ int Project::initLog()
 
 int Project::initLua()
 {
+    setlocale(LC_NUMERIC, "C");
     LuaHost::open();
     return 1;
 }
