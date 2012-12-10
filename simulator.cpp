@@ -17,7 +17,7 @@
 VirtualTime Simulator::m_globalTime;
 VirtualTime Simulator::m_maxGlobalTime;
 
-QMap<EventID, QList<EventHandler*> > Simulator::m_eventHandlers;
+QMap<EventID, QList<IHandler*> > Simulator::m_eventHandlers;
 QMap<QString, QMap<ModuleID, EventID> > Simulator::m_events;
 QMap<QString, QMap<ModuleID, QVector<EventParam> > > Simulator::m_eventsArgs;
 
@@ -25,12 +25,15 @@ QList<EventID> Simulator::m_loggableEvents;
 
 eventQueue Simulator::m_queue;
 
-void Simulator::registerEvent(QString name, ModuleID author, EventID event)
+void Simulator::registerEvent(QString name, ModuleID author, EventID event, bool recordable)
 {
     m_events[name][author] = event;
+
+    if (recordable)
+        m_loggableEvents += event;
 }
 
-void Simulator::registerEventHandler(EventID eventID, EventHandler* handler)
+void Simulator::registerEventHandler(EventID eventID, IHandler* handler)
 {
     m_eventHandlers[eventID] += handler;
 }
@@ -68,32 +71,22 @@ VirtualTime Simulator::globalTime()
     return m_globalTime;
 }
 
-void Simulator::postEvent(ModuleID author, QString name, VirtualTime delay, QVector<EventParam> params)
+void Simulator::postEvent(ModuleID author, QString name, VirtualTime delay, QVector<EventParam>& params)
 {
     // TODO: bufferization
     Event* event = new Event();
     event->name = name;
     event->author = author;
+    event->ID = m_events[event->name][event->author];
+    event->recordable = m_loggableEvents.contains(event->ID);
     event->time = m_globalTime + delay;
-    if (delay == 0)
-        event->recordable = false;
-    else
-        event->recordable = true;
     event->params = params;
 
-    postEvent(event);
-};
+    if (delay == 0 && event->recordable) {
+        Log::write(event);
+        event->recordable = false;
+    }
 
-void Simulator::postEvent(Event* event)
-{
-    event->ID = m_events[event->name][event->author];
-
-    if (event->recordable == false)
-        // if (m_loggableEvents.contains(event->ID))
-            Log::write(event);
-
-    // TODO: add author argument?
-    // TODO: add priority argument
     m_queue.insert(event);
 }
 
@@ -160,10 +153,9 @@ void Simulator::eval()
         }
 
         if (nextEvent->recordable == true)
-            // if (m_loggableEvents.contains(nextEvent->ID))
-                Log::write(nextEvent);
+            Log::write(nextEvent);
 
-        foreach(EventHandler* handler, m_eventHandlers[nextEvent->ID])
+        foreach(IHandler* handler, m_eventHandlers[nextEvent->ID])
             handler->handle(nextEvent);
 
         VirtualTime remainingTime = m_maxGlobalTime - nextEvent->time;

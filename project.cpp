@@ -114,12 +114,19 @@ int Project::initSimulator()
         QString eventName = params.eventInfo["name"];
         ModuleID moduleID = params.eventInfo["moduleID"].toUInt();
         EventID eventID = params.eventInfo["ID"].toUInt();
-        Simulator::registerEvent(eventName, moduleID, eventID);
+
+        QString recordableString = params.eventInfo["recordable"];
+        bool recordable = true;
+        if (recordableString == "false")
+            recordable = false;
+
+        Simulator::registerEvent(eventName, moduleID, eventID, recordable);
 
         foreach (EventArgument arg, params.arguments) {
             QString name = arg["name"];
             quint16 ID = arg["ID"].toUInt();
             QString typeName = arg["type"];
+
             EventParamType type = m_eventsParamsNames.value(typeName, UNKNOWN_TYPE);
             if (type == UNKNOWN_TYPE) {
                 m_errorString = "Wrong type " + typeName + " of event argument " + name;

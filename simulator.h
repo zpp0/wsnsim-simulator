@@ -14,13 +14,13 @@
 #include "module.h"
 #include "eventQueue.h"
 #include "project.h"
-#include "eventHandler.h"
+#include "IHandler.h"
 
 class Simulator
 {
 public:
-    static void registerEventHandler(EventID eventID, EventHandler* handler);
-    static void registerEvent(QString name, ModuleID author, EventID event);
+    static void registerEventHandler(EventID eventID, IHandler* handler);
+    static void registerEvent(QString name, ModuleID author, EventID event, bool recordable);
     static void registerEventParam(QString eventName,
                                    ModuleID author,
                                    QString argName,
@@ -31,8 +31,10 @@ public:
     static QVector<EventParam> getEventParams(QString name, ModuleID author);
 
     static VirtualTime globalTime();
-    static void postEvent(ModuleID author, QString name, VirtualTime delay, QVector<EventParam> params);
-    static void postEvent(Event* event);
+    static void postEvent(ModuleID author,
+                          QString name,
+                          VirtualTime delay,
+                          QVector<EventParam>& params);
 
     static void setMaxTime(VirtualTime maxTime);
 
