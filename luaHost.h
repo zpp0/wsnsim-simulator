@@ -41,7 +41,8 @@ public:
 
     static void eventHandler(Event* event,
                              ModuleID moduleID,
-                             ModuleInstanceID ID);
+                             ModuleInstanceID ID,
+                             QVector<EventParam>& params);
 
     static QString errorString();
 
@@ -55,9 +56,11 @@ private:
     inline static void getInterface(ModuleID moduleID, ModuleInstanceID ID);
 
     static void createParams(QList<ModuleParameter> params);
-    static void createDependencies(ModuleInstanceID ID,
+    static void createDependencies(ModuleID moduleID,
+                                   ModuleInstanceID ID,
                                    ModuleType type,
                                    QList<ModuleDepend> dependencies);
+
     static int dummyDeclareModule(lua_State* lua);
 
     static void setCurrentModule(ModuleID moduleID, ModuleInstanceID ID);
@@ -70,9 +73,11 @@ private:
 
     static QMap<ModuleID, ModuleInstanceID> m_modulesInstances;
     static QMap<ModuleID, QList<ModuleID> > m_moduleDeps;
-    static QMap<QString, ModuleID> m_depNames;
+    static QMap<ModuleID, QMap<QString, ModuleID> > m_depNames;
 
     static QList<ModuleID> m_nodesModules;
+
+    static QMap<ModuleID, QMap<QString, ModuleDepend > > m_dependenciesEvents;
 
     static QMap<ModuleID, QMap<ModuleInstanceID, int> > m_modulesRefs;
     static QMap<ModuleID, QMap<ModuleInstanceID, int> > m_interfacesRefs;

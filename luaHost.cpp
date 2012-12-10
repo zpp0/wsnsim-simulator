@@ -10,6 +10,7 @@
 
 #include "luaHost.h"
 #include "eventHandler.h"
+#include "eventNodeHandler.h"
 #include "simulator.h"
 
 lua_State* LuaHost::m_lua = 0;
@@ -20,7 +21,7 @@ ModuleInstanceID LuaHost::m_currentModuleInstance;
 
 QMap<ModuleID, ModuleInstanceID> LuaHost::m_modulesInstances;
 QMap<ModuleID, QList<ModuleID> > LuaHost::m_moduleDeps;
-QMap<QString, ModuleID> LuaHost::m_depNames;
+QMap<ModuleID, QMap<QString, ModuleID> > LuaHost::m_depNames;
 
 QList<ModuleID> LuaHost::m_nodesModules;
 
@@ -29,6 +30,8 @@ QMap<ModuleID, QMap<ModuleInstanceID, int> > LuaHost::m_interfacesRefs;
 QMap<ModuleID, QMap<ModuleInstanceID, QMap<EventID, int> > > LuaHost::m_handlersRefs;
 QMap<const void*, ModuleID> LuaHost::m_modulesPtrs;
 QMap<const void*, ModuleInstanceID> LuaHost::m_modulesInstancesPtrs;
+
+QMap<ModuleID, QMap<QString, ModuleDepend > > LuaHost::m_dependenciesEvents;
 
 static const luaL_Reg simulatorAPI[] = {
 
@@ -168,7 +171,7 @@ int LuaHost::initModule(ModuleID moduleID,
     }
 
     // put on top of the stack module interfaces
-    createDependencies(ID, type, dependencies);
+    createDependencies(moduleID, ID, type, dependencies);
 
     // call init function
     if (lua_pcall(m_lua, 3, 0, 0)) {
@@ -207,6 +210,9 @@ void LuaHost::createParams(QList<ModuleParameter> params)
         switch (param.type) {
         case ModuleParamType_INT:
             lua_pushnumber(m_lua, param.value.toInt());
+            break;
+        case ModuleParamType_BOOL:
+            lua_pushboolean(m_lua, param.value.toBool());
             break;
         case ModuleParamType_UINT8:
         case ModuleParamType_UINT16:
@@ -257,13 +263,22 @@ void LuaHost::createParams(QList<ModuleParameter> params)
     }
 }
 
-void LuaHost::createDependencies(ModuleInstanceID ID,
+void LuaHost::createDependencies(ModuleID moduleID,
+                                 ModuleInstanceID ID,
                                  ModuleType type,
                                  QList<ModuleDepend> dependencies)
 {
     lua_newtable(m_lua);
 
     foreach(ModuleDepend dep, dependencies) {
+
+        m_dependenciesEvents[moduleID][dep.name] = dep;
+        // remember module depends for event handling
+        m_moduleDeps[moduleID] += dep.moduleID;
+        m_depNames[moduleID][dep.name] = dep.moduleID;
+
+        if (!dep.hasFunctions)
+            continue;
 
         switch(dep.type) {
 
@@ -297,10 +312,6 @@ void LuaHost::createDependencies(ModuleInstanceID ID,
         }
 
         lua_setfield(m_lua, -2, dep.name.toUtf8().constData());
-
-        // remember module depends for event handling
-        m_moduleDeps[m_currentModule] += dep.moduleID;
-        m_depNames[dep.name] = dep.moduleID;
     }
 }
 
@@ -311,31 +322,19 @@ void LuaHost::close()
 
 void LuaHost::eventHandler(Event* event,
                            ModuleID moduleID,
-                           ModuleInstanceID ID)
+                           ModuleInstanceID ID,
+                           QVector<EventParam>& params)
 {
     int handlerRef = m_handlersRefs[moduleID][ID][event->ID];
     lua_rawgeti(m_lua, LUA_REGISTRYINDEX, handlerRef);
 
     // TODO: errors handling
-    // if (!lua_isfunction(m_lua, -1)) {
-    //     return 0;
-    // }
+    if (!lua_isfunction(m_lua, -1)) {
+        qDebug() << "not a function";
+        return;
+    }
 
     getInstance(moduleID, ID);
-
-    QVector<EventParam> params = event->params;
-
-    // remove nodeID param for nodes modules
-    if (m_nodesModules.contains(moduleID)) {
-
-        // filter wrong nodes modules
-        if (params[0].value.u16 == ID)
-            params.pop_front();
-        else {
-            lua_pop(m_lua, 2);
-            return;
-        }
-    }
 
     foreach(EventParam param, params) {
         switch (param.type) {
@@ -429,12 +428,21 @@ int LuaHost::handleEvent(lua_State* lua)
 
     lua_pop(lua, 1);
 
-    EventHandler* handler = new EventHandler(m_currentModule,
-                                             m_currentModuleInstance);
-
     if (eventName == "")
         // TODO: errors handling
         return 1;
+
+    IHandler* handler;
+    if (m_nodesModules.contains(m_currentModule))
+        handler = (IHandler*)new EventNodeHandler(m_currentModule,
+                                                  m_currentModuleInstance,
+                                                  m_currentModuleInstance);
+    else
+        handler = (IHandler*)new EventHandler(m_currentModule,
+                                              m_currentModuleInstance);
+
+    if (authorName != "")
+        handler->setCustomParams(m_dependenciesEvents[m_currentModule][authorName].eventParams[eventName]);
 
     QMap<ModuleID, EventID> events = Simulator::getEventID(eventName);
 
@@ -450,7 +458,7 @@ int LuaHost::handleEvent(lua_State* lua)
     }
 
     else {
-        ModuleID dep = m_depNames[authorName];
+        ModuleID dep = m_depNames[m_currentModule][authorName];
         if (events.contains(dep)) {
             Simulator::registerEventHandler(events[dep], handler);
             m_handlersRefs[m_currentModule][m_currentModuleInstance][events[dep]] = ref;

@@ -48,7 +48,7 @@ private:
     // реальное время в системе
     static VirtualTime m_globalTime;
 
-    static QMap<EventID, QList<EventHandler*> > m_eventHandlers;
+    static QMap<EventID, QList<IHandler*> > m_eventHandlers;
 
     static QMap<QString, QMap<ModuleID, EventID> > m_events;
     static QMap<QString, QMap<ModuleID, QVector<EventParam> > > m_eventsArgs;
