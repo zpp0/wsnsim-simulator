@@ -192,6 +192,11 @@ int Project::createNodes(Nodes nodes, int nodesTotal)
     modulesList += nodeType.application;
 
     foreach(QList<ModuleID> modules, modulesList) {
+        if (modules.isEmpty()) {
+            m_errorString = "node type has no modules";
+            return 0;
+        }
+
         foreach(ModuleID moduleID, modules) {
             Module* nodeModule = findNodeModule(moduleID);
 
