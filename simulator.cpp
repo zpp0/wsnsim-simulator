@@ -13,6 +13,7 @@
 #include "simulator.h"
 #include "event.h"
 #include "log.h"
+#include "errorsWriter.h"
 
 VirtualTime Simulator::m_globalTime;
 VirtualTime Simulator::m_maxGlobalTime;
@@ -113,7 +114,7 @@ void Simulator::init(QString projectFileName)
         || !project.createModules()
         || !project.initModules())
     {
-        std::cout << qPrintable(project.errorString()) << std::endl;
+        ErrorsWriter::write(project.errorString());
         exit(1);
     }
 }
@@ -199,4 +200,5 @@ void Simulator::eval()
 
     // TODO: to separate initialisation and uninitialisation from evaluation
     Log::uninit();
+    ErrorsWriter::uninit();
 }

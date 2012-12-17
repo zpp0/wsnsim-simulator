@@ -13,6 +13,7 @@
 #include "project.h"
 #include "simulator.h"
 #include "log.h"
+#include "errorsWriter.h"
 #include "luaHost.h"
 
 Project::Project(QString projectFileName)
@@ -134,11 +135,13 @@ int Project::initLog()
 {
     QFileInfo projectFile(m_projectFileName);
 
-    int ret = Log::init(projectFile.dir().path() + "/" + m_projectParams.simulatorParams.logFile);
+    int ret = Log::init(projectFile.dir().path(), m_projectParams.simulatorParams.logFile);
     if (ret == 0) {
         m_errorString = Log::errorString();
         return 0;
     }
+
+    ErrorsWriter::init(projectFile.dir().path(), "errors.txt");
 
     return 1;
 }
@@ -155,8 +158,10 @@ int Project::loadModules()
     foreach(ModuleData moduleData, m_projectParams.modules) {
         Module module(moduleData);
 
-        if (!isValidModule(module))
+        if (!isValidModule(module)) {
+            m_errorString = "module with ID " + QString::number(moduleData.moduleInfo["ID"].toInt()) + " is invalid";
             return 0;
+        }
 
         if (module.type == ModuleType_Environment)
             m_envModules += module;
@@ -200,8 +205,10 @@ int Project::createNodes(Nodes nodes, int nodesTotal)
         foreach(ModuleID moduleID, modules) {
             Module* nodeModule = findNodeModule(moduleID);
 
-            if (!nodeModule)
+            if (!nodeModule)  {
+                m_errorString = "module with ID " + QString::number(moduleID) + " not found";
                 return 0;
+            }
 
             int ret = LuaHost::loadFile(getModulePath(nodeModule->fileName), nodeModule->name);
             if (!ret) {
@@ -240,8 +247,10 @@ int Project::initNodes(Nodes nodes, int nodesTotal)
         foreach(QList<ModuleID> modules, modulesList) {
             foreach(ModuleID moduleID, modules) {
                 Module* nodeModule = findNodeModule(moduleID);
-                if (!nodeModule)
+                if (!nodeModule)  {
+                    m_errorString = "module with ID " + QString::number(moduleID) + " not found";
                     return 0;
+                }
 
                 // init module
                 int success = LuaHost::initModule(nodeModule->ID,

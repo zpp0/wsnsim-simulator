@@ -13,12 +13,14 @@
 QDataStream Log::m_logStream;
 QString Log::m_errorString;
 
-int Log::init(QString logFilePath)
+int Log::init(QString directory, QString logFileName)
 {
-    if (logFilePath == "") {
+    if (logFileName == "") {
         m_errorString = "Error: empty log file path";
         return 0;
     }
+
+    QString logFilePath = directory + "/" + logFileName;
 
     // remove old log file with the same name
     QFile* m_log = new QFile(logFilePath);

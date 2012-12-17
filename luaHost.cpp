@@ -12,6 +12,7 @@
 #include "eventHandler.h"
 #include "eventNodeHandler.h"
 #include "simulator.h"
+#include "errorsWriter.h"
 
 lua_State* LuaHost::m_lua = 0;
 QString LuaHost::m_errorString;
@@ -115,7 +116,6 @@ int LuaHost::createModule(ModuleID moduleID, ModuleInstanceID ID, QString name)
     // get interface
     lua_getfield(m_lua, -1, "interface");
     if (!lua_isfunction(m_lua, -1)) {
-        qDebug() << "error";
         m_errorString = "module " + name + " has no interface() method";
         lua_pop(m_lua, 1);
         return 0;
@@ -323,10 +323,18 @@ void LuaHost::close()
     lua_close(m_lua);
 }
 
-void LuaHost::systemEventHandler(QString name, ModuleID moduleID, ModuleInstanceID ID, QVector<EventParam>& params)
+void LuaHost::systemEventHandler(QString name,
+                                 ModuleID moduleID,
+                                 ModuleInstanceID ID,
+                                 QVector<EventParam>& params)
 {
     int handlerRef = m_systemHandlersRefs[moduleID][ID][name];
-    eventHandler(handlerRef, moduleID, ID, params);
+    if (handlerRef != -1)
+        eventHandler(handlerRef, moduleID, ID, params);
+    else
+        ErrorsWriter::write("module with ID " + QString::number(moduleID) + " has invalid handler of system event " + name);
+
+
 }
 
 void LuaHost::eventHandler(Event* event,
@@ -335,7 +343,10 @@ void LuaHost::eventHandler(Event* event,
                            QVector<EventParam>& params)
 {
     int handlerRef = m_handlersRefs[moduleID][ID][event->ID];
-    eventHandler(handlerRef, moduleID, ID, params);
+    if (handlerRef != -1)
+        eventHandler(handlerRef, moduleID, ID, params);
+    else
+        ErrorsWriter::write("module with ID " + QString::number(moduleID) + " has invalid handler of event " + event->name);
 }
 
 void LuaHost::eventHandler(int ref,
@@ -345,9 +356,8 @@ void LuaHost::eventHandler(int ref,
 {
     lua_rawgeti(m_lua, LUA_REGISTRYINDEX, ref);
 
-    // TODO: errors handling
     if (!lua_isfunction(m_lua, -1)) {
-        qDebug() << "not a function";
+        ErrorsWriter::write("module with ID " + QString::number(moduleID) + " has invalid event handler: not a function");
         return;
     }
 
@@ -391,10 +401,9 @@ void LuaHost::eventHandler(int ref,
         }
     }
 
-    // TODO: errors handling
     int ret = lua_pcall(m_lua, 1 + params.size(), 0, 0);
     if (ret) {
-        qDebug() << lua_tostring(m_lua, -1);
+        ErrorsWriter::write("error in event handler of module " + QString::number(moduleID) + " : " + lua_tostring(m_lua, -1));
         lua_pop(m_lua, 1);
     }
 }
@@ -407,9 +416,10 @@ QString LuaHost::errorString()
 
 int LuaHost::handleEvent(lua_State* lua)
 {
-    // TODO: errors handling
-    if (!lua_istable(lua, -1))
+    if (!lua_istable(lua, -1)) {
+        ErrorsWriter::write("invalid arguments of Simulator.handleEvent");
         return 1;
+    }
 
     QString authorName = "";
     QString eventName = "";
@@ -430,9 +440,10 @@ int LuaHost::handleEvent(lua_State* lua)
         eventHandlerName = lua_tostring(lua, -1);
     lua_pop(lua, 1);
 
-    // TODO: errors handling
-    if (!eventHandlerName)
+    if (!eventHandlerName) {
+        ErrorsWriter::write("invalid argument handler of function Simulator.handleEvent");
         return 1;
+    }
 
     getInstance(m_currentModule, m_currentModuleInstance);
     lua_getfield(m_lua, -1, eventHandlerName);
@@ -440,16 +451,17 @@ int LuaHost::handleEvent(lua_State* lua)
     if (lua_isfunction(m_lua, -1))
         ref = luaL_ref(m_lua, LUA_REGISTRYINDEX);
     else {
-        // TODO: errors handling
+        ErrorsWriter::write("module " + QString::number(m_currentModule) + "has no function " + eventHandlerName);
         lua_pop(lua, 2);
         return 1;
     }
 
     lua_pop(lua, 1);
 
-    if (eventName == "")
-        // TODO: errors handling
+    if (eventName == "") {
+        ErrorsWriter::write("invalid argument event of function Simulator.handleEvent");
         return 1;
+    }
 
     if (authorName == "simulator") {
         if (eventName == "globalTimeChanged") {
@@ -461,7 +473,7 @@ int LuaHost::handleEvent(lua_State* lua)
             return 1;
         }
         else {
-            // TODO: errors handling
+            ErrorsWriter::write("invalid event name of simulator");
         }
     }
 
@@ -488,7 +500,7 @@ int LuaHost::handleEvent(lua_State* lua)
             m_handlersRefs[m_currentModule][m_currentModuleInstance][maybeEvent] = ref;
         }
         else {
-            // TODO: errors handling
+            ErrorsWriter::write("invalid event " + eventName + " of module " + m_currentModule);
         }
     }
 
@@ -499,7 +511,7 @@ int LuaHost::handleEvent(lua_State* lua)
             m_handlersRefs[m_currentModule][m_currentModuleInstance][events[dep]] = ref;
         }
         else {
-            // TODO: errors handling
+            ErrorsWriter::write("invalid event " + eventName + " of dependence " + authorName);
         }
     }
 
@@ -540,7 +552,7 @@ int LuaHost::postEvent(lua_State* lua)
                 id = m_modulesInstancesPtrs[table_p];
             }
             else {
-                qDebug() << "no author of event";
+                ErrorsWriter::write("invalid argument author of Simulator.postEvent function");
                 return 1;
             }
 
@@ -562,7 +574,6 @@ int LuaHost::postEvent(lua_State* lua)
                 lua_next(lua, -2);
 
                 if (lua_isnil(lua, -1))
-                    // TODO: error handling
                     break;
 
                 switch (params[i].type) {
@@ -570,43 +581,43 @@ int LuaHost::postEvent(lua_State* lua)
                     if (lua_isnumber(lua, -1))
                         params[i].value.i32 = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number" << params[i].name;
+                        ErrorsWriter::write(params[i].name + " has invalid value");
                     break;
                 case BOOL_TYPE:
                     if (lua_isboolean(lua, -1))
                         params[i].value.b = lua_toboolean(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting bool";
+                        ErrorsWriter::write(params[i].name + " has invalid value");
                     break;
                 case UINT8_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.u8 = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number"  << params[i].name;
+                        ErrorsWriter::write(params[i].name + " has invalid value");
                     break;
                 case UINT16_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.u16 = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number" << params[i].name;
+                        ErrorsWriter::write(params[i].name + " has invalid value");
                     break;
                 case UINT32_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.u32 = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number"  << params[i].name;
+                        ErrorsWriter::write(params[i].name + " has invalid value");
                     break;
                 case UINT64_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.u64 = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number" << params[i].name;
+                        ErrorsWriter::write(params[i].name + " has invalid value");
                     break;
                 case DOUBLE_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.d = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number" << params[i].name;
+                        ErrorsWriter::write(params[i].name + " has invalid value");
                     break;
                 case STRING_TYPE:
                     if (lua_isstring(lua, -1)) {
@@ -618,7 +629,7 @@ int LuaHost::postEvent(lua_State* lua)
                         params[i].value.string.length = length;
                     }
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting string";
+                        ErrorsWriter::write(params[i].name + " has invalid value");
                     break;
                 case BYTE_ARRAY_TYPE:
                     if (lua_istable(lua, -1)) {
@@ -633,7 +644,7 @@ int LuaHost::postEvent(lua_State* lua)
                         params[i].value.byteArray.size = size;
                     }
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting table";
+                        ErrorsWriter::write(params[i].name + " has invalid value");
                     break;
                 case UNKNOWN_TYPE:
                     break;
