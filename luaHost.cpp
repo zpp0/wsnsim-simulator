@@ -27,7 +27,10 @@ QList<ModuleID> LuaHost::m_nodesModules;
 
 QMap<ModuleID, QMap<ModuleInstanceID, int> > LuaHost::m_modulesRefs;
 QMap<ModuleID, QMap<ModuleInstanceID, int> > LuaHost::m_interfacesRefs;
+
 QMap<ModuleID, QMap<ModuleInstanceID, QMap<EventID, int> > > LuaHost::m_handlersRefs;
+QMap<ModuleID, QMap<ModuleInstanceID, QMap<QString, int> > > LuaHost::m_systemHandlersRefs;
+
 QMap<const void*, ModuleID> LuaHost::m_modulesPtrs;
 QMap<const void*, ModuleInstanceID> LuaHost::m_modulesInstancesPtrs;
 
@@ -81,7 +84,7 @@ int LuaHost::loadFile(QString path, QString name)
         lua_pop(m_lua, 1);
     }
     else {
-        m_errorString = "There is no module " + name + "in file " + path;
+        m_errorString = "There is no module " + name + " in file " + path;
         return 0;
     }
 
@@ -320,13 +323,27 @@ void LuaHost::close()
     lua_close(m_lua);
 }
 
+void LuaHost::systemEventHandler(QString name, ModuleID moduleID, ModuleInstanceID ID, QVector<EventParam>& params)
+{
+    int handlerRef = m_systemHandlersRefs[moduleID][ID][name];
+    eventHandler(handlerRef, moduleID, ID, params);
+}
+
 void LuaHost::eventHandler(Event* event,
                            ModuleID moduleID,
                            ModuleInstanceID ID,
                            QVector<EventParam>& params)
 {
     int handlerRef = m_handlersRefs[moduleID][ID][event->ID];
-    lua_rawgeti(m_lua, LUA_REGISTRYINDEX, handlerRef);
+    eventHandler(handlerRef, moduleID, ID, params);
+}
+
+void LuaHost::eventHandler(int ref,
+                           ModuleID moduleID,
+                           ModuleInstanceID ID,
+                           QVector<EventParam>& params)
+{
+    lua_rawgeti(m_lua, LUA_REGISTRYINDEX, ref);
 
     // TODO: errors handling
     if (!lua_isfunction(m_lua, -1)) {
@@ -380,8 +397,8 @@ void LuaHost::eventHandler(Event* event,
         qDebug() << lua_tostring(m_lua, -1);
         lua_pop(m_lua, 1);
     }
-
 }
+
 
 QString LuaHost::errorString()
 {
@@ -420,17 +437,35 @@ int LuaHost::handleEvent(lua_State* lua)
     getInstance(m_currentModule, m_currentModuleInstance);
     lua_getfield(m_lua, -1, eventHandlerName);
     int ref;
-    if (lua_isfunction(m_lua, -1)) {
+    if (lua_isfunction(m_lua, -1))
         ref = luaL_ref(m_lua, LUA_REGISTRYINDEX);
+    else {
+        // TODO: errors handling
+        lua_pop(lua, 2);
+        return 1;
     }
-    else
-        lua_pop(lua, 1);
 
     lua_pop(lua, 1);
 
     if (eventName == "")
         // TODO: errors handling
         return 1;
+
+    if (authorName == "simulator") {
+        if (eventName == "globalTimeChanged") {
+            SystemEventHandler* handler = new SystemEventHandler(m_currentModule,
+                                                                 m_currentModuleInstance,
+                                                                 eventName);
+            Simulator::registerSystemEventHandler(eventName, handler);
+
+            return 1;
+        }
+        else {
+            // TODO: errors handling
+        }
+    }
+
+    // else...
 
     IHandler* handler;
     if (m_nodesModules.contains(m_currentModule))
@@ -535,7 +570,7 @@ int LuaHost::postEvent(lua_State* lua)
                     if (lua_isnumber(lua, -1))
                         params[i].value.i32 = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number" << params[i].name;
                     break;
                 case BOOL_TYPE:
                     if (lua_isboolean(lua, -1))
@@ -547,31 +582,31 @@ int LuaHost::postEvent(lua_State* lua)
                     if (lua_isnumber(lua, -1))
                         params[i].value.u8 = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number"  << params[i].name;
                     break;
                 case UINT16_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.u16 = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number" << params[i].name;
                     break;
                 case UINT32_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.u32 = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number"  << params[i].name;
                     break;
                 case UINT64_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.u64 = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number" << params[i].name;
                     break;
                 case DOUBLE_TYPE:
                     if (lua_isnumber(lua, -1))
                         params[i].value.d = lua_tonumber(lua, -1);
                     else
-                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number";
+                        qDebug() << "got" << lua_typename(lua, -1) << "while expecting number" << params[i].name;
                     break;
                 case STRING_TYPE:
                     if (lua_isstring(lua, -1)) {

@@ -21,7 +21,7 @@ unix {
 CONFIG += console
 
 # Input
-HEADERS += event.h eventQueue.h log.h simulator.h luaHost.h module.h virtualTime.h project.h IHandler.h eventHandler.h eventNodeHandler.h
+HEADERS += event.h eventQueue.h log.h simulator.h luaHost.h module.h virtualTime.h project.h IHandler.h eventHandler.h eventNodeHandler.h systemEventHandler.h
 SOURCES += eventQueue.cpp \
            log.cpp \
            simulator.cpp \
@@ -29,6 +29,7 @@ SOURCES += eventQueue.cpp \
            event.cpp \
            luaHost.cpp \
            project.cpp \
+           systemEventHandler.cpp \
            eventHandler.cpp \
            eventNodeHandler.cpp \
            IHandler.cpp \

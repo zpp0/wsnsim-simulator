@@ -18,6 +18,8 @@ VirtualTime Simulator::m_globalTime;
 VirtualTime Simulator::m_maxGlobalTime;
 
 QMap<EventID, QList<IHandler*> > Simulator::m_eventHandlers;
+QMap<QString, QList<SystemEventHandler*> > Simulator::m_systemEventHandlers;
+
 QMap<QString, QMap<ModuleID, EventID> > Simulator::m_events;
 QMap<QString, QMap<ModuleID, QVector<EventParam> > > Simulator::m_eventsArgs;
 
@@ -36,6 +38,11 @@ void Simulator::registerEvent(QString name, ModuleID author, EventID event, bool
 void Simulator::registerEventHandler(EventID eventID, IHandler* handler)
 {
     m_eventHandlers[eventID] += handler;
+}
+
+void Simulator::registerSystemEventHandler(QString name, SystemEventHandler* handler)
+{
+    m_systemEventHandlers[name] += handler;
 }
 
 void Simulator::registerEventParam(QString eventName,
@@ -149,7 +156,17 @@ void Simulator::eval()
         m_globalTime = nextEvent->time;
 
         if (m_globalTime > oldTime) {
-            // TODO: generate priority not loggable event timeChanged()
+            QList<SystemEventHandler*> handlers = m_systemEventHandlers["globalTimeChanged"];
+            if (!handlers.isEmpty()) {
+                QVector<EventParam> params;
+                EventParam param;
+                param.type = UINT64_TYPE;
+                param.value.u64 = m_globalTime;
+                params << param;
+
+                foreach(SystemEventHandler* handler, handlers)
+                    handler->handle(params);
+            }
         }
 
         if (nextEvent->recordable == true)

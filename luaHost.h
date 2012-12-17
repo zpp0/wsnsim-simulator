@@ -44,6 +44,11 @@ public:
                              ModuleInstanceID ID,
                              QVector<EventParam>& params);
 
+    static void systemEventHandler(QString name,
+                                   ModuleID moduleID,
+                                   ModuleInstanceID ID,
+                                   QVector<EventParam>& params);
+
     static QString errorString();
 
     // Simulator API
@@ -52,6 +57,12 @@ public:
     static int getTime(lua_State* lua);
 
 private:
+    static void eventHandler(int ref,
+                             ModuleID moduleID,
+                             ModuleInstanceID ID,
+                             QVector<EventParam>& params);
+
+
     inline static void getInstance(ModuleID moduleID, ModuleInstanceID ID);
     inline static void getInterface(ModuleID moduleID, ModuleInstanceID ID);
 
@@ -82,6 +93,7 @@ private:
     static QMap<ModuleID, QMap<ModuleInstanceID, int> > m_modulesRefs;
     static QMap<ModuleID, QMap<ModuleInstanceID, int> > m_interfacesRefs;
     static QMap<ModuleID, QMap<ModuleInstanceID, QMap<EventID, int> > > m_handlersRefs;
+    static QMap<ModuleID, QMap<ModuleInstanceID, QMap<QString, int> > > m_systemHandlersRefs;
     static QMap<const void*, ModuleID> m_modulesPtrs;
     static QMap<const void*, ModuleInstanceID> m_modulesInstancesPtrs;
 };

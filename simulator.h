@@ -16,10 +16,13 @@
 #include "project.h"
 #include "IHandler.h"
 
+#include "systemEventHandler.h"
+
 class Simulator
 {
 public:
     static void registerEventHandler(EventID eventID, IHandler* handler);
+    static void registerSystemEventHandler(QString name, SystemEventHandler* handler);
     static void registerEvent(QString name, ModuleID author, EventID event, bool recordable);
     static void registerEventParam(QString eventName,
                                    ModuleID author,
@@ -49,6 +52,7 @@ private:
     static VirtualTime m_globalTime;
 
     static QMap<EventID, QList<IHandler*> > m_eventHandlers;
+    static QMap<QString, QList<SystemEventHandler*> > m_systemEventHandlers;
 
     static QMap<QString, QMap<ModuleID, EventID> > m_events;
     static QMap<QString, QMap<ModuleID, QVector<EventParam> > > m_eventsArgs;
